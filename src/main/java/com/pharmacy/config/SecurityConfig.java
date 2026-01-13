@@ -37,24 +37,37 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
-                // Allow public access to Swagger UI and API documentation
-                .requestMatchers("/swagger-ui/**", "/swagger-ui.html").permitAll()
-                .requestMatchers("/v3/api-docs/**", "/api-docs/**").permitAll()
-                .requestMatchers("/swagger-resources/**", "/webjars/**").permitAll()
-                // Allow public access to actuator health endpoint
-                .requestMatchers("/actuator/health/**").permitAll()
-                    .requestMatchers("/api/**").permitAll()
-                // API endpoints - require authentication and specific roles
-                .requestMatchers("/api/users/**").hasRole("ADMIN")
-                .requestMatchers("/api/medicines/**").hasAnyRole("ADMIN", "PHARMACIST")
-                .requestMatchers("/api/prescriptions/**").hasAnyRole("ADMIN", "PHARMACIST")
-                .requestMatchers("/api/sales/**").hasAnyRole("ADMIN", "PHARMACIST")
-                // All other requests require authentication
-                .anyRequest().authenticated()
-            )
-            .httpBasic(httpBasic -> {})
-            .authenticationProvider(authenticationProvider());
+                // TEMPORARY: Allow all requests without authentication
+                .anyRequest().permitAll()
+            );
 
         return http.build();
     }
+
+    // PRODUCTION CONFIGURATION (Commented for now - uncomment when ready to add authentication)
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//            .csrf(csrf -> csrf.disable())
+//            .authorizeHttpRequests(authz -> authz
+//                // Allow public access to Swagger UI and API documentation
+//                .requestMatchers("/swagger-ui/**", "/swagger-ui.html").permitAll()
+//                .requestMatchers("/v3/api-docs/**", "/api-docs/**").permitAll()
+//                .requestMatchers("/swagger-resources/**", "/webjars/**").permitAll()
+//                // Allow public access to actuator health endpoint
+//                .requestMatchers("/actuator/health/**").permitAll()
+//                // API endpoints - require authentication and specific roles
+//                .requestMatchers("/api/users/**").hasRole("ADMIN")
+//                .requestMatchers("/api/medicines/**").hasAnyRole("ADMIN", "PHARMACIST")
+//                .requestMatchers("/api/prescriptions/**").hasAnyRole("ADMIN", "PHARMACIST")
+//                .requestMatchers("/api/sales/**").hasAnyRole("ADMIN", "PHARMACIST")
+//                .requestMatchers("/api/**").hasAnyRole("ADMIN", "PHARMACIST", "USER")
+//                // All other requests require authentication
+//                .anyRequest().authenticated()
+//            )
+//            .httpBasic(httpBasic -> {})
+//            .authenticationProvider(authenticationProvider());
+//
+//        return http.build();
+//    }
 }
