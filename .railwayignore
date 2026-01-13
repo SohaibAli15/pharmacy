@@ -1,0 +1,59 @@
+# Railway Ignore - Reduce build size and deployment time
+SWAGGER*.md
+IMPLEMENTATION*.md
+PROJECT*.pdf
+# Large documentation files
+
+*.postman_environment.json
+*.postman_collection.json
+# Postman collections (not needed in production)
+
+.gitignore
+.git/
+# Git
+
+*~
+*.swp
+*.bak
+*.tmp
+temp/
+tmp/
+# Temporary files
+
+logs/
+*.log
+# Logs
+
+mvnw.cmd
+mvnw
+.mvn/
+target/
+# Build artifacts (will be rebuilt)
+
+src/main/resources/application-dev.properties
+src/main/resources/application.properties
+# Development files
+
+*Tests.java
+*Test.java
+src/test/
+# Test files
+
+Thumbs.db
+.DS_Store
+# OS files
+
+*.ipr
+*.iws
+*.iml
+.vscode/
+.idea/
+# IDE files
+
+HELP.md
+docs/
+!README.md
+*.md
+# Documentation
+
+
