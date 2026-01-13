@@ -21,10 +21,10 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/recipes")
+@RequestMapping("/api/v1/recipes")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
-@Tag(name = "Recipe Management", description = "APIs for managing pharmaceutical recipes and formulations")
+@Tag(name = "Recipe Management", description = "APIs for managing pharmaceutical recipes and formulations (v1)")
 public class RecipeController {
 
     private final RecipeService recipeService;

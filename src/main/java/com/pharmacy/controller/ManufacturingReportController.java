@@ -1,8 +1,13 @@
 package com.pharmacy.controller;
 
 import com.pharmacy.dto.ProductionBatchDto;
-import com.pharmacy.dto.ProductionBatchMaterialDto;
 import com.pharmacy.service.ProductionBatchService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -20,22 +25,35 @@ import java.util.stream.Collectors;
  * Following pharmaceutical GMP compliance requirements
  */
 @RestController
-@RequestMapping("/api/manufacturing-reports")
+@RequestMapping("/api/v1/manufacturing-reports")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Manufacturing Reports", description = "Analytics and reporting endpoints for manufacturing operations and GMP compliance (v1)")
 public class ManufacturingReportController {
 
     private final ProductionBatchService productionBatchService;
 
-    /**
-     * Material Consumption Report
-     * Shows total material usage across production batches
-     */
+    @Operation(
+        summary = "Material Consumption Report",
+        description = """
+            Comprehensive material consumption analysis across production batches.
+            Shows total material usage, variances, and costs with filtering options.
+            Useful for inventory management and cost control.
+            """
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully generated material consumption report",
+            content = @Content(mediaType = "application/json"))
+    })
     @GetMapping("/material-consumption")
     public ResponseEntity<Map<String, Object>> getMaterialConsumptionReport(
+            @Parameter(description = "Start date for report (ISO 8601 format)", example = "2026-01-01T00:00:00")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @Parameter(description = "End date for report (ISO 8601 format)", example = "2026-12-31T23:59:59")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            @Parameter(description = "Filter by business location", example = "Butt Brothers")
             @RequestParam(required = false) String businessLocation,
+            @Parameter(description = "Filter by specific ingredient ID")
             @RequestParam(required = false) Long ingredientId
     ) {
         List<ProductionBatchDto> batches = productionBatchService.searchProductionBatches(
@@ -98,14 +116,24 @@ public class ManufacturingReportController {
         return ResponseEntity.ok(report);
     }
 
-    /**
-     * Cost Variance Report
-     * Compares actual vs expected costs
-     */
+    @Operation(
+        summary = "Cost Variance Report",
+        description = """
+            Analyzes cost variances between expected and actual production costs.
+            Helps identify cost overruns and optimize production planning.
+            Includes ingredient cost breakdown and production cost analysis.
+            """
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully generated cost variance report")
+    })
     @GetMapping("/cost-variance")
     public ResponseEntity<Map<String, Object>> getCostVarianceReport(
+            @Parameter(description = "Start date for report", example = "2026-01-01T00:00:00")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @Parameter(description = "End date for report", example = "2026-12-31T23:59:59")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            @Parameter(description = "Filter by business location")
             @RequestParam(required = false) String businessLocation
     ) {
         List<ProductionBatchDto> batches = productionBatchService.searchProductionBatches(

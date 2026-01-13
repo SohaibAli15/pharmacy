@@ -32,12 +32,50 @@ public class RecipeService {
     public RecipeDto toDto(Recipe r) {
         RecipeDto dto = new RecipeDto();
         dto.setId(r.getId());
+        dto.setRecipeCode(r.getRecipeCode());
         dto.setName(r.getName());
         dto.setDescription(r.getDescription());
+        dto.setCategory(r.getCategory());
+        dto.setSubCategory(r.getSubCategory());
+
+        // Product information
+        if (r.getProduct() != null) {
+            dto.setProductId(r.getProduct().getId());
+            dto.setProductName(r.getProduct().getName());
+        }
+
+        // Output specifications
+        dto.setOutputQuantity(r.getOutputQuantity());
+        dto.setOutputUnit(r.getOutputUnit());
+
+        // Cost breakdown
+        dto.setTotalIngredientCost(r.getTotalIngredientCost());
+        dto.setFixedProductionCost(r.getFixedProductionCost());
+        dto.setVariableProductionCost(r.getVariableProductionCost());
         dto.setTotalCost(r.getTotalCost());
-        dto.setIngredients(r.getIngredients().stream().map(this::toRecipeIngredientDto).collect(Collectors.toList()));
+        dto.setUnitPrice(r.getUnitPrice());
+        dto.setWastagePercent(r.getWastagePercent());
+
+        // Instructions
+        dto.setInstructions(r.getInstructions());
+
+        // Ingredients
+        if (r.getIngredients() != null) {
+            dto.setIngredients(r.getIngredients().stream()
+                .map(this::toRecipeIngredientDto)
+                .collect(Collectors.toList()));
+        }
+
+        // Status
+        dto.setStatus(r.getStatus());
+        dto.setIsActive(r.getIsActive());
+
+        // Audit fields
         dto.setCreatedAt(r.getCreatedAt());
         dto.setUpdatedAt(r.getUpdatedAt());
+        dto.setCreatedBy(r.getCreatedBy());
+        dto.setUpdatedBy(r.getUpdatedBy());
+
         return dto;
     }
 
@@ -47,17 +85,55 @@ public class RecipeService {
         dto.setIngredientId(ri.getIngredient().getId());
         dto.setIngredientName(ri.getIngredient().getName());
         dto.setQuantityRequired(ri.getQuantityRequired());
+        dto.setUnit(ri.getUnit());
+        dto.setWastagePercent(ri.getWastagePercent());
+        dto.setFinalQuantity(ri.getFinalQuantity());
+        dto.setCostPerUnit(ri.getCostPerUnit());
+        dto.setTotalCost(ri.getTotalCost());
+        dto.setSortOrder(ri.getSortOrder());
         return dto;
     }
 
     public Recipe fromDto(RecipeDto dto) {
         Recipe r = new Recipe();
         r.setId(dto.getId());
+        r.setRecipeCode(dto.getRecipeCode());
         r.setName(dto.getName());
         r.setDescription(dto.getDescription());
-        r.setTotalCost(dto.getTotalCost());
+        r.setCategory(dto.getCategory());
+        r.setSubCategory(dto.getSubCategory());
+
+        // Set product if provided
+        if (dto.getProductId() != null) {
+            Medicine product = medicineRepository.findById(dto.getProductId()).orElse(null);
+            r.setProduct(product);
+        }
+
+        // Output specifications
+        r.setOutputQuantity(dto.getOutputQuantity());
+        r.setOutputUnit(dto.getOutputUnit());
+
+        // Cost fields with defaults
+        r.setFixedProductionCost(dto.getFixedProductionCost() != null ? dto.getFixedProductionCost() : BigDecimal.ZERO);
+        r.setVariableProductionCost(dto.getVariableProductionCost() != null ? dto.getVariableProductionCost() : BigDecimal.ZERO);
+        r.setTotalIngredientCost(dto.getTotalIngredientCost() != null ? dto.getTotalIngredientCost() : BigDecimal.ZERO);
+        r.setTotalCost(dto.getTotalCost() != null ? dto.getTotalCost() : BigDecimal.ZERO);
+        r.setUnitPrice(dto.getUnitPrice() != null ? dto.getUnitPrice() : BigDecimal.ZERO);
+        r.setWastagePercent(dto.getWastagePercent() != null ? dto.getWastagePercent() : BigDecimal.ZERO);
+
+        // Instructions
+        r.setInstructions(dto.getInstructions());
+
+        // Status fields
+        r.setStatus(dto.getStatus() != null ? dto.getStatus() : "DRAFT");
+        r.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
+
+        // Audit fields
         r.setCreatedAt(dto.getCreatedAt() != null ? dto.getCreatedAt() : LocalDateTime.now());
         r.setUpdatedAt(LocalDateTime.now());
+        r.setCreatedBy(dto.getCreatedBy());
+        r.setUpdatedBy(dto.getUpdatedBy());
+
         // Ingredients will be set separately
         return r;
     }
@@ -278,17 +354,41 @@ public class RecipeService {
      * Calculate all costs for a recipe including ingredient costs, production costs, and unit price
      */
     private void calculateRecipeCosts(Recipe recipe) {
+        // Calculate costs for each ingredient first (before @PrePersist)
+        if (recipe.getIngredients() != null) {
+            for (RecipeIngredient ri : recipe.getIngredients()) {
+                // Calculate final quantity with wastage
+                if (ri.getWastagePercent() != null && ri.getWastagePercent().compareTo(BigDecimal.ZERO) > 0) {
+                    BigDecimal wastageMultiplier = BigDecimal.ONE.add(
+                        ri.getWastagePercent().divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP)
+                    );
+                    ri.setFinalQuantity(ri.getQuantityRequired().multiply(wastageMultiplier));
+                } else {
+                    ri.setFinalQuantity(ri.getQuantityRequired());
+                }
+
+                // Calculate total cost
+                if (ri.getCostPerUnit() != null && ri.getFinalQuantity() != null) {
+                    ri.setTotalCost(ri.getFinalQuantity().multiply(ri.getCostPerUnit()));
+                } else {
+                    ri.setTotalCost(BigDecimal.ZERO);
+                }
+            }
+        }
+
         // Calculate total ingredient cost (with wastage)
-        BigDecimal totalIngredientCost = recipe.getIngredients().stream()
-            .map(RecipeIngredient::getTotalCost)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalIngredientCost = recipe.getIngredients() != null
+            ? recipe.getIngredients().stream()
+                .map(ri -> ri.getTotalCost() != null ? ri.getTotalCost() : BigDecimal.ZERO)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+            : BigDecimal.ZERO;
 
         recipe.setTotalIngredientCost(totalIngredientCost);
 
         // Calculate total cost
-        BigDecimal totalCost = totalIngredientCost
-            .add(recipe.getFixedProductionCost() != null ? recipe.getFixedProductionCost() : BigDecimal.ZERO)
-            .add(recipe.getVariableProductionCost() != null ? recipe.getVariableProductionCost() : BigDecimal.ZERO);
+        BigDecimal fixedCost = recipe.getFixedProductionCost() != null ? recipe.getFixedProductionCost() : BigDecimal.ZERO;
+        BigDecimal variableCost = recipe.getVariableProductionCost() != null ? recipe.getVariableProductionCost() : BigDecimal.ZERO;
+        BigDecimal totalCost = totalIngredientCost.add(fixedCost).add(variableCost);
 
         recipe.setTotalCost(totalCost);
 
@@ -296,6 +396,8 @@ public class RecipeService {
         if (recipe.getOutputQuantity() != null && recipe.getOutputQuantity().compareTo(BigDecimal.ZERO) > 0) {
             BigDecimal unitPrice = totalCost.divide(recipe.getOutputQuantity(), 4, RoundingMode.HALF_UP);
             recipe.setUnitPrice(unitPrice);
+        } else {
+            recipe.setUnitPrice(BigDecimal.ZERO);
         }
     }
 }

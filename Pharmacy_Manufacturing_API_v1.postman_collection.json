@@ -1,0 +1,329 @@
+{
+  "info": {
+    "name": "Pharmacy Manufacturing API v1",
+    "description": "Complete API test suite for Pharmacy Manufacturing Module with API versioning (v1)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "item": [
+    {
+      "name": "Ingredients API",
+      "item": [
+        {
+          "name": "Create Ingredient",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Paracetamol Powder\",\n  \"description\": \"Active pharmaceutical ingredient for pain relief\",\n  \"unit\": \"G\",\n  \"currentStock\": 5000.00,\n  \"thresholdLow\": 500.00,\n  \"thresholdHigh\": 10000.00,\n  \"costPerUnit\": 2.50\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/ingredients",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "ingredients"]
+            }
+          }
+        },
+        {
+          "name": "Get All Ingredients",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/ingredients",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "ingredients"]
+            }
+          }
+        },
+        {
+          "name": "Get Low Stock Ingredients",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/ingredients/low-stock",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "ingredients", "low-stock"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Recipes API",
+      "item": [
+        {
+          "name": "Create Recipe - Basic Syrup",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipeCode\": \"SYR001\",\n  \"name\": \"Paracetamol Syrup 120mg/5ml\",\n  \"category\": \"SYRUP\",\n  \"subCategory\": \"Analgesic\",\n  \"description\": \"Paracetamol syrup for fever and pain relief\",\n  \"outputQuantity\": 1000,\n  \"outputUnit\": \"ML\",\n  \"wastagePercent\": 3.0,\n  \"fixedProductionCost\": 50,\n  \"variableProductionCost\": 20,\n  \"isActive\": true,\n  \"status\": \"DRAFT\",\n  \"ingredients\": [\n    {\n      \"ingredientId\": 1,\n      \"quantityRequired\": 50.0,\n      \"unit\": \"G\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/recipes",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "recipes"]
+            }
+          }
+        },
+        {
+          "name": "Create Recipe - Test Data",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipeCode\": \"TEST001\",\n  \"name\": \"Paracetamol Syrup\",\n  \"category\": \"SYRUP\",\n  \"subCategory\": \"Analgesic\",\n  \"outputQuantity\": 1000,\n  \"outputUnit\": \"ML\",\n  \"wastagePercent\": 3.0,\n  \"fixedProductionCost\": 0,\n  \"variableProductionCost\": 0,\n  \"isActive\": true,\n  \"status\": \"DRAFT\",\n  \"ingredients\": [\n    {\n      \"ingredientId\": 1,\n      \"quantityRequired\": 50.0,\n      \"unit\": \"G\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/recipes",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "recipes"]
+            }
+          }
+        },
+        {
+          "name": "Get All Recipes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/recipes",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "recipes"]
+            }
+          }
+        },
+        {
+          "name": "Get Recipe by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/recipes/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "recipes", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Recipe by Code",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/recipes/code/TEST001",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "recipes", "code", "TEST001"]
+            }
+          }
+        },
+        {
+          "name": "Search Recipes by Name",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/recipes/search?searchTerm=Paracetamol",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "recipes", "search"],
+              "query": [{"key": "searchTerm", "value": "Paracetamol"}]
+            }
+          }
+        },
+        {
+          "name": "Search Recipes by Category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/recipes/search?category=SYRUP",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "recipes", "search"],
+              "query": [{"key": "category", "value": "SYRUP"}]
+            }
+          }
+        },
+        {
+          "name": "Update Recipe",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipeCode\": \"TEST001\",\n  \"name\": \"Paracetamol Syrup Updated\",\n  \"category\": \"SYRUP\",\n  \"subCategory\": \"Analgesic\",\n  \"description\": \"Updated description\",\n  \"outputQuantity\": 2000,\n  \"outputUnit\": \"ML\",\n  \"wastagePercent\": 2.5,\n  \"fixedProductionCost\": 60,\n  \"variableProductionCost\": 25,\n  \"isActive\": true,\n  \"status\": \"ACTIVE\",\n  \"ingredients\": [\n    {\n      \"ingredientId\": 1,\n      \"quantityRequired\": 100.0,\n      \"unit\": \"G\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/recipes/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "recipes", "1"]
+            }
+          }
+        },
+        {
+          "name": "Copy Recipe",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newRecipeCode\": \"TEST001-COPY\",\n  \"newName\": \"Paracetamol Syrup (Copy)\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/recipes/1/copy",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "recipes", "1", "copy"]
+            }
+          }
+        },
+        {
+          "name": "Get Active Recipes Only",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/recipes?activeOnly=true",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "recipes"],
+              "query": [{"key": "activeOnly", "value": "true"}]
+            }
+          }
+        },
+        {
+          "name": "Delete Recipe (Soft Delete)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/recipes/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "recipes", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Production Batches API",
+      "item": [
+        {
+          "name": "Create Production Batch",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipeId\": 1,\n  \"batchNumber\": \"BATCH-001\",\n  \"plannedQuantity\": 1000,\n  \"status\": \"PLANNED\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/production-batches",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "production-batches"]
+            }
+          }
+        },
+        {
+          "name": "Get All Production Batches",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/production-batches",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "production-batches"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Alerts API",
+      "item": [
+        {
+          "name": "Get All Alerts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/alerts",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "alerts"]
+            }
+          }
+        },
+        {
+          "name": "Get Unread Alerts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/alerts/unread",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "alerts", "unread"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Manufacturing Reports API",
+      "item": [
+        {
+          "name": "Get Production Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/manufacturing-reports/production-summary",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "manufacturing-reports", "production-summary"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+

@@ -1,0 +1,839 @@
+{
+	"info": {
+		"_postman_id": "pharmacy-manufacturing-api",
+		"name": "Pharmacy Manufacturing API - Complete",
+		"description": "Complete API collection for Pharmacy Manufacturing Module - Butt Brothers\n\n## Features:\n- 32+ API endpoints across 5 modules\n- Auto-save IDs between requests\n- Pre-configured test data\n- Response validation tests\n\n## Usage:\n1. Import this collection\n2. Import the environment file\n3. Run requests in order: Ingredients → Recipes → Production Batches → Reports",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Ingredients Module",
+			"item": [
+				{
+					"name": "Create Ingredient - Paracetamol",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"ingredient_id\", jsonData.id);",
+									"    pm.test(\"Ingredient created successfully\", function () {",
+									"        pm.expect(jsonData.id).to.exist;",
+									"        pm.expect(jsonData.name).to.eql(\"Paracetamol Powder\");",
+									"    });",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Paracetamol Powder\",\n  \"description\": \"Active pharmaceutical ingredient for pain relief\",\n  \"unit\": \"g\",\n  \"currentStock\": 5000.00,\n  \"thresholdLow\": 500.00,\n  \"thresholdHigh\": 10000.00,\n  \"costPerUnit\": 2.50\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ingredients",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ingredients"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Ingredient - Glucose",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Glucose Syrup\",\n  \"description\": \"Sweet base for liquid medications\",\n  \"unit\": \"ml\",\n  \"currentStock\": 20000.00,\n  \"thresholdLow\": 2000.00,\n  \"thresholdHigh\": 50000.00,\n  \"costPerUnit\": 0.15\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ingredients",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ingredients"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Ingredients",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ingredients",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ingredients"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Ingredient by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ingredients/{{ingredient_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ingredients", "{{ingredient_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Low Stock Ingredients",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ingredients/low-stock",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ingredients", "low-stock"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get High Stock Ingredients",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ingredients/high-stock",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ingredients", "high-stock"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Ingredient",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Paracetamol Powder (Updated)\",\n  \"description\": \"High-grade active pharmaceutical ingredient\",\n  \"unit\": \"g\",\n  \"currentStock\": 6000.00,\n  \"thresholdLow\": 500.00,\n  \"thresholdHigh\": 10000.00,\n  \"costPerUnit\": 2.75\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ingredients/{{ingredient_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ingredients", "{{ingredient_id}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Recipes Module",
+			"item": [
+				{
+					"name": "Create Recipe - Paracetamol Syrup",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"recipe_id\", jsonData.id);",
+									"    pm.test(\"Recipe created successfully\", function () {",
+									"        pm.expect(jsonData.id).to.exist;",
+									"        pm.expect(jsonData.recipeCode).to.eql(\"RCP-001\");",
+									"    });",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"recipeCode\": \"RCP-001\",\n  \"name\": \"Paracetamol Syrup 120mg/5ml\",\n  \"description\": \"Pediatric pain relief syrup - cherry flavor\",\n  \"category\": \"Syrup\",\n  \"subCategory\": \"Analgesic\",\n  \"outputQuantity\": 1000,\n  \"outputUnit\": \"ml\",\n  \"wastagePercent\": 3.0,\n  \"fixedProductionCost\": 100.00,\n  \"variableProductionCost\": 50.00,\n  \"instructions\": \"1. Mix paracetamol powder with glucose syrup\\n2. Add purified water and stir until dissolved\\n3. Add cherry flavoring\\n4. Fill into sterilized bottles\\n5. Cap and label\",\n  \"status\": \"ACTIVE\",\n  \"isActive\": true,\n  \"ingredients\": [\n    {\n      \"ingredientId\": 1,\n      \"quantity\": 24.0,\n      \"unit\": \"g\"\n    },\n    {\n      \"ingredientId\": 2,\n      \"quantity\": 500.0,\n      \"unit\": \"ml\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/recipes",
+							"host": ["{{base_url}}"],
+							"path": ["api", "recipes"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Recipes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/recipes",
+							"host": ["{{base_url}}"],
+							"path": ["api", "recipes"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active Recipes Only",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/recipes?activeOnly=true",
+							"host": ["{{base_url}}"],
+							"path": ["api", "recipes"],
+							"query": [
+								{
+									"key": "activeOnly",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Recipes by Category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/recipes/search?category=Syrup&status=ACTIVE",
+							"host": ["{{base_url}}"],
+							"path": ["api", "recipes", "search"],
+							"query": [
+								{
+									"key": "category",
+									"value": "Syrup"
+								},
+								{
+									"key": "status",
+									"value": "ACTIVE"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Recipe by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/recipes/{{recipe_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "recipes", "{{recipe_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Recipe by Code",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/recipes/code/RCP-001",
+							"host": ["{{base_url}}"],
+							"path": ["api", "recipes", "code", "RCP-001"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Recipes by Category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/recipes/category/Syrup",
+							"host": ["{{base_url}}"],
+							"path": ["api", "recipes", "category", "Syrup"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Recipe",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"recipeCode\": \"RCP-001\",\n  \"name\": \"Paracetamol Syrup 120mg/5ml (Updated)\",\n  \"description\": \"Updated pediatric pain relief syrup\",\n  \"category\": \"Syrup\",\n  \"subCategory\": \"Analgesic\",\n  \"outputQuantity\": 1200,\n  \"outputUnit\": \"ml\",\n  \"wastagePercent\": 2.5,\n  \"fixedProductionCost\": 100.00,\n  \"variableProductionCost\": 50.00,\n  \"status\": \"ACTIVE\",\n  \"isActive\": true,\n  \"ingredients\": [\n    {\n      \"ingredientId\": 1,\n      \"quantity\": 28.8,\n      \"unit\": \"g\"\n    },\n    {\n      \"ingredientId\": 2,\n      \"quantity\": 600.0,\n      \"unit\": \"ml\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/recipes/{{recipe_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "recipes", "{{recipe_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Calculate Recipe Cost",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"outputQuantity\": 1000,\n  \"ingredients\": [\n    {\n      \"ingredientId\": 1,\n      \"quantity\": 24.0\n    },\n    {\n      \"ingredientId\": 2,\n      \"quantity\": 500.0\n    }\n  ],\n  \"fixedProductionCost\": 100.00,\n  \"variableProductionCost\": 50.00,\n  \"wastagePercent\": 3.0\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/recipes/calculate-cost",
+							"host": ["{{base_url}}"],
+							"path": ["api", "recipes", "calculate-cost"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Copy Recipe",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/recipes/{{recipe_id}}/copy?newRecipeCode=RCP-002&newName=Paracetamol Syrup (Copy)",
+							"host": ["{{base_url}}"],
+							"path": ["api", "recipes", "{{recipe_id}}", "copy"],
+							"query": [
+								{
+									"key": "newRecipeCode",
+									"value": "RCP-002"
+								},
+								{
+									"key": "newName",
+									"value": "Paracetamol Syrup (Copy)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Recipe Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/recipes/stats",
+							"host": ["{{base_url}}"],
+							"path": ["api", "recipes", "stats"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Soft Delete Recipe",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/recipes/{{recipe_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "recipes", "{{recipe_id}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Production Batches Module",
+			"item": [
+				{
+					"name": "Create Production Batch",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"batch_id\", jsonData.id);",
+									"    pm.test(\"Production batch created successfully\", function () {",
+									"        pm.expect(jsonData.id).to.exist;",
+									"        pm.expect(jsonData.businessLocation).to.eql(\"Butt Brothers\");",
+									"    });",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"recipeId\": 1,\n  \"productionDate\": \"2026-01-13T10:00:00\",\n  \"businessLocation\": \"Butt Brothers\",\n  \"quantityProduced\": 1000.0,\n  \"productionByName\": \"John Doe\",\n  \"notes\": \"First batch of January 2026 - Quality checked\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/production-batches",
+							"host": ["{{base_url}}"],
+							"path": ["api", "production-batches"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Production Batches",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/production-batches",
+							"host": ["{{base_url}}"],
+							"path": ["api", "production-batches"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Production Batches",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/production-batches/search?businessLocation=Butt Brothers&status=PENDING&startDate=2026-01-01T00:00:00&endDate=2026-01-31T23:59:59",
+							"host": ["{{base_url}}"],
+							"path": ["api", "production-batches", "search"],
+							"query": [
+								{
+									"key": "businessLocation",
+									"value": "Butt Brothers"
+								},
+								{
+									"key": "status",
+									"value": "PENDING"
+								},
+								{
+									"key": "startDate",
+									"value": "2026-01-01T00:00:00"
+								},
+								{
+									"key": "endDate",
+									"value": "2026-01-31T23:59:59"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Batch by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/production-batches/{{batch_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "production-batches", "{{batch_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Batches by Recipe",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/production-batches/recipe/{{recipe_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "production-batches", "recipe", "{{recipe_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Batches by Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/production-batches/status/PENDING",
+							"host": ["{{base_url}}"],
+							"path": ["api", "production-batches", "status", "PENDING"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Business Locations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/production-batches/locations",
+							"host": ["{{base_url}}"],
+							"path": ["api", "production-batches", "locations"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Production Batch",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"recipeId\": 1,\n  \"productionDate\": \"2026-01-13T10:00:00\",\n  \"businessLocation\": \"Butt Brothers\",\n  \"quantityProduced\": 1200.0,\n  \"productionByName\": \"John Doe\",\n  \"notes\": \"Updated quantity after quality check\",\n  \"status\": \"IN_PROGRESS\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/production-batches/{{batch_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "production-batches", "{{batch_id}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Finalize Production Batch",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/production-batches/{{batch_id}}/finalize",
+							"host": ["{{base_url}}"],
+							"path": ["api", "production-batches", "{{batch_id}}", "finalize"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Production Batch",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/production-batches/{{batch_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "production-batches", "{{batch_id}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Manufacturing Reports Module",
+			"item": [
+				{
+					"name": "Material Consumption Report",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/manufacturing-reports/material-consumption?startDate=2026-01-01T00:00:00&endDate=2026-01-31T23:59:59&businessLocation=Butt Brothers",
+							"host": ["{{base_url}}"],
+							"path": ["api", "manufacturing-reports", "material-consumption"],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2026-01-01T00:00:00"
+								},
+								{
+									"key": "endDate",
+									"value": "2026-01-31T23:59:59"
+								},
+								{
+									"key": "businessLocation",
+									"value": "Butt Brothers"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Production Summary Report",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/manufacturing-reports/production-summary?startDate=2026-01-01T00:00:00&endDate=2026-01-31T23:59:59&businessLocation=Butt Brothers",
+							"host": ["{{base_url}}"],
+							"path": ["api", "manufacturing-reports", "production-summary"],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2026-01-01T00:00:00"
+								},
+								{
+									"key": "endDate",
+									"value": "2026-01-31T23:59:59"
+								},
+								{
+									"key": "businessLocation",
+									"value": "Butt Brothers"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cost Analysis Report",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/manufacturing-reports/cost-analysis?startDate=2026-01-01T00:00:00&endDate=2026-01-31T23:59:59&businessLocation=Butt Brothers",
+							"host": ["{{base_url}}"],
+							"path": ["api", "manufacturing-reports", "cost-analysis"],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2026-01-01T00:00:00"
+								},
+								{
+									"key": "endDate",
+									"value": "2026-01-31T23:59:59"
+								},
+								{
+									"key": "businessLocation",
+									"value": "Butt Brothers"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ingredient Usage Report",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/manufacturing-reports/ingredient-usage/1?startDate=2026-01-01T00:00:00&endDate=2026-01-31T23:59:59",
+							"host": ["{{base_url}}"],
+							"path": ["api", "manufacturing-reports", "ingredient-usage", "1"],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2026-01-01T00:00:00"
+								},
+								{
+									"key": "endDate",
+									"value": "2026-01-31T23:59:59"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Recipe Performance Report",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/manufacturing-reports/recipe-performance/{{recipe_id}}?startDate=2026-01-01T00:00:00&endDate=2026-01-31T23:59:59",
+							"host": ["{{base_url}}"],
+							"path": ["api", "manufacturing-reports", "recipe-performance", "{{recipe_id}}"],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2026-01-01T00:00:00"
+								},
+								{
+									"key": "endDate",
+									"value": "2026-01-31T23:59:59"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Wastage Analysis Report",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/manufacturing-reports/wastage-analysis?startDate=2026-01-01T00:00:00&endDate=2026-01-31T23:59:59",
+							"host": ["{{base_url}}"],
+							"path": ["api", "manufacturing-reports", "wastage-analysis"],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2026-01-01T00:00:00"
+								},
+								{
+									"key": "endDate",
+									"value": "2026-01-31T23:59:59"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5. Alerts Module",
+			"item": [
+				{
+					"name": "Get All Alerts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/alerts",
+							"host": ["{{base_url}}"],
+							"path": ["api", "alerts"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Unread Alerts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/alerts/unread",
+							"host": ["{{base_url}}"],
+							"path": ["api", "alerts", "unread"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Alerts by Type",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/alerts/type/LOW_STOCK",
+							"host": ["{{base_url}}"],
+							"path": ["api", "alerts", "type", "LOW_STOCK"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Alert as Read",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/alerts/1/mark-read",
+							"host": ["{{base_url}}"],
+							"path": ["api", "alerts", "1", "mark-read"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mark All Alerts as Read",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/alerts/mark-all-read",
+							"host": ["{{base_url}}"],
+							"path": ["api", "alerts", "mark-all-read"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Alert",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/alerts/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "alerts", "1"]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Set current timestamp for production dates",
+					"pm.environment.set(\"current_timestamp\", new Date().toISOString());"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global test to check response time",
+					"pm.test(\"Response time is less than 3000ms\", function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+					"});"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
+

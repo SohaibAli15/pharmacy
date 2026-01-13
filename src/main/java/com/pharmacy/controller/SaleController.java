@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/sales")
+@RequestMapping("/api/v1/sales")
 @RequiredArgsConstructor
 public class SaleController {
 
