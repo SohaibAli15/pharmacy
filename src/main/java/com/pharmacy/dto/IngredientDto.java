@@ -1,0 +1,19 @@
+package com.pharmacy.dto;
+
+import lombok.Data;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Data
+public class IngredientDto {
+    private Long id;
+    private String name;
+    private String description;
+    private String unit;
+    private BigDecimal currentStock;
+    private BigDecimal thresholdLow;
+    private BigDecimal thresholdHigh;
+    private BigDecimal costPerUnit;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+}
