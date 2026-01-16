@@ -1,0 +1,1564 @@
+{
+  "info": {
+    "name": "Pharmacy Management System - Complete API v1",
+    "description": "Complete API collection for Pharmacy Management System with all modules: Suppliers, Stores, Purchase Orders, Ingredients, Recipes, Production, Medicines, Inventory, Stock Transfers, Customers, Prescriptions, Sales, Alerts, Users, and File Upload. All endpoints use API v1 versioning.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "description": "Authenticate user and get JWT token"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Supplier Management",
+      "item": [
+        {
+          "name": "Create Supplier",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"ABC Pharmaceuticals\",\n  \"code\": \"SUP001\",\n  \"email\": \"contact@abc.com\",\n  \"phone\": \"123-456-7890\",\n  \"address\": \"123 Main St, City, State\",\n  \"contactPerson\": \"John Doe\",\n  \"paymentTerms\": \"Net 30\",\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/suppliers",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "suppliers"]
+            },
+            "description": "Create a new supplier with contact details and payment terms"
+          }
+        },
+        {
+          "name": "Get All Suppliers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/suppliers",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "suppliers"]
+            },
+            "description": "Retrieve all registered suppliers"
+          }
+        },
+        {
+          "name": "Get Supplier by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/suppliers/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "suppliers", "1"]
+            },
+            "description": "Retrieve a specific supplier by ID"
+          }
+        },
+        {
+          "name": "Get Supplier by Code",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/suppliers/code/SUP001",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "suppliers", "code", "SUP001"]
+            },
+            "description": "Retrieve a supplier by its unique code"
+          }
+        },
+        {
+          "name": "Update Supplier",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"ABC Pharmaceuticals Updated\",\n  \"code\": \"SUP001\",\n  \"email\": \"contact@abc.com\",\n  \"phone\": \"123-456-7890\",\n  \"address\": \"456 Updated St, City, State\",\n  \"contactPerson\": \"Jane Smith\",\n  \"paymentTerms\": \"Net 15\",\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/suppliers/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "suppliers", "1"]
+            },
+            "description": "Update supplier information"
+          }
+        },
+        {
+          "name": "Get Suppliers by Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/suppliers/status/ACTIVE",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "suppliers", "status", "ACTIVE"]
+            },
+            "description": "Get suppliers filtered by status (ACTIVE, INACTIVE, SUSPENDED)"
+          }
+        },
+        {
+          "name": "Search Suppliers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/suppliers/search?name=ABC",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "suppliers", "search"],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "ABC"
+                }
+              ]
+            },
+            "description": "Search suppliers by name"
+          }
+        },
+        {
+          "name": "Delete Supplier",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/suppliers/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "suppliers", "1"]
+            },
+            "description": "Delete a supplier from the system"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Store Management",
+      "item": [
+        {
+          "name": "Create Store",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Main Warehouse\",\n  \"code\": \"WH001\",\n  \"type\": \"WAREHOUSE\",\n  \"address\": \"123 Warehouse St, City, State\",\n  \"phone\": \"555-0101\",\n  \"managerName\": \"Alice Johnson\",\n  \"capacity\": 10000,\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/stores",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "stores"]
+            },
+            "description": "Create a new store (Warehouse, Manufacturing Unit, Retail Store, or Distribution Center)"
+          }
+        },
+        {
+          "name": "Get All Stores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/stores",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "stores"]
+            },
+            "description": "Retrieve all registered stores"
+          }
+        },
+        {
+          "name": "Get Store by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/stores/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "stores", "1"]
+            },
+            "description": "Retrieve a specific store by ID"
+          }
+        },
+        {
+          "name": "Get Store by Code",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/stores/code/WH001",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "stores", "code", "WH001"]
+            },
+            "description": "Retrieve a store by its unique code"
+          }
+        },
+        {
+          "name": "Update Store",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Main Warehouse Updated\",\n  \"code\": \"WH001\",\n  \"type\": \"WAREHOUSE\",\n  \"address\": \"456 Updated St, City, State\",\n  \"phone\": \"555-0102\",\n  \"managerName\": \"Bob Wilson\",\n  \"capacity\": 15000,\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/stores/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "stores", "1"]
+            },
+            "description": "Update store information"
+          }
+        },
+        {
+          "name": "Get Stores by Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/stores/status/ACTIVE",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "stores", "status", "ACTIVE"]
+            },
+            "description": "Get stores filtered by status (ACTIVE, INACTIVE, CLOSED)"
+          }
+        },
+        {
+          "name": "Get Stores by Type",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/stores/type/WAREHOUSE",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "stores", "type", "WAREHOUSE"]
+            },
+            "description": "Get stores filtered by type (WAREHOUSE, MANUFACTURING_UNIT, RETAIL_STORE, DISTRIBUTION_CENTER)"
+          }
+        },
+        {
+          "name": "Delete Store",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/stores/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "stores", "1"]
+            },
+            "description": "Delete a store from the system"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Purchase Order Management",
+      "item": [
+        {
+          "name": "Create Purchase Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"supplierId\": 1,\n  \"orderDate\": \"2026-01-16\",\n  \"expectedDeliveryDate\": \"2026-01-20\",\n  \"status\": \"DRAFT\",\n  \"notes\": \"Urgent order for raw materials\",\n  \"items\": [\n    {\n      \"ingredientId\": 1,\n      \"quantity\": 100,\n      \"unitPrice\": 25.50,\n      \"totalPrice\": 2550.00\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/purchase-orders",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "purchase-orders"]
+            },
+            "description": "Create a new purchase order from a supplier"
+          }
+        },
+        {
+          "name": "Get All Purchase Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/purchase-orders",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "purchase-orders"]
+            },
+            "description": "Retrieve all purchase orders"
+          }
+        },
+        {
+          "name": "Get Purchase Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/purchase-orders/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "purchase-orders", "1"]
+            },
+            "description": "Retrieve a specific purchase order by ID"
+          }
+        },
+        {
+          "name": "Approve Purchase Order",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/purchase-orders/1/approve",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "purchase-orders", "1", "approve"]
+            },
+            "description": "Approve a purchase order"
+          }
+        },
+        {
+          "name": "Receive Purchase Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"receivedItems\": [\n    {\n      \"itemId\": 1,\n      \"receivedQuantity\": 95,\n      \"notes\": \"Good quality\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/purchase-orders/1/receive",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "purchase-orders", "1", "receive"]
+            },
+            "description": "Receive and process a purchase order delivery"
+          }
+        },
+        {
+          "name": "Get Purchase Orders by Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/purchase-orders/status/APPROVED",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "purchase-orders", "status", "APPROVED"]
+            },
+            "description": "Get purchase orders filtered by status"
+          }
+        },
+        {
+          "name": "Get Purchase Orders by Supplier",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/purchase-orders/supplier/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "purchase-orders", "supplier", "1"]
+            },
+            "description": "Get purchase orders for a specific supplier"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ingredient Management",
+      "item": [
+        {
+          "name": "Get All Ingredients",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/ingredients",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "ingredients"]
+            },
+            "description": "Retrieve all ingredients in the system"
+          }
+        },
+        {
+          "name": "Get Low Stock Ingredients",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/ingredients/low-stock",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "ingredients", "low-stock"]
+            },
+            "description": "Get ingredients with stock below reorder level"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Recipe Management",
+      "item": [
+        {
+          "name": "Create Recipe",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Paracetamol 500mg Tablets\",\n  \"code\": \"REC001\",\n  \"description\": \"Standard paracetamol formulation\",\n  \"batchSize\": 1000,\n  \"status\": \"ACTIVE\",\n  \"ingredients\": [\n    {\n      \"ingredientId\": 1,\n      \"quantity\": 500.0,\n      \"unit\": \"mg\",\n      \"wastagePercentage\": 2.0\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/recipes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "recipes"]
+            },
+            "description": "Create a new medicine recipe/formulation"
+          }
+        },
+        {
+          "name": "Get All Recipes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/recipes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "recipes"]
+            },
+            "description": "Retrieve all recipes"
+          }
+        },
+        {
+          "name": "Get Recipe by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/recipes/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "recipes", "1"]
+            },
+            "description": "Retrieve a specific recipe by ID"
+          }
+        },
+        {
+          "name": "Update Recipe",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Paracetamol 500mg Tablets Updated\",\n  \"code\": \"REC001\",\n  \"description\": \"Updated paracetamol formulation\",\n  \"batchSize\": 1200,\n  \"status\": \"ACTIVE\",\n  \"ingredients\": [\n    {\n      \"ingredientId\": 1,\n      \"quantity\": 500.0,\n      \"unit\": \"mg\",\n      \"wastagePercentage\": 1.5\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/recipes/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "recipes", "1"]
+            },
+            "description": "Update recipe information"
+          }
+        },
+        {
+          "name": "Get Active Recipes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/recipes/active",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "recipes", "active"]
+            },
+            "description": "Get only active recipes"
+          }
+        },
+        {
+          "name": "Delete Recipe",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/recipes/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "recipes", "1"]
+            },
+            "description": "Delete a recipe from the system"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Production Batch Management",
+      "item": [
+        {
+          "name": "Create Production Batch",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipeId\": 1,\n  \"batchNumber\": \"PB001\",\n  \"plannedQuantity\": 1000,\n  \"productionDate\": \"2026-01-16\",\n  \"expiryDate\": \"2028-01-16\",\n  \"storeId\": 1,\n  \"notes\": \"First production batch\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/production-batches",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "production-batches"]
+            },
+            "description": "Create a new production batch"
+          }
+        },
+        {
+          "name": "Get All Production Batches",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/production-batches",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "production-batches"]
+            },
+            "description": "Retrieve all production batches"
+          }
+        },
+        {
+          "name": "Get Production Batch by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/production-batches/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "production-batches", "1"]
+            },
+            "description": "Retrieve a specific production batch by ID"
+          }
+        },
+        {
+          "name": "Start Production",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/production-batches/1/start",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "production-batches", "1", "start"]
+            },
+            "description": "Start production for a batch"
+          }
+        },
+        {
+          "name": "Complete Production",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"actualQuantity\": 950,\n  \"qualityCheckPassed\": true,\n  \"qualityNotes\": \"Passed all quality checks\",\n  \"completionNotes\": \"Production completed successfully\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/production-batches/1/complete",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "production-batches", "1", "complete"]
+            },
+            "description": "Complete production for a batch"
+          }
+        },
+        {
+          "name": "Get Production Batches by Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/production-batches/status/PLANNED",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "production-batches", "status", "PLANNED"]
+            },
+            "description": "Get production batches filtered by status"
+          }
+        },
+        {
+          "name": "Get Production Batches by Recipe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/production-batches/recipe/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "production-batches", "recipe", "1"]
+            },
+            "description": "Get production batches for a specific recipe"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Medicine Management",
+      "item": [
+        {
+          "name": "Get All Medicines",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/medicines",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "medicines"]
+            },
+            "description": "Retrieve all medicines in the catalog"
+          }
+        },
+        {
+          "name": "Search Medicines",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/medicines/search?q=paracetamol",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "medicines", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "paracetamol"
+                }
+              ]
+            },
+            "description": "Search medicines by name"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Inventory Stock Management",
+      "item": [
+        {
+          "name": "Add Inventory Stock",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"storeId\": 1,\n  \"medicineId\": 1,\n  \"batchNumber\": \"MED001\",\n  \"quantity\": 1000,\n  \"costPrice\": 5.50,\n  \"sellingPrice\": 8.00,\n  \"manufacturingDate\": \"2026-01-01\",\n  \"expiryDate\": \"2028-01-01\",\n  \"reorderLevel\": 100,\n  \"maxStockLevel\": 2000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/inventory-stock",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "inventory-stock"]
+            },
+            "description": "Add new inventory stock for a medicine"
+          }
+        },
+        {
+          "name": "Get All Inventory Stock",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/inventory-stock",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "inventory-stock"]
+            },
+            "description": "Retrieve all inventory stock"
+          }
+        },
+        {
+          "name": "Get Inventory Stock by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/inventory-stock/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "inventory-stock", "1"]
+            },
+            "description": "Retrieve specific inventory stock by ID"
+          }
+        },
+        {
+          "name": "Update Inventory Stock",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"storeId\": 1,\n  \"medicineId\": 1,\n  \"batchNumber\": \"MED001\",\n  \"quantity\": 800,\n  \"costPrice\": 5.50,\n  \"sellingPrice\": 8.50,\n  \"reorderLevel\": 150,\n  \"maxStockLevel\": 2500\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/inventory-stock/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "inventory-stock", "1"]
+            },
+            "description": "Update inventory stock information"
+          }
+        },
+        {
+          "name": "Adjust Stock Quantity",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantityChange\": -50,\n  \"reason\": \"Damaged goods\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/inventory-stock/1/adjust",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "inventory-stock", "1", "adjust"]
+            },
+            "description": "Adjust stock quantity (positive for addition, negative for reduction)"
+          }
+        },
+        {
+          "name": "Get Inventory by Store",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/inventory-stock/store/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "inventory-stock", "store", "1"]
+            },
+            "description": "Get inventory stock for a specific store"
+          }
+        },
+        {
+          "name": "Get Inventory by Medicine",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/inventory-stock/medicine/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "inventory-stock", "medicine", "1"]
+            },
+            "description": "Get inventory stock for a specific medicine"
+          }
+        },
+        {
+          "name": "Get Low Stock Items",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/inventory-stock/low-stock/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "inventory-stock", "low-stock", "1"]
+            },
+            "description": "Get low stock items for a specific store"
+          }
+        },
+        {
+          "name": "Get Expiring Stock",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/inventory-stock/expiring/1?daysAhead=30",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "inventory-stock", "expiring", "1"],
+              "query": [
+                {
+                  "key": "daysAhead",
+                  "value": "30"
+                }
+              ]
+            },
+            "description": "Get stock expiring within specified days for a store"
+          }
+        },
+        {
+          "name": "Delete Inventory Stock",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/inventory-stock/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "inventory-stock", "1"]
+            },
+            "description": "Delete inventory stock entry"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stock Transfer Management",
+      "item": [
+        {
+          "name": "Create Stock Transfer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fromStoreId\": 1,\n  \"toStoreId\": 2,\n  \"transferDate\": \"2026-01-16\",\n  \"status\": \"DRAFT\",\n  \"notes\": \"Transfer to retail store\",\n  \"items\": [\n    {\n      \"inventoryStockId\": 1,\n      \"quantity\": 100,\n      \"notes\": \"Paracetamol batch\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/stock-transfers",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "stock-transfers"]
+            },
+            "description": "Create a new stock transfer request between stores"
+          }
+        },
+        {
+          "name": "Get All Stock Transfers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/stock-transfers",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "stock-transfers"]
+            },
+            "description": "Retrieve all stock transfers"
+          }
+        },
+        {
+          "name": "Get Stock Transfer by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/stock-transfers/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "stock-transfers", "1"]
+            },
+            "description": "Retrieve a specific stock transfer by ID"
+          }
+        },
+        {
+          "name": "Approve Stock Transfer",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/stock-transfers/1/approve",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "stock-transfers", "1", "approve"]
+            },
+            "description": "Approve a stock transfer request"
+          }
+        },
+        {
+          "name": "Dispatch Stock Transfer",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/stock-transfers/1/dispatch",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "stock-transfers", "1", "dispatch"]
+            },
+            "description": "Mark stock transfer as dispatched"
+          }
+        },
+        {
+          "name": "Receive Stock Transfer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"receivedItems\": [\n    {\n      \"itemId\": 1,\n      \"receivedQuantity\": 95,\n      \"condition\": \"GOOD\",\n      \"notes\": \"Received in good condition\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/stock-transfers/1/receive",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "stock-transfers", "1", "receive"]
+            },
+            "description": "Receive and process a stock transfer"
+          }
+        },
+        {
+          "name": "Get Stock Transfers by Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/stock-transfers/status/APPROVED",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "stock-transfers", "status", "APPROVED"]
+            },
+            "description": "Get stock transfers filtered by status"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Customer Management",
+      "item": [
+        {
+          "name": "Create Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"code\": \"CUST001\",\n  \"email\": \"john.doe@email.com\",\n  \"phone\": \"555-0123\",\n  \"dateOfBirth\": \"1990-05-15\",\n  \"address\": \"123 Main St, City, State\",\n  \"medicalHistory\": \"No known allergies\",\n  \"emergencyContact\": \"Jane Doe - 555-0124\",\n  \"type\": \"REGULAR\",\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/customers",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "customers"]
+            },
+            "description": "Create a new customer with medical history"
+          }
+        },
+        {
+          "name": "Get All Customers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/customers",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "customers"]
+            },
+            "description": "Retrieve all customers"
+          }
+        },
+        {
+          "name": "Get Customer by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/customers/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "customers", "1"]
+            },
+            "description": "Retrieve a specific customer by ID"
+          }
+        },
+        {
+          "name": "Get Customer by Code",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/customers/code/CUST001",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "customers", "code", "CUST001"]
+            },
+            "description": "Retrieve a customer by their unique code"
+          }
+        },
+        {
+          "name": "Update Customer",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"code\": \"CUST001\",\n  \"email\": \"john.doe.updated@email.com\",\n  \"phone\": \"555-0123\",\n  \"dateOfBirth\": \"1990-05-15\",\n  \"address\": \"456 Updated St, City, State\",\n  \"medicalHistory\": \"No known allergies, updated info\",\n  \"emergencyContact\": \"Jane Doe - 555-0124\",\n  \"type\": \"REGULAR\",\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/customers/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "customers", "1"]
+            },
+            "description": "Update customer information"
+          }
+        },
+        {
+          "name": "Search Customers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/customers/search?searchTerm=John",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "customers", "search"],
+              "query": [
+                {
+                  "key": "searchTerm",
+                  "value": "John"
+                }
+              ]
+            },
+            "description": "Search customers by name or phone"
+          }
+        },
+        {
+          "name": "Delete Customer",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/customers/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "customers", "1"]
+            },
+            "description": "Delete a customer from the system"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Prescription Management",
+      "item": [
+        {
+          "name": "Create Prescription",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": 1,\n  \"doctorName\": \"Dr. Smith\",\n  \"prescriptionDate\": \"2026-01-16\",\n  \"diagnosis\": \"Fever and headache\",\n  \"notes\": \"Take with food\",\n  \"status\": \"PENDING\",\n  \"items\": [\n    {\n      \"medicineId\": 1,\n      \"dosage\": \"500mg\",\n      \"frequency\": \"Twice daily\",\n      \"duration\": \"5 days\",\n      \"quantity\": 10,\n      \"instructions\": \"Take after meals\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/prescriptions",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "prescriptions"]
+            },
+            "description": "Create a new prescription with prescribed medicines"
+          }
+        },
+        {
+          "name": "Get All Prescriptions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/prescriptions",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "prescriptions"]
+            },
+            "description": "Retrieve all prescriptions"
+          }
+        },
+        {
+          "name": "Get Prescription by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/prescriptions/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "prescriptions", "1"]
+            },
+            "description": "Retrieve a specific prescription by ID"
+          }
+        },
+        {
+          "name": "Get Prescriptions by Customer",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/prescriptions/customer/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "prescriptions", "customer", "1"]
+            },
+            "description": "Get prescriptions for a specific customer"
+          }
+        },
+        {
+          "name": "Get Prescriptions by Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/prescriptions/status/PENDING",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "prescriptions", "status", "PENDING"]
+            },
+            "description": "Get prescriptions filtered by status"
+          }
+        },
+        {
+          "name": "Update Prescription Status",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/prescriptions/1/status?status=DISPENSED",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "prescriptions", "1", "status"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "DISPENSED"
+                }
+              ]
+            },
+            "description": "Update prescription status"
+          }
+        },
+        {
+          "name": "Delete Prescription",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/prescriptions/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "prescriptions", "1"]
+            },
+            "description": "Delete a prescription from the system"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sales Management",
+      "item": [
+        {
+          "name": "Create Sale",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"storeId\": 2,\n  \"customerId\": 1,\n  \"pharmacistId\": 1,\n  \"paymentMethod\": \"CASH\",\n  \"items\": [\n    {\n      \"medicineId\": 1,\n      \"quantity\": 5,\n      \"unitPrice\": 8.00,\n      \"totalPrice\": 40.00\n    }\n  ],\n  \"subtotal\": 40.00,\n  \"taxAmount\": 4.00,\n  \"totalAmount\": 44.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/sales",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "sales"]
+            },
+            "description": "Create a new sale transaction with FIFO inventory management"
+          }
+        },
+        {
+          "name": "Get All Sales",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/sales",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "sales"]
+            },
+            "description": "Retrieve all sales transactions"
+          }
+        },
+        {
+          "name": "Get Sale by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/sales/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "sales", "1"]
+            },
+            "description": "Retrieve a specific sale by ID"
+          }
+        },
+        {
+          "name": "Get Sale by Invoice Number",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/sales/invoice/INV001",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "sales", "invoice", "INV001"]
+            },
+            "description": "Retrieve a sale by its invoice number"
+          }
+        },
+        {
+          "name": "Get Sales by Store",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/sales/store/2",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "sales", "store", "2"]
+            },
+            "description": "Get sales for a specific store"
+          }
+        },
+        {
+          "name": "Get Sales by Customer",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/sales/customer/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "sales", "customer", "1"]
+            },
+            "description": "Get sales for a specific customer"
+          }
+        },
+        {
+          "name": "Get Sales by Date Range",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/sales/date-range?startDate=2026-01-01&endDate=2026-01-31",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "sales", "date-range"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2026-01-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2026-01-31"
+                }
+              ]
+            },
+            "description": "Get sales within a date range"
+          }
+        },
+        {
+          "name": "Get Sales by Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/sales/status/COMPLETED",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "sales", "status", "COMPLETED"]
+            },
+            "description": "Get sales filtered by status"
+          }
+        },
+        {
+          "name": "Cancel Sale",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/sales/1/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "sales", "1", "cancel"]
+            },
+            "description": "Cancel a sale and restore inventory"
+          }
+        },
+        {
+          "name": "Return Sale",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/sales/1/return",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "sales", "1", "return"]
+            },
+            "description": "Process a sale return and restore inventory"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Alert Management",
+      "item": [
+        {
+          "name": "Get All Alerts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/alerts",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "alerts"]
+            },
+            "description": "Retrieve all system alerts"
+          }
+        },
+        {
+          "name": "Get Unread Alerts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/alerts/unread",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "alerts", "unread"]
+            },
+            "description": "Get all unread/unacknowledged alerts"
+          }
+        }
+      ]
+    },
+    {
+      "name": "User Management",
+      "item": [
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"pharmacist1\",\n  \"password\": \"password123\",\n  \"email\": \"pharmacist@pharmacy.com\",\n  \"firstName\": \"Alice\",\n  \"lastName\": \"Johnson\",\n  \"role\": \"PHARMACIST\",\n  \"storeId\": 2,\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/users",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users"]
+            },
+            "description": "Create a new system user"
+          }
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users"]
+            },
+            "description": "Retrieve all system users"
+          }
+        }
+      ]
+    },
+    {
+      "name": "File Upload Management",
+      "item": [
+        {
+          "name": "Upload Single File",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "category",
+                  "value": "prescription",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Patient prescription document",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/files/upload",
+              "host": ["{{base_url}}"],
+              "path": ["api", "files", "upload"]
+            },
+            "description": "Upload a single file (prescription, invoice, certificate, etc.)"
+          }
+        },
+        {
+          "name": "Upload Multiple Files",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "files",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "files",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "category",
+                  "value": "report",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/files/upload-multiple",
+              "host": ["{{base_url}}"],
+              "path": ["api", "files", "upload-multiple"]
+            },
+            "description": "Upload multiple files at once"
+          }
+        },
+        {
+          "name": "Download File",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/files/download/prescription/filename.pdf",
+              "host": ["{{base_url}}"],
+              "path": ["api", "files", "download", "prescription", "filename.pdf"]
+            },
+            "description": "Download a previously uploaded file"
+          }
+        },
+        {
+          "name": "Delete File",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/files/delete/prescription/filename.pdf",
+              "host": ["{{base_url}}"],
+              "path": ["api", "files", "delete", "prescription", "filename.pdf"]
+            },
+            "description": "Delete an uploaded file"
+          }
+        },
+        {
+          "name": "List Files by Category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/files/list/prescription",
+              "host": ["{{base_url}}"],
+              "path": ["api", "files", "list", "prescription"]
+            },
+            "description": "List all files in a specific category"
+          }
+        }
+      ]
+    }
+  ]
+}

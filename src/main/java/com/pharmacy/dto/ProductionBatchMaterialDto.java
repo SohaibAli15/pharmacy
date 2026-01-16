@@ -1,38 +1,37 @@
+/* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.dto;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import java.math.BigDecimal;
+
 import jakarta.validation.constraints.*;
 
-import java.math.BigDecimal;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductionBatchMaterialDto {
-    private Long id;
+  private Long id;
 
-    @NotNull(message = "Ingredient ID is required")
-    private Long ingredientId;
-    private String ingredientName;
-    private String ingredientCode;
+  @NotNull(message = "Ingredient ID is required") private Long ingredientId;
 
-    @NotNull(message = "Quantity required is required")
-    private BigDecimal quantityRequired;
+  private String ingredientName;
+  private String ingredientCode;
 
-    @NotNull(message = "Quantity used is required")
-    @DecimalMin(value = "0.0", message = "Quantity used cannot be negative")
-    private BigDecimal quantityUsed;
+  @NotNull(message = "Quantity required is required") private BigDecimal quantityRequired;
 
-    @NotBlank(message = "Unit is required")
-    private String unit;
+  @NotNull(message = "Quantity used is required") @DecimalMin(value = "0.0", message = "Quantity used cannot be negative")
+  private BigDecimal quantityUsed;
 
-    private BigDecimal variance;
-    private BigDecimal variancePercent;
-    private BigDecimal costPerUnit;
-    private BigDecimal totalCost;
-    private String lotNumber;
-    private String notes;
+  @NotBlank(message = "Unit is required")
+  private String unit;
+
+  private BigDecimal variance;
+  private BigDecimal variancePercent;
+  private BigDecimal costPerUnit;
+  private BigDecimal totalCost;
+  private String lotNumber;
+  private String notes;
 }
-

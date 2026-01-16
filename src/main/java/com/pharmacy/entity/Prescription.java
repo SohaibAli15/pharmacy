@@ -1,11 +1,14 @@
+/* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.entity;
 
-import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 import java.time.LocalDate;
 import java.util.List;
+
+import jakarta.persistence.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "prescriptions")
@@ -14,24 +17,24 @@ import java.util.List;
 @AllArgsConstructor
 public class Prescription {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
-    private User customer;
+  @ManyToOne
+  @JoinColumn(name = "customer_id", nullable = false)
+  private User customer;
 
-    @ManyToOne
-    @JoinColumn(name = "pharmacist_id")
-    private User pharmacist;
+  @ManyToOne
+  @JoinColumn(name = "pharmacist_id")
+  private User pharmacist;
 
-    @Column(nullable = false)
-    private LocalDate issueDate;
+  @Column(nullable = false)
+  private LocalDate issueDate;
 
-    @Column(nullable = false)
-    private String status; // e.g., PENDING, APPROVED, REJECTED
+  @Column(nullable = false)
+  private String status; // e.g., PENDING, APPROVED, REJECTED
 
-    @OneToMany(mappedBy = "prescription", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<PrescriptionItem> items;
+  @OneToMany(mappedBy = "prescription", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  private List<PrescriptionItem> items;
 }

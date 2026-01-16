@@ -1,10 +1,13 @@
+/* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.entity;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.*;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import java.math.BigDecimal;
 
 @Entity
 @Table(name = "sale_items")
@@ -13,24 +16,24 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class SaleItem {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "sale_id", nullable = false)
-    private Sale sale;
+  @ManyToOne
+  @JoinColumn(name = "sale_id", nullable = false)
+  private Sale sale;
 
-    @ManyToOne
-    @JoinColumn(name = "medicine_id", nullable = false)
-    private Medicine medicine;
+  @ManyToOne
+  @JoinColumn(name = "medicine_id", nullable = false)
+  private Medicine medicine;
 
-    @Column(nullable = false)
-    private Integer quantity;
+  @Column(nullable = false)
+  private Integer quantity;
 
-    @Column(nullable = false)
-    private BigDecimal unitPrice;
+  @Column(nullable = false)
+  private BigDecimal unitPrice;
 
-    @Column(nullable = false)
-    private BigDecimal totalPrice;
+  @Column(nullable = false)
+  private BigDecimal totalPrice;
 }

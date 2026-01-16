@@ -1,12 +1,15 @@
+/* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.entity;
 
-import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import jakarta.persistence.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "sales")
@@ -15,24 +18,84 @@ import java.util.List;
 @AllArgsConstructor
 public class Sale {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private User customer;
+  @Column(nullable = false, unique = true)
+  private String invoiceNumber;
 
-    @ManyToOne
-    @JoinColumn(name = "pharmacist_id", nullable = false)
-    private User pharmacist;
+  @ManyToOne
+  @JoinColumn(name = "store_id", nullable = false)
+  private Store store;
 
-    @Column(nullable = false)
-    private LocalDateTime saleDate;
+  @ManyToOne
+  @JoinColumn(name = "customer_id")
+  private Customer customer;
 
-    @Column(nullable = false)
-    private BigDecimal totalAmount;
+  @ManyToOne
+  @JoinColumn(name = "pharmacist_id", nullable = false)
+  private User pharmacist;
 
-    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<SaleItem> items;
+  @Column(nullable = false)
+  private LocalDateTime saleDate;
+
+  @Column(nullable = false, precision = 12, scale = 2)
+  private BigDecimal subtotal;
+
+  @Column(precision = 12, scale = 2)
+  private BigDecimal discount;
+
+  @Column(precision = 12, scale = 2)
+  private BigDecimal taxAmount;
+
+  @Column(nullable = false, precision = 12, scale = 2)
+  private BigDecimal totalAmount;
+
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private PaymentMethod paymentMethod;
+
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private SaleStatus status;
+
+  @Column private String notes;
+
+  @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  private List<SaleItem> items;
+
+  @Column(nullable = false)
+  private LocalDateTime createdAt;
+
+  @Column(nullable = false)
+  private LocalDateTime updatedAt;
+
+  @PrePersist
+  protected void onCreate() {
+    createdAt = LocalDateTime.now();
+    updatedAt = LocalDateTime.now();
+  }
+
+  @PreUpdate
+  protected void onUpdate() {
+    updatedAt = LocalDateTime.now();
+  }
+
+  public enum PaymentMethod {
+    CASH,
+    CREDIT_CARD,
+    DEBIT_CARD,
+    INSURANCE,
+    ONLINE,
+    UPI,
+    CHECK
+  }
+
+  public enum SaleStatus {
+    COMPLETED,
+    PENDING,
+    CANCELLED,
+    RETURNED
+  }
 }

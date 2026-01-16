@@ -1,63 +1,63 @@
+/* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.dto;
-
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import jakarta.validation.constraints.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductionBatchDto {
-    private Long id;
+  private Long id;
 
-    @NotNull(message = "Recipe ID is required")
-    private Long recipeId;
-    private String recipeName;
-    private String recipeCode;
+  @NotNull(message = "Recipe ID is required") private Long recipeId;
 
-    private String referenceNumber; // Auto-generated if not provided
+  private String recipeName;
+  private String recipeCode;
 
-    @NotNull(message = "Production date is required")
-    private LocalDateTime productionDate;
+  private String referenceNumber; // Auto-generated if not provided
 
-    @NotBlank(message = "Business location is required")
-    private String businessLocation;
+  @NotNull(message = "Production date is required") private LocalDateTime productionDate;
 
-    private Long productId;
-    private String productName;
+  @NotBlank(message = "Business location is required")
+  private String businessLocation;
 
-    @NotNull(message = "Quantity produced is required")
-    @DecimalMin(value = "0.001", message = "Quantity must be greater than 0")
-    private BigDecimal quantityProduced;
+  private Long productId;
+  private String productName;
 
-    private BigDecimal expectedQuantity;
-    private BigDecimal wastedQuantity;
+  @NotNull(message = "Quantity produced is required") @DecimalMin(value = "0.001", message = "Quantity must be greater than 0")
+  private BigDecimal quantityProduced;
 
-    @NotBlank(message = "Unit is required")
-    private String unit;
+  private BigDecimal expectedQuantity;
+  private BigDecimal wastedQuantity;
 
-    private BigDecimal totalCost;
-    private BigDecimal productionCost;
-    private BigDecimal ingredientCost;
+  @NotBlank(message = "Unit is required")
+  private String unit;
 
-    private String status;
-    private Boolean isFinalized;
-    private LocalDateTime finalizedAt;
-    private String finalizedBy;
+  private BigDecimal totalCost;
+  private BigDecimal productionCost;
+  private BigDecimal ingredientCost;
 
-    private String lotNumber;
-    private String attachedDocumentPath;
-    private String notes;
+  private String status;
+  private Boolean isFinalized;
+  private LocalDateTime finalizedAt;
+  private String finalizedBy;
 
-    private List<ProductionBatchMaterialDto> materialsConsumed;
+  private String lotNumber;
+  private String attachedDocumentPath;
+  private String notes;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private String createdBy;
-    private String updatedBy;
+  private List<ProductionBatchMaterialDto> materialsConsumed;
+
+  private LocalDateTime createdAt;
+  private LocalDateTime updatedAt;
+  private String createdBy;
+  private String updatedBy;
 }

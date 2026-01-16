@@ -1,12 +1,16 @@
+/* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.repository;
 
-import com.pharmacy.entity.Medicine;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import java.util.List;
+
+import com.pharmacy.entity.Medicine;
 
 @Repository
 public interface MedicineRepository extends JpaRepository<Medicine, Long> {
-    List<Medicine> findByNameContainingIgnoreCase(String name);
-    List<Medicine> findByCategory(String category);
+  List<Medicine> findByNameContainingIgnoreCase(String name);
+
+  List<Medicine> findByCategory(String category);
 }

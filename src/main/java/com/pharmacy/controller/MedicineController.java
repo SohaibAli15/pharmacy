@@ -1,57 +1,126 @@
+/* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.controller;
 
-import com.pharmacy.dto.MedicineDto;
-import com.pharmacy.service.MedicineService;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import com.pharmacy.dto.MedicineDto;
+import com.pharmacy.service.MedicineService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/medicines")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
+@Tag(
+    name = "Medicine Management",
+    description = "APIs for managing finished medicine products (v1)")
 public class MedicineController {
 
-    private final MedicineService medicineService;
+  private final MedicineService medicineService;
 
-    @GetMapping
-    public List<MedicineDto> listAll() {
-        return medicineService.listAll();
-    }
+  @GetMapping
+  @Operation(summary = "Get all medicines", description = "Retrieve all medicines in the catalog")
+  @ApiResponse(responseCode = "200", description = "Successfully retrieved all medicines")
+  public List<MedicineDto> listAll() {
+    return medicineService.listAll();
+  }
 
-    @GetMapping("/search")
-    public List<MedicineDto> search(@RequestParam("q") String q) {
-        return medicineService.searchByName(q);
-    }
+  @GetMapping("/search")
+  @Operation(summary = "Search medicines", description = "Search medicines by name")
+  @ApiResponse(responseCode = "200", description = "Successfully retrieved matching medicines")
+  public List<MedicineDto> search(
+      @Parameter(description = "Search query", required = true) @RequestParam("q") String q) {
+    return medicineService.searchByName(q);
+  }
 
-    @GetMapping("/category/{category}")
-    public List<MedicineDto> byCategory(@PathVariable String category) {
-        return medicineService.findByCategory(category);
-    }
+  @GetMapping("/category/{category}")
+  @Operation(
+      summary = "Get medicines by category",
+      description = "Retrieve medicines filtered by category")
+  @ApiResponse(responseCode = "200", description = "Successfully retrieved medicines by category")
+  public List<MedicineDto> byCategory(
+      @Parameter(description = "Medicine category", required = true) @PathVariable
+          String category) {
+    return medicineService.findByCategory(category);
+  }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<MedicineDto> get(@PathVariable Long id) {
-        MedicineDto dto = medicineService.getById(id);
-        if (dto == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(dto);
-    }
+  @GetMapping("/{id}")
+  @Operation(summary = "Get medicine by ID", description = "Retrieve a specific medicine by its ID")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Medicine found",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = MedicineDto.class))),
+        @ApiResponse(responseCode = "404", description = "Medicine not found")
+      })
+  public ResponseEntity<MedicineDto> get(
+      @Parameter(description = "Medicine ID", required = true) @PathVariable Long id) {
+    MedicineDto dto = medicineService.getById(id);
+    if (dto == null) return ResponseEntity.notFound().build();
+    return ResponseEntity.ok(dto);
+  }
 
-    @PostMapping
-    public ResponseEntity<MedicineDto> create(@RequestBody MedicineDto dto) {
-        MedicineDto created = medicineService.create(dto);
-        return ResponseEntity.ok(created);
-    }
+  @PostMapping
+  @Operation(
+      summary = "Create a new medicine",
+      description = "Register a new medicine product with specifications and pricing")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Medicine created successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = MedicineDto.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid input")
+      })
+  public ResponseEntity<MedicineDto> create(@RequestBody MedicineDto dto) {
+    MedicineDto created = medicineService.create(dto);
+    return ResponseEntity.ok(created);
+  }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<MedicineDto> update(@PathVariable Long id, @RequestBody MedicineDto dto) {
-        MedicineDto updated = medicineService.update(id, dto);
-        return ResponseEntity.ok(updated);
-    }
+  @PutMapping("/{id}")
+  @Operation(
+      summary = "Update a medicine",
+      description = "Update medicine information including specifications and pricing")
+  @ApiResponses(
+      value = {
+        @ApiResponse(responseCode = "200", description = "Medicine updated successfully"),
+        @ApiResponse(responseCode = "404", description = "Medicine not found")
+      })
+  public ResponseEntity<MedicineDto> update(
+      @Parameter(description = "Medicine ID", required = true) @PathVariable Long id,
+      @RequestBody MedicineDto dto) {
+    MedicineDto updated = medicineService.update(id, dto);
+    return ResponseEntity.ok(updated);
+  }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        medicineService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
+  @DeleteMapping("/{id}")
+  @Operation(summary = "Delete a medicine", description = "Remove a medicine from the catalog")
+  @ApiResponses(
+      value = {
+        @ApiResponse(responseCode = "204", description = "Medicine deleted successfully"),
+        @ApiResponse(responseCode = "404", description = "Medicine not found")
+      })
+  public ResponseEntity<Void> delete(
+      @Parameter(description = "Medicine ID", required = true) @PathVariable Long id) {
+    medicineService.delete(id);
+    return ResponseEntity.noContent().build();
+  }
 }

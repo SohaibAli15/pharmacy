@@ -1,3 +1,4 @@
+/* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy;
 
 import org.springframework.boot.SpringApplication;
@@ -8,8 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class PharmacyApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(PharmacyApplication.class, args);
-    }
-
+  public static void main(String[] args) {
+    SpringApplication.run(PharmacyApplication.class, args);
+  }
 }
