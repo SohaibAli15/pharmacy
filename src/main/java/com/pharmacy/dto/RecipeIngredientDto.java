@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,6 +22,7 @@ public class RecipeIngredientDto {
   private String ingredientName;
   private String ingredientCode;
 
+  @JsonProperty("quantity")
   @NotNull(message = "Quantity is required") @DecimalMin(value = "0.0001", message = "Quantity must be greater than 0")
   private BigDecimal quantityRequired;
 
