@@ -13,6 +13,7 @@ import com.pharmacy.service.SupplierService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -57,7 +58,13 @@ public class SupplierController {
       description = "Update supplier information including contact details and status")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Supplier updated successfully"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Supplier updated successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = SupplierDto.class))),
         @ApiResponse(responseCode = "404", description = "Supplier not found")
       })
   public ResponseEntity<SupplierDto> updateSupplier(
@@ -73,7 +80,13 @@ public class SupplierController {
       description = "Retrieve a specific supplier by their ID")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Supplier found"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Supplier found",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = SupplierDto.class))),
         @ApiResponse(responseCode = "404", description = "Supplier not found")
       })
   public ResponseEntity<SupplierDto> getSupplierById(
@@ -88,7 +101,13 @@ public class SupplierController {
       description = "Retrieve a supplier by their unique supplier code")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Supplier found"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Supplier found",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = SupplierDto.class))),
         @ApiResponse(responseCode = "404", description = "Supplier not found")
       })
   public ResponseEntity<SupplierDto> getSupplierByCode(
@@ -99,7 +118,13 @@ public class SupplierController {
 
   @GetMapping
   @Operation(summary = "Get all suppliers", description = "Retrieve all registered suppliers")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved all suppliers")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved all suppliers",
+      content =
+          @Content(
+              mediaType = "application/json",
+              array = @ArraySchema(schema = @Schema(implementation = SupplierDto.class))))
   public ResponseEntity<List<SupplierDto>> getAllSuppliers() {
     List<SupplierDto> suppliers = supplierService.getAllSuppliers();
     return ResponseEntity.ok(suppliers);
@@ -109,7 +134,13 @@ public class SupplierController {
   @Operation(
       summary = "Get suppliers by status",
       description = "Retrieve suppliers filtered by status (ACTIVE, INACTIVE, SUSPENDED)")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved suppliers")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved suppliers",
+      content =
+          @Content(
+              mediaType = "application/json",
+              array = @ArraySchema(schema = @Schema(implementation = SupplierDto.class))))
   public ResponseEntity<List<SupplierDto>> getSuppliersByStatus(
       @Parameter(description = "Supplier status", required = true) @PathVariable
           Supplier.SupplierStatus status) {
@@ -121,7 +152,13 @@ public class SupplierController {
   @Operation(
       summary = "Search suppliers by name",
       description = "Search for suppliers by name or company name")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved matching suppliers")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved matching suppliers",
+      content =
+          @Content(
+              mediaType = "application/json",
+              array = @ArraySchema(schema = @Schema(implementation = SupplierDto.class))))
   public ResponseEntity<List<SupplierDto>> searchSuppliers(
       @Parameter(description = "Search term (name)", required = true) @RequestParam String name) {
     List<SupplierDto> suppliers = supplierService.searchSuppliersByName(name);

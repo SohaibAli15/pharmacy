@@ -11,6 +11,7 @@ import com.pharmacy.service.AlertService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,8 +35,14 @@ public class AlertController {
   @Operation(
       summary = "Get all alerts",
       description = "Retrieve all system alerts including low stock and expiry warnings")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved all alerts")
-  public List<AlertDto> listAll() {
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved all alerts",
+      content =
+          @Content(
+              mediaType = "application/json",
+              array = @ArraySchema(schema = @Schema(implementation = AlertDto.class))))
+  public List<AlertDto> getAllAlerts() {
     return alertService.listAll();
   }
 
@@ -43,7 +50,13 @@ public class AlertController {
   @Operation(
       summary = "Get unread alerts",
       description = "Retrieve all unread/unacknowledged alerts")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved unread alerts")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved unread alerts",
+      content =
+          @Content(
+              mediaType = "application/json",
+              array = @ArraySchema(schema = @Schema(implementation = AlertDto.class))))
   public List<AlertDto> getUnread() {
     return alertService.getUnreadAlerts();
   }
@@ -54,7 +67,13 @@ public class AlertController {
       description = "Retrieve alerts related to a specific ingredient")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Successfully retrieved alerts"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved alerts",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = AlertDto.class)))),
         @ApiResponse(responseCode = "404", description = "Ingredient not found")
       })
   public List<AlertDto> getByIngredient(
@@ -75,7 +94,7 @@ public class AlertController {
                     schema = @Schema(implementation = AlertDto.class))),
         @ApiResponse(responseCode = "404", description = "Alert not found")
       })
-  public ResponseEntity<AlertDto> get(
+  public ResponseEntity<AlertDto> getAlertById(
       @Parameter(description = "Alert ID", required = true) @PathVariable Long id) {
     AlertDto dto = alertService.getById(id);
     if (dto == null) return ResponseEntity.notFound().build();
@@ -104,7 +123,7 @@ public class AlertController {
         @ApiResponse(responseCode = "204", description = "Alert deleted successfully"),
         @ApiResponse(responseCode = "404", description = "Alert not found")
       })
-  public ResponseEntity<Void> delete(
+  public ResponseEntity<Void> deleteAlert(
       @Parameter(description = "Alert ID", required = true) @PathVariable Long id) {
     alertService.delete(id);
     return ResponseEntity.noContent().build();

@@ -18,6 +18,7 @@ import com.pharmacy.service.ProductionBatchService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -47,10 +48,11 @@ public class ProductionBatchController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = ProductionBatchDto.class)))
+                    array =
+                        @ArraySchema(schema = @Schema(implementation = ProductionBatchDto.class))))
       })
   @GetMapping
-  public ResponseEntity<List<ProductionBatchDto>> listAll() {
+  public ResponseEntity<List<ProductionBatchDto>> getAllProductionBatches() {
     List<ProductionBatchDto> batches = productionBatchService.listAll();
     return ResponseEntity.ok(batches);
   }
@@ -63,10 +65,15 @@ public class ProductionBatchController {
       value = {
         @ApiResponse(
             responseCode = "200",
-            description = "Successfully retrieved filtered production batches")
+            description = "Successfully retrieved filtered production batches",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    array =
+                        @ArraySchema(schema = @Schema(implementation = ProductionBatchDto.class))))
       })
   @GetMapping("/search")
-  public ResponseEntity<List<ProductionBatchDto>> search(
+  public ResponseEntity<List<ProductionBatchDto>> searchProductionBatches(
       @Parameter(description = "Filter by business location", example = "Butt Brothers")
           @RequestParam(required = false)
           String businessLocation,
@@ -99,8 +106,19 @@ public class ProductionBatchController {
   @Operation(
       summary = "Get production batches by recipe",
       description = "Retrieve all production batches for a specific recipe")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved production batches for the recipe",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    array =
+                        @ArraySchema(schema = @Schema(implementation = ProductionBatchDto.class))))
+      })
   @GetMapping("/recipe/{recipeId}")
-  public ResponseEntity<List<ProductionBatchDto>> getByRecipe(
+  public ResponseEntity<List<ProductionBatchDto>> getProductionBatchesByRecipe(
       @Parameter(description = "Recipe ID") @PathVariable Long recipeId) {
     List<ProductionBatchDto> batches = productionBatchService.getByRecipe(recipeId);
     return ResponseEntity.ok(batches);
@@ -109,8 +127,19 @@ public class ProductionBatchController {
   @Operation(
       summary = "Get production batches by status",
       description = "Retrieve all production batches with a specific status")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved production batches by status",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    array =
+                        @ArraySchema(schema = @Schema(implementation = ProductionBatchDto.class))))
+      })
   @GetMapping("/status/{status}")
-  public ResponseEntity<List<ProductionBatchDto>> getByStatus(
+  public ResponseEntity<List<ProductionBatchDto>> getProductionBatchesByStatus(
       @Parameter(description = "Status value", example = "COMPLETED") @PathVariable String status) {
     List<ProductionBatchDto> batches = productionBatchService.getByStatus(status);
     return ResponseEntity.ok(batches);
@@ -121,7 +150,13 @@ public class ProductionBatchController {
       description = "Retrieve list of all business locations that have production batches")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Successfully retrieved locations")
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved locations",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = String.class))))
       })
   @GetMapping("/locations")
   public ResponseEntity<List<String>> getBusinessLocations() {
@@ -134,11 +169,17 @@ public class ProductionBatchController {
       description = "Retrieve a specific production batch with all material consumption details")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Production batch found"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Production batch found",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ProductionBatchDto.class))),
         @ApiResponse(responseCode = "404", description = "Production batch not found")
       })
   @GetMapping("/{id}")
-  public ResponseEntity<ProductionBatchDto> get(
+  public ResponseEntity<ProductionBatchDto> getProductionBatchById(
       @Parameter(description = "Production batch ID", example = "1") @PathVariable Long id) {
     try {
       ProductionBatchDto dto = productionBatchService.getById(id);
@@ -153,11 +194,17 @@ public class ProductionBatchController {
       description = "Create a new production batch with material consumption tracking")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "201", description = "Production batch created successfully"),
+        @ApiResponse(
+            responseCode = "201",
+            description = "Production batch created successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ProductionBatchDto.class))),
         @ApiResponse(responseCode = "400", description = "Invalid input")
       })
   @PostMapping
-  public ResponseEntity<?> create(
+  public ResponseEntity<?> createProductionBatch(
       @io.swagger.v3.oas.annotations.parameters.RequestBody(
               description = "Production batch details with materials consumed",
               required = true)
@@ -180,12 +227,18 @@ public class ProductionBatchController {
           "Update production batch details and material consumption (only if not finalized)")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Production batch updated successfully"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Production batch updated successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ProductionBatchDto.class))),
         @ApiResponse(responseCode = "400", description = "Invalid input or batch is finalized"),
         @ApiResponse(responseCode = "404", description = "Production batch not found")
       })
   @PutMapping("/{id}")
-  public ResponseEntity<?> update(
+  public ResponseEntity<?> updateProductionBatch(
       @Parameter(description = "Production batch ID") @PathVariable Long id,
       @Valid @RequestBody ProductionBatchDto dto) {
     try {
@@ -208,7 +261,7 @@ public class ProductionBatchController {
         @ApiResponse(responseCode = "404", description = "Production batch not found")
       })
   @DeleteMapping("/{id}")
-  public ResponseEntity<?> delete(
+  public ResponseEntity<?> deleteProductionBatch(
       @Parameter(description = "Production batch ID") @PathVariable Long id) {
     try {
       productionBatchService.delete(id);
@@ -233,7 +286,13 @@ public class ProductionBatchController {
             """)
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Production batch finalized successfully"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Production batch finalized successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ProductionBatchDto.class))),
         @ApiResponse(
             responseCode = "400",
             description = "Batch already finalized or invalid state"),
@@ -270,7 +329,11 @@ public class ProductionBatchController {
       value = {
         @ApiResponse(
             responseCode = "200",
-            description = "Production batch unfinalized successfully"),
+            description = "Production batch unfinalized successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ProductionBatchDto.class))),
         @ApiResponse(
             responseCode = "400",
             description = "Batch is not finalized or cannot be unfinalized"),
@@ -290,8 +353,21 @@ public class ProductionBatchController {
   }
 
   /** Get production statistics */
+  @Operation(
+      summary = "Get production statistics",
+      description = "Retrieve production statistics for all batches or within a date range")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved production statistics",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Map.class)))
+      })
   @GetMapping("/stats")
-  public ResponseEntity<Map<String, Object>> getStats(
+  public ResponseEntity<Map<String, Object>> getProductionStats(
       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
           LocalDateTime startDate,
       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

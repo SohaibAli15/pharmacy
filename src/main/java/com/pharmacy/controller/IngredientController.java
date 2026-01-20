@@ -11,6 +11,7 @@ import com.pharmacy.service.IngredientService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -33,8 +34,14 @@ public class IngredientController {
   @Operation(
       summary = "Get all ingredients",
       description = "Retrieve all ingredients in the system")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved all ingredients")
-  public List<IngredientDto> listAll() {
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved all ingredients",
+      content =
+          @Content(
+              mediaType = "application/json",
+              array = @ArraySchema(schema = @Schema(implementation = IngredientDto.class))))
+  public List<IngredientDto> getAllIngredients() {
     return ingredientService.listAll();
   }
 
@@ -42,7 +49,13 @@ public class IngredientController {
   @Operation(
       summary = "Get low stock ingredients",
       description = "Retrieve ingredients with stock below reorder level")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved low stock ingredients")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved low stock ingredients",
+      content =
+          @Content(
+              mediaType = "application/json",
+              array = @ArraySchema(schema = @Schema(implementation = IngredientDto.class))))
   public List<IngredientDto> getLowStock() {
     return ingredientService.getLowStockIngredients();
   }
@@ -51,7 +64,13 @@ public class IngredientController {
   @Operation(
       summary = "Get high stock ingredients",
       description = "Retrieve ingredients with stock above maximum level")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved high stock ingredients")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved high stock ingredients",
+      content =
+          @Content(
+              mediaType = "application/json",
+              array = @ArraySchema(schema = @Schema(implementation = IngredientDto.class))))
   public List<IngredientDto> getHighStock() {
     return ingredientService.getHighStockIngredients();
   }
@@ -71,7 +90,7 @@ public class IngredientController {
                     schema = @Schema(implementation = IngredientDto.class))),
         @ApiResponse(responseCode = "404", description = "Ingredient not found")
       })
-  public ResponseEntity<IngredientDto> get(
+  public ResponseEntity<IngredientDto> getIngredientById(
       @Parameter(description = "Ingredient ID", required = true) @PathVariable Long id) {
     IngredientDto dto = ingredientService.getById(id);
     if (dto == null) return ResponseEntity.notFound().build();
@@ -93,7 +112,7 @@ public class IngredientController {
                     schema = @Schema(implementation = IngredientDto.class))),
         @ApiResponse(responseCode = "400", description = "Invalid input")
       })
-  public ResponseEntity<IngredientDto> create(@RequestBody IngredientDto dto) {
+  public ResponseEntity<IngredientDto> createIngredient(@RequestBody IngredientDto dto) {
     IngredientDto created = ingredientService.create(dto);
     return ResponseEntity.ok(created);
   }
@@ -104,10 +123,16 @@ public class IngredientController {
       description = "Update ingredient information including specifications and stock levels")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Ingredient updated successfully"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Ingredient updated successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = IngredientDto.class))),
         @ApiResponse(responseCode = "404", description = "Ingredient not found")
       })
-  public ResponseEntity<IngredientDto> update(
+  public ResponseEntity<IngredientDto> updateIngredient(
       @Parameter(description = "Ingredient ID", required = true) @PathVariable Long id,
       @RequestBody IngredientDto dto) {
     IngredientDto updated = ingredientService.update(id, dto);
@@ -121,7 +146,7 @@ public class IngredientController {
         @ApiResponse(responseCode = "204", description = "Ingredient deleted successfully"),
         @ApiResponse(responseCode = "404", description = "Ingredient not found")
       })
-  public ResponseEntity<Void> delete(
+  public ResponseEntity<Void> deleteIngredient(
       @Parameter(description = "Ingredient ID", required = true) @PathVariable Long id) {
     ingredientService.delete(id);
     return ResponseEntity.noContent().build();

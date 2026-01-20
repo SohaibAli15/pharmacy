@@ -16,6 +16,7 @@ import com.pharmacy.service.RecipeService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -45,10 +46,10 @@ public class RecipeController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = RecipeDto.class)))
+                    array = @ArraySchema(schema = @Schema(implementation = RecipeDto.class))))
       })
   @GetMapping
-  public ResponseEntity<List<RecipeDto>> listAll(
+  public ResponseEntity<List<RecipeDto>> getAllRecipes(
       @Parameter(description = "Filter for active recipes only") @RequestParam(required = false)
           Boolean activeOnly) {
     List<RecipeDto> recipes =
@@ -62,10 +63,16 @@ public class RecipeController {
           "Search recipes using multiple filter criteria including name, category, and product")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Successfully retrieved filtered recipes")
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved filtered recipes",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = RecipeDto.class))))
       })
   @GetMapping("/search")
-  public ResponseEntity<List<RecipeDto>> search(
+  public ResponseEntity<List<RecipeDto>> searchRecipes(
       @Parameter(description = "Search query for recipe name") @RequestParam(required = false)
           String q,
       @Parameter(description = "Filter by category") @RequestParam(required = false)
@@ -85,8 +92,18 @@ public class RecipeController {
   @Operation(
       summary = "Get recipes by category",
       description = "Retrieve all recipes belonging to a specific category")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved recipes by category",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = RecipeDto.class))))
+      })
   @GetMapping("/category/{category}")
-  public ResponseEntity<List<RecipeDto>> getByCategory(
+  public ResponseEntity<List<RecipeDto>> getRecipesByCategory(
       @Parameter(description = "Category name", example = "Packaging Material") @PathVariable
           String category) {
     List<RecipeDto> recipes = recipeService.findByCategory(category);
@@ -96,8 +113,18 @@ public class RecipeController {
   @Operation(
       summary = "Get recipes by product",
       description = "Retrieve all recipes associated with a specific product")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved recipes by product",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = RecipeDto.class))))
+      })
   @GetMapping("/product/{productId}")
-  public ResponseEntity<List<RecipeDto>> getByProduct(
+  public ResponseEntity<List<RecipeDto>> getRecipesByProduct(
       @Parameter(description = "Product ID") @PathVariable Long productId) {
     List<RecipeDto> recipes = recipeService.findByProduct(productId);
     return ResponseEntity.ok(recipes);
@@ -112,7 +139,7 @@ public class RecipeController {
         @ApiResponse(responseCode = "404", description = "Recipe not found")
       })
   @GetMapping("/{id}")
-  public ResponseEntity<RecipeDto> get(
+  public ResponseEntity<RecipeDto> getRecipeById(
       @Parameter(description = "Recipe ID", example = "1") @PathVariable Long id) {
     try {
       RecipeDto dto = recipeService.getById(id);
@@ -123,8 +150,22 @@ public class RecipeController {
   }
 
   /** Get recipe by recipe code */
+  @Operation(
+      summary = "Get recipe by recipe code",
+      description = "Retrieve a specific recipe using its unique recipe code")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Recipe found",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = RecipeDto.class))),
+        @ApiResponse(responseCode = "404", description = "Recipe not found")
+      })
   @GetMapping("/code/{recipeCode}")
-  public ResponseEntity<RecipeDto> getByCode(@PathVariable String recipeCode) {
+  public ResponseEntity<RecipeDto> getRecipeByCode(@PathVariable String recipeCode) {
     RecipeDto dto = recipeService.getByRecipeCode(recipeCode);
     if (dto == null) {
       return ResponseEntity.notFound().build();
@@ -143,7 +184,7 @@ public class RecipeController {
             description = "Invalid input or recipe code already exists")
       })
   @PostMapping
-  public ResponseEntity<?> create(
+  public ResponseEntity<?> createRecipe(
       @io.swagger.v3.oas.annotations.parameters.RequestBody(
               description = "Recipe details including ingredients",
               required = true)
@@ -170,7 +211,7 @@ public class RecipeController {
         @ApiResponse(responseCode = "404", description = "Recipe not found")
       })
   @PutMapping("/{id}")
-  public ResponseEntity<?> update(
+  public ResponseEntity<?> updateRecipe(
       @Parameter(description = "Recipe ID") @PathVariable Long id,
       @Valid @RequestBody RecipeDto dto) {
     try {
@@ -192,7 +233,8 @@ public class RecipeController {
         @ApiResponse(responseCode = "404", description = "Recipe not found")
       })
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@Parameter(description = "Recipe ID") @PathVariable Long id) {
+  public ResponseEntity<Void> deleteRecipe(
+      @Parameter(description = "Recipe ID") @PathVariable Long id) {
     try {
       recipeService.delete(id);
       return ResponseEntity.noContent().build();
@@ -225,8 +267,21 @@ public class RecipeController {
   }
 
   /** Get recipe statistics */
+  @Operation(
+      summary = "Get recipe statistics",
+      description = "Retrieve statistics about recipes including counts by category")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved recipe statistics",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Map.class)))
+      })
   @GetMapping("/stats")
-  public ResponseEntity<Map<String, Object>> getStats() {
+  public ResponseEntity<Map<String, Object>> getRecipeStats() {
     List<RecipeDto> allRecipes = recipeService.listAll();
     List<RecipeDto> activeRecipes = recipeService.listAllActive();
 

@@ -11,6 +11,7 @@ import com.pharmacy.service.MedicineService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -31,15 +32,27 @@ public class MedicineController {
 
   @GetMapping
   @Operation(summary = "Get all medicines", description = "Retrieve all medicines in the catalog")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved all medicines")
-  public List<MedicineDto> listAll() {
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved all medicines",
+      content =
+          @Content(
+              mediaType = "application/json",
+              array = @ArraySchema(schema = @Schema(implementation = MedicineDto.class))))
+  public List<MedicineDto> getAllMedicines() {
     return medicineService.listAll();
   }
 
   @GetMapping("/search")
   @Operation(summary = "Search medicines", description = "Search medicines by name")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved matching medicines")
-  public List<MedicineDto> search(
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved matching medicines",
+      content =
+          @Content(
+              mediaType = "application/json",
+              array = @ArraySchema(schema = @Schema(implementation = MedicineDto.class))))
+  public List<MedicineDto> searchMedicines(
       @Parameter(description = "Search query", required = true) @RequestParam("q") String q) {
     return medicineService.searchByName(q);
   }
@@ -48,8 +61,14 @@ public class MedicineController {
   @Operation(
       summary = "Get medicines by category",
       description = "Retrieve medicines filtered by category")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved medicines by category")
-  public List<MedicineDto> byCategory(
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved medicines by category",
+      content =
+          @Content(
+              mediaType = "application/json",
+              array = @ArraySchema(schema = @Schema(implementation = MedicineDto.class))))
+  public List<MedicineDto> getMedicinesByCategory(
       @Parameter(description = "Medicine category", required = true) @PathVariable
           String category) {
     return medicineService.findByCategory(category);
@@ -68,7 +87,7 @@ public class MedicineController {
                     schema = @Schema(implementation = MedicineDto.class))),
         @ApiResponse(responseCode = "404", description = "Medicine not found")
       })
-  public ResponseEntity<MedicineDto> get(
+  public ResponseEntity<MedicineDto> getMedicineById(
       @Parameter(description = "Medicine ID", required = true) @PathVariable Long id) {
     MedicineDto dto = medicineService.getById(id);
     if (dto == null) return ResponseEntity.notFound().build();
@@ -90,7 +109,7 @@ public class MedicineController {
                     schema = @Schema(implementation = MedicineDto.class))),
         @ApiResponse(responseCode = "400", description = "Invalid input")
       })
-  public ResponseEntity<MedicineDto> create(@RequestBody MedicineDto dto) {
+  public ResponseEntity<MedicineDto> createMedicine(@RequestBody MedicineDto dto) {
     MedicineDto created = medicineService.create(dto);
     return ResponseEntity.ok(created);
   }
@@ -101,10 +120,16 @@ public class MedicineController {
       description = "Update medicine information including specifications and pricing")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Medicine updated successfully"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Medicine updated successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = MedicineDto.class))),
         @ApiResponse(responseCode = "404", description = "Medicine not found")
       })
-  public ResponseEntity<MedicineDto> update(
+  public ResponseEntity<MedicineDto> updateMedicine(
       @Parameter(description = "Medicine ID", required = true) @PathVariable Long id,
       @RequestBody MedicineDto dto) {
     MedicineDto updated = medicineService.update(id, dto);
@@ -118,7 +143,7 @@ public class MedicineController {
         @ApiResponse(responseCode = "204", description = "Medicine deleted successfully"),
         @ApiResponse(responseCode = "404", description = "Medicine not found")
       })
-  public ResponseEntity<Void> delete(
+  public ResponseEntity<Void> deleteMedicine(
       @Parameter(description = "Medicine ID", required = true) @PathVariable Long id) {
     medicineService.delete(id);
     return ResponseEntity.noContent().build();
