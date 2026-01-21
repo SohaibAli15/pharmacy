@@ -15,6 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.pharmacy.dto.RecipeDto;
+import com.pharmacy.dto.RecipePageResponse;
+import com.pharmacy.dto.RecipeStatsResponse;
+import com.pharmacy.dto.ErrorResponse;
 import com.pharmacy.service.RecipeService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,10 +52,10 @@ public class RecipeController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = Page.class)))
+                    schema = @Schema(implementation = RecipePageResponse.class)))
       })
   @GetMapping
-  public ResponseEntity<Page<RecipeDto>> getAllRecipes(
+  public ResponseEntity<RecipePageResponse> getAllRecipes(
       @Parameter(description = "Filter for active recipes only") @RequestParam(required = false)
           Boolean activeOnly,
       @PageableDefault(size = 20) Pageable pageable) {
@@ -60,7 +63,16 @@ public class RecipeController {
         activeOnly != null && activeOnly
             ? recipeService.listAllActive(pageable)
             : recipeService.listAll(pageable);
-    return ResponseEntity.ok(recipes);
+    RecipePageResponse response = new RecipePageResponse();
+    response.setContent(recipes.getContent());
+    response.setTotalElements(recipes.getTotalElements());
+    response.setTotalPages(recipes.getTotalPages());
+    response.setNumber(recipes.getNumber());
+    response.setSize(recipes.getSize());
+    response.setFirst(recipes.isFirst());
+    response.setLast(recipes.isLast());
+    response.setEmpty(recipes.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/search")
@@ -76,9 +88,9 @@ public class RecipeController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = Page.class)))
+                    schema = @Schema(implementation = RecipePageResponse.class)))
       })
-  public ResponseEntity<Page<RecipeDto>> searchRecipes(
+  public ResponseEntity<RecipePageResponse> searchRecipes(
       @Parameter(description = "Search query for recipe name") @RequestParam(required = false)
           String q,
       @Parameter(description = "Filter by category") @RequestParam(required = false)
@@ -93,7 +105,16 @@ public class RecipeController {
       @PageableDefault(size = 20) Pageable pageable) {
     Page<RecipeDto> recipes =
         recipeService.searchRecipes(category, subCategory, status, productId, q, pageable);
-    return ResponseEntity.ok(recipes);
+    RecipePageResponse response = new RecipePageResponse();
+    response.setContent(recipes.getContent());
+    response.setTotalElements(recipes.getTotalElements());
+    response.setTotalPages(recipes.getTotalPages());
+    response.setNumber(recipes.getNumber());
+    response.setSize(recipes.getSize());
+    response.setFirst(recipes.isFirst());
+    response.setLast(recipes.isLast());
+    response.setEmpty(recipes.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/category/{category}")
@@ -108,14 +129,23 @@ public class RecipeController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = Page.class)))
+                    schema = @Schema(implementation = RecipePageResponse.class)))
       })
-  public ResponseEntity<Page<RecipeDto>> getRecipesByCategory(
+  public ResponseEntity<RecipePageResponse> getRecipesByCategory(
       @Parameter(description = "Category name", example = "Packaging Material") @PathVariable
           String category,
       @PageableDefault(size = 20) Pageable pageable) {
     Page<RecipeDto> recipes = recipeService.findByCategory(category, pageable);
-    return ResponseEntity.ok(recipes);
+    RecipePageResponse response = new RecipePageResponse();
+    response.setContent(recipes.getContent());
+    response.setTotalElements(recipes.getTotalElements());
+    response.setTotalPages(recipes.getTotalPages());
+    response.setNumber(recipes.getNumber());
+    response.setSize(recipes.getSize());
+    response.setFirst(recipes.isFirst());
+    response.setLast(recipes.isLast());
+    response.setEmpty(recipes.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @Operation(
@@ -129,14 +159,23 @@ public class RecipeController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = Page.class)))
+                    schema = @Schema(implementation = RecipePageResponse.class)))
       })
   @GetMapping("/product/{productId}")
-  public ResponseEntity<Page<RecipeDto>> getRecipesByProduct(
+  public ResponseEntity<RecipePageResponse> getRecipesByProduct(
       @Parameter(description = "Product ID") @PathVariable Long productId,
       @PageableDefault(size = 20) Pageable pageable) {
     Page<RecipeDto> recipes = recipeService.findByProduct(productId, pageable);
-    return ResponseEntity.ok(recipes);
+    RecipePageResponse response = new RecipePageResponse();
+    response.setContent(recipes.getContent());
+    response.setTotalElements(recipes.getTotalElements());
+    response.setTotalPages(recipes.getTotalPages());
+    response.setNumber(recipes.getNumber());
+    response.setSize(recipes.getSize());
+    response.setFirst(recipes.isFirst());
+    response.setLast(recipes.isLast());
+    response.setEmpty(recipes.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @Operation(
@@ -190,7 +229,8 @@ public class RecipeController {
         @ApiResponse(responseCode = "201", description = "Recipe created successfully"),
         @ApiResponse(
             responseCode = "400",
-            description = "Invalid input or recipe code already exists")
+            description = "Invalid input or recipe code already exists",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
       })
   @PostMapping
   public ResponseEntity<?> createRecipe(
@@ -204,8 +244,8 @@ public class RecipeController {
       RecipeDto created = recipeService.create(dto);
       return ResponseEntity.status(HttpStatus.CREATED).body(created);
     } catch (RuntimeException e) {
-      Map<String, String> error = new HashMap<>();
-      error.put("error", e.getMessage());
+      ErrorResponse error = new ErrorResponse();
+      error.setError(e.getMessage());
       return ResponseEntity.badRequest().body(error);
     }
   }
@@ -216,7 +256,7 @@ public class RecipeController {
   @ApiResponses(
       value = {
         @ApiResponse(responseCode = "200", description = "Recipe updated successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid input"),
+        @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
         @ApiResponse(responseCode = "404", description = "Recipe not found")
       })
   @PutMapping("/{id}")
@@ -227,8 +267,8 @@ public class RecipeController {
       RecipeDto updated = recipeService.update(id, dto);
       return ResponseEntity.ok(updated);
     } catch (RuntimeException e) {
-      Map<String, String> error = new HashMap<>();
-      error.put("error", e.getMessage());
+      ErrorResponse error = new ErrorResponse();
+      error.setError(e.getMessage());
       return ResponseEntity.badRequest().body(error);
     }
   }
@@ -260,6 +300,11 @@ public class RecipeController {
   }
 
   /** Copy recipe from existing */
+  @Operation(summary = "Copy existing recipe", description = "Copy an existing recipe with a new code and optional name")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "201", description = "Recipe copied successfully"),
+    @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+  })
   @PostMapping("/{id}/copy")
   public ResponseEntity<?> copyRecipe(
       @PathVariable Long id,
@@ -269,8 +314,8 @@ public class RecipeController {
       RecipeDto copied = recipeService.copyRecipe(id, newRecipeCode, newName);
       return ResponseEntity.status(HttpStatus.CREATED).body(copied);
     } catch (RuntimeException e) {
-      Map<String, String> error = new HashMap<>();
-      error.put("error", e.getMessage());
+      ErrorResponse error = new ErrorResponse();
+      error.setError(e.getMessage());
       return ResponseEntity.badRequest().body(error);
     }
   }
@@ -287,17 +332,17 @@ public class RecipeController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = Map.class)))
+                    schema = @Schema(implementation = RecipeStatsResponse.class)))
       })
   @GetMapping("/stats")
-  public ResponseEntity<Map<String, Object>> getRecipeStats() {
+  public ResponseEntity<RecipeStatsResponse> getRecipeStats() {
     List<RecipeDto> allRecipes = recipeService.listAll();
     List<RecipeDto> activeRecipes = recipeService.listAllActive();
 
-    Map<String, Object> stats = new HashMap<>();
-    stats.put("totalRecipes", allRecipes.size());
-    stats.put("activeRecipes", activeRecipes.size());
-    stats.put("inactiveRecipes", allRecipes.size() - activeRecipes.size());
+    RecipeStatsResponse statsResponse = new RecipeStatsResponse();
+    statsResponse.setTotalRecipes(allRecipes.size());
+    statsResponse.setActiveRecipes(activeRecipes.size());
+    statsResponse.setInactiveRecipes(allRecipes.size() - activeRecipes.size());
 
     // Count by category
     Map<String, Long> categoryCount = new HashMap<>();
@@ -306,8 +351,8 @@ public class RecipeController {
           String category = recipe.getCategory() != null ? recipe.getCategory() : "Uncategorized";
           categoryCount.put(category, categoryCount.getOrDefault(category, 0L) + 1);
         });
-    stats.put("categoryBreakdown", categoryCount);
+    statsResponse.setCategoryBreakdown(categoryCount);
 
-    return ResponseEntity.ok(stats);
+    return ResponseEntity.ok(statsResponse);
   }
 }

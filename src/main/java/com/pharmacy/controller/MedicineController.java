@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.pharmacy.dto.MedicineDto;
+import com.pharmacy.dto.MedicinePageResponse;
 import com.pharmacy.service.MedicineService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,9 +39,19 @@ public class MedicineController {
       responseCode = "200",
       description = "Successfully retrieved medicines",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
-  public Page<MedicineDto> getAllMedicines(@PageableDefault(size = 20) Pageable pageable) {
-    return medicineService.listAll(pageable);
+          @Content(mediaType = "application/json", schema = @Schema(implementation = MedicinePageResponse.class)))
+  public ResponseEntity<MedicinePageResponse> getAllMedicines(@PageableDefault(size = 20) Pageable pageable) {
+    Page<MedicineDto> medicines = medicineService.listAll(pageable);
+    MedicinePageResponse response = new MedicinePageResponse();
+    response.setContent(medicines.getContent());
+    response.setTotalElements(medicines.getTotalElements());
+    response.setTotalPages(medicines.getTotalPages());
+    response.setNumber(medicines.getNumber());
+    response.setSize(medicines.getSize());
+    response.setFirst(medicines.isFirst());
+    response.setLast(medicines.isLast());
+    response.setEmpty(medicines.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/search")
@@ -49,11 +60,21 @@ public class MedicineController {
       responseCode = "200",
       description = "Successfully retrieved matching medicines",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
-  public Page<MedicineDto> searchMedicines(
+          @Content(mediaType = "application/json", schema = @Schema(implementation = MedicinePageResponse.class)))
+  public ResponseEntity<MedicinePageResponse> searchMedicines(
       @Parameter(description = "Search query", required = true) @RequestParam("q") String q,
       @PageableDefault(size = 20) Pageable pageable) {
-    return medicineService.searchByName(q, pageable);
+    Page<MedicineDto> medicines = medicineService.searchByName(q, pageable);
+    MedicinePageResponse response = new MedicinePageResponse();
+    response.setContent(medicines.getContent());
+    response.setTotalElements(medicines.getTotalElements());
+    response.setTotalPages(medicines.getTotalPages());
+    response.setNumber(medicines.getNumber());
+    response.setSize(medicines.getSize());
+    response.setFirst(medicines.isFirst());
+    response.setLast(medicines.isLast());
+    response.setEmpty(medicines.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/category/{category}")
@@ -64,11 +85,21 @@ public class MedicineController {
       responseCode = "200",
       description = "Successfully retrieved medicines by category",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
-  public Page<MedicineDto> getMedicinesByCategory(
+          @Content(mediaType = "application/json", schema = @Schema(implementation = MedicinePageResponse.class)))
+  public ResponseEntity<MedicinePageResponse> getMedicinesByCategory(
       @Parameter(description = "Medicine category", required = true) @PathVariable String category,
       @PageableDefault(size = 20) Pageable pageable) {
-    return medicineService.findByCategory(category, pageable);
+    Page<MedicineDto> medicines = medicineService.findByCategory(category, pageable);
+    MedicinePageResponse response = new MedicinePageResponse();
+    response.setContent(medicines.getContent());
+    response.setTotalElements(medicines.getTotalElements());
+    response.setTotalPages(medicines.getTotalPages());
+    response.setNumber(medicines.getNumber());
+    response.setSize(medicines.getSize());
+    response.setFirst(medicines.isFirst());
+    response.setLast(medicines.isLast());
+    response.setEmpty(medicines.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/{id}")

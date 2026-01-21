@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.pharmacy.dto.StoreDto;
+import com.pharmacy.dto.StorePageResponse;
 import com.pharmacy.entity.Store;
 import com.pharmacy.service.StoreService;
 
@@ -108,11 +109,20 @@ public class StoreController {
       responseCode = "200",
       description = "Successfully retrieved stores",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
-  public ResponseEntity<Page<StoreDto>> getAllStores(
+          @Content(mediaType = "application/json", schema = @Schema(implementation = StorePageResponse.class)))
+  public ResponseEntity<StorePageResponse> getAllStores(
       @PageableDefault(size = 20) Pageable pageable) {
     Page<StoreDto> stores = storeService.getAllStores(pageable);
-    return ResponseEntity.ok(stores);
+    StorePageResponse response = new StorePageResponse();
+    response.setContent(stores.getContent());
+    response.setTotalElements(stores.getTotalElements());
+    response.setTotalPages(stores.getTotalPages());
+    response.setNumber(stores.getNumber());
+    response.setSize(stores.getSize());
+    response.setFirst(stores.isFirst());
+    response.setLast(stores.isLast());
+    response.setEmpty(stores.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/status/{status}")
@@ -123,13 +133,22 @@ public class StoreController {
       responseCode = "200",
       description = "Successfully retrieved stores",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
-  public ResponseEntity<Page<StoreDto>> getStoresByStatus(
+          @Content(mediaType = "application/json", schema = @Schema(implementation = StorePageResponse.class)))
+  public ResponseEntity<StorePageResponse> getStoresByStatus(
       @Parameter(description = "Store status", required = true) @PathVariable
           Store.StoreStatus status,
       @PageableDefault(size = 20) Pageable pageable) {
     Page<StoreDto> stores = storeService.getStoresByStatus(status, pageable);
-    return ResponseEntity.ok(stores);
+    StorePageResponse response = new StorePageResponse();
+    response.setContent(stores.getContent());
+    response.setTotalElements(stores.getTotalElements());
+    response.setTotalPages(stores.getTotalPages());
+    response.setNumber(stores.getNumber());
+    response.setSize(stores.getSize());
+    response.setFirst(stores.isFirst());
+    response.setLast(stores.isLast());
+    response.setEmpty(stores.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/type/{type}")
@@ -142,12 +161,21 @@ public class StoreController {
       responseCode = "200",
       description = "Successfully retrieved stores",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
-  public ResponseEntity<Page<StoreDto>> getStoresByType(
+          @Content(mediaType = "application/json", schema = @Schema(implementation = StorePageResponse.class)))
+  public ResponseEntity<StorePageResponse> getStoresByType(
       @Parameter(description = "Store type", required = true) @PathVariable Store.StoreType type,
       @PageableDefault(size = 20) Pageable pageable) {
     Page<StoreDto> stores = storeService.getStoresByType(type, pageable);
-    return ResponseEntity.ok(stores);
+    StorePageResponse response = new StorePageResponse();
+    response.setContent(stores.getContent());
+    response.setTotalElements(stores.getTotalElements());
+    response.setTotalPages(stores.getTotalPages());
+    response.setNumber(stores.getNumber());
+    response.setSize(stores.getSize());
+    response.setFirst(stores.isFirst());
+    response.setLast(stores.isLast());
+    response.setEmpty(stores.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @DeleteMapping("/{id}")

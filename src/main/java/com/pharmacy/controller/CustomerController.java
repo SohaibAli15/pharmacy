@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.pharmacy.dto.CustomerDto;
+import com.pharmacy.dto.CustomerPageResponse;
 import com.pharmacy.service.CustomerService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -112,11 +113,20 @@ public class CustomerController {
       responseCode = "200",
       description = "Successfully retrieved customers",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
-  public ResponseEntity<Page<CustomerDto>> getAllCustomers(
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomerPageResponse.class)))
+  public ResponseEntity<CustomerPageResponse> getAllCustomers(
       @PageableDefault(size = 20) Pageable pageable) {
     Page<CustomerDto> customers = customerService.getAllCustomers(pageable);
-    return ResponseEntity.ok(customers);
+    CustomerPageResponse response = new CustomerPageResponse();
+    response.setContent(customers.getContent());
+    response.setTotalElements(customers.getTotalElements());
+    response.setTotalPages(customers.getTotalPages());
+    response.setNumber(customers.getNumber());
+    response.setSize(customers.getSize());
+    response.setFirst(customers.isFirst());
+    response.setLast(customers.isLast());
+    response.setEmpty(customers.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/search")
@@ -128,13 +138,22 @@ public class CustomerController {
       responseCode = "200",
       description = "Successfully retrieved matching customers",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
-  public ResponseEntity<Page<CustomerDto>> searchCustomers(
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomerPageResponse.class)))
+  public ResponseEntity<CustomerPageResponse> searchCustomers(
       @Parameter(description = "Search term (name or phone)", required = true) @RequestParam
           String searchTerm,
       @PageableDefault(size = 20) Pageable pageable) {
     Page<CustomerDto> customers = customerService.searchCustomers(searchTerm, pageable);
-    return ResponseEntity.ok(customers);
+    CustomerPageResponse response = new CustomerPageResponse();
+    response.setContent(customers.getContent());
+    response.setTotalElements(customers.getTotalElements());
+    response.setTotalPages(customers.getTotalPages());
+    response.setNumber(customers.getNumber());
+    response.setSize(customers.getSize());
+    response.setFirst(customers.isFirst());
+    response.setLast(customers.isLast());
+    response.setEmpty(customers.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @DeleteMapping("/{id}")

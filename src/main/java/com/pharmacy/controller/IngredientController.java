@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.pharmacy.dto.IngredientDto;
+import com.pharmacy.dto.IngredientPageResponse;
 import com.pharmacy.service.IngredientService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,9 +42,19 @@ public class IngredientController {
       responseCode = "200",
       description = "Successfully retrieved ingredients",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
-  public Page<IngredientDto> getAllIngredients(@PageableDefault(size = 20) Pageable pageable) {
-    return ingredientService.listAll(pageable);
+          @Content(mediaType = "application/json", schema = @Schema(implementation = IngredientPageResponse.class)))
+  public ResponseEntity<IngredientPageResponse> getAllIngredients(@PageableDefault(size = 20) Pageable pageable) {
+    Page<IngredientDto> ingredients = ingredientService.listAll(pageable);
+    IngredientPageResponse response = new IngredientPageResponse();
+    response.setContent(ingredients.getContent());
+    response.setTotalElements(ingredients.getTotalElements());
+    response.setTotalPages(ingredients.getTotalPages());
+    response.setNumber(ingredients.getNumber());
+    response.setSize(ingredients.getSize());
+    response.setFirst(ingredients.isFirst());
+    response.setLast(ingredients.isLast());
+    response.setEmpty(ingredients.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/low-stock")
