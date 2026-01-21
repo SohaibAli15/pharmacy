@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.pharmacy.dto.InventoryStockDto;
+import com.pharmacy.dto.InventoryStockPageResponse;
 import com.pharmacy.service.InventoryStockService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -125,11 +126,22 @@ public class InventoryStockController {
       responseCode = "200",
       description = "Successfully retrieved inventory stock",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
-  public ResponseEntity<Page<InventoryStockDto>> getAllInventoryStock(
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = InventoryStockPageResponse.class)))
+  public ResponseEntity<InventoryStockPageResponse> getAllInventoryStock(
       @PageableDefault(size = 20) Pageable pageable) {
     Page<InventoryStockDto> stocks = inventoryStockService.getAllInventoryStock(pageable);
-    return ResponseEntity.ok(stocks);
+    InventoryStockPageResponse response = new InventoryStockPageResponse();
+    response.setContent(stocks.getContent());
+    response.setTotalElements(stocks.getTotalElements());
+    response.setTotalPages(stocks.getTotalPages());
+    response.setNumber(stocks.getNumber());
+    response.setSize(stocks.getSize());
+    response.setFirst(stocks.isFirst());
+    response.setLast(stocks.isLast());
+    response.setEmpty(stocks.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/store/{storeId}")
@@ -144,14 +156,23 @@ public class InventoryStockController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = Page.class))),
+                    schema = @Schema(implementation = InventoryStockPageResponse.class))),
         @ApiResponse(responseCode = "404", description = "Store not found")
       })
-  public ResponseEntity<Page<InventoryStockDto>> getInventoryByStore(
+  public ResponseEntity<InventoryStockPageResponse> getInventoryByStore(
       @Parameter(description = "Store ID", required = true) @PathVariable Long storeId,
       @PageableDefault(size = 20) Pageable pageable) {
     Page<InventoryStockDto> stocks = inventoryStockService.getInventoryByStore(storeId, pageable);
-    return ResponseEntity.ok(stocks);
+    InventoryStockPageResponse response = new InventoryStockPageResponse();
+    response.setContent(stocks.getContent());
+    response.setTotalElements(stocks.getTotalElements());
+    response.setTotalPages(stocks.getTotalPages());
+    response.setNumber(stocks.getNumber());
+    response.setSize(stocks.getSize());
+    response.setFirst(stocks.isFirst());
+    response.setLast(stocks.isLast());
+    response.setEmpty(stocks.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/medicine/{medicineId}")
@@ -167,15 +188,24 @@ public class InventoryStockController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = Page.class))),
+                    schema = @Schema(implementation = InventoryStockPageResponse.class))),
         @ApiResponse(responseCode = "404", description = "Medicine not found")
       })
-  public ResponseEntity<Page<InventoryStockDto>> getInventoryByMedicine(
+  public ResponseEntity<InventoryStockPageResponse> getInventoryByMedicine(
       @Parameter(description = "Medicine ID", required = true) @PathVariable Long medicineId,
       @PageableDefault(size = 20) Pageable pageable) {
     Page<InventoryStockDto> stocks =
         inventoryStockService.getInventoryByMedicine(medicineId, pageable);
-    return ResponseEntity.ok(stocks);
+    InventoryStockPageResponse response = new InventoryStockPageResponse();
+    response.setContent(stocks.getContent());
+    response.setTotalElements(stocks.getTotalElements());
+    response.setTotalPages(stocks.getTotalPages());
+    response.setNumber(stocks.getNumber());
+    response.setSize(stocks.getSize());
+    response.setFirst(stocks.isFirst());
+    response.setLast(stocks.isLast());
+    response.setEmpty(stocks.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/store/{storeId}/low-stock")
@@ -191,14 +221,23 @@ public class InventoryStockController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = Page.class))),
+                    schema = @Schema(implementation = InventoryStockPageResponse.class))),
         @ApiResponse(responseCode = "404", description = "Store not found")
       })
-  public ResponseEntity<Page<InventoryStockDto>> getLowStockItems(
+  public ResponseEntity<InventoryStockPageResponse> getLowStockItems(
       @Parameter(description = "Store ID", required = true) @PathVariable Long storeId,
       @PageableDefault(size = 20) Pageable pageable) {
     Page<InventoryStockDto> stocks = inventoryStockService.getLowStockItems(storeId, pageable);
-    return ResponseEntity.ok(stocks);
+    InventoryStockPageResponse response = new InventoryStockPageResponse();
+    response.setContent(stocks.getContent());
+    response.setTotalElements(stocks.getTotalElements());
+    response.setTotalPages(stocks.getTotalPages());
+    response.setNumber(stocks.getNumber());
+    response.setSize(stocks.getSize());
+    response.setFirst(stocks.isFirst());
+    response.setLast(stocks.isLast());
+    response.setEmpty(stocks.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/store/{storeId}/expiring")
@@ -214,10 +253,10 @@ public class InventoryStockController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = Page.class))),
+                    schema = @Schema(implementation = InventoryStockPageResponse.class))),
         @ApiResponse(responseCode = "404", description = "Store not found")
       })
-  public ResponseEntity<Page<InventoryStockDto>> getExpiringStock(
+  public ResponseEntity<InventoryStockPageResponse> getExpiringStock(
       @Parameter(description = "Store ID", required = true) @PathVariable Long storeId,
       @Parameter(description = "Days ahead to check for expiry", example = "30")
           @RequestParam(defaultValue = "30")
@@ -225,7 +264,16 @@ public class InventoryStockController {
       @PageableDefault(size = 20) Pageable pageable) {
     Page<InventoryStockDto> stocks =
         inventoryStockService.getExpiringStock(storeId, daysAhead, pageable);
-    return ResponseEntity.ok(stocks);
+    InventoryStockPageResponse response = new InventoryStockPageResponse();
+    response.setContent(stocks.getContent());
+    response.setTotalElements(stocks.getTotalElements());
+    response.setTotalPages(stocks.getTotalPages());
+    response.setNumber(stocks.getNumber());
+    response.setSize(stocks.getSize());
+    response.setFirst(stocks.isFirst());
+    response.setLast(stocks.isLast());
+    response.setEmpty(stocks.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @DeleteMapping("/{id}")

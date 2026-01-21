@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.pharmacy.dto.PrescriptionDto;
+import com.pharmacy.dto.PrescriptionPageResponse;
 import com.pharmacy.service.PrescriptionService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -82,11 +83,22 @@ public class PrescriptionController {
       responseCode = "200",
       description = "Successfully retrieved prescriptions",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
-  public ResponseEntity<Page<PrescriptionDto>> getAllPrescriptions(
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = PrescriptionPageResponse.class)))
+  public ResponseEntity<PrescriptionPageResponse> getAllPrescriptions(
       @PageableDefault(size = 20) Pageable pageable) {
     Page<PrescriptionDto> prescriptions = prescriptionService.getAllPrescriptions(pageable);
-    return ResponseEntity.ok(prescriptions);
+    PrescriptionPageResponse response = new PrescriptionPageResponse();
+    response.setContent(prescriptions.getContent());
+    response.setTotalElements(prescriptions.getTotalElements());
+    response.setTotalPages(prescriptions.getTotalPages());
+    response.setNumber(prescriptions.getNumber());
+    response.setSize(prescriptions.getSize());
+    response.setFirst(prescriptions.isFirst());
+    response.setLast(prescriptions.isLast());
+    response.setEmpty(prescriptions.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/customer/{customerId}")
@@ -101,15 +113,24 @@ public class PrescriptionController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = Page.class))),
+                    schema = @Schema(implementation = PrescriptionPageResponse.class))),
         @ApiResponse(responseCode = "404", description = "Customer not found")
       })
-  public ResponseEntity<Page<PrescriptionDto>> getPrescriptionsByCustomer(
+  public ResponseEntity<PrescriptionPageResponse> getPrescriptionsByCustomer(
       @Parameter(description = "Customer ID", required = true) @PathVariable Long customerId,
       @PageableDefault(size = 20) Pageable pageable) {
     Page<PrescriptionDto> prescriptions =
         prescriptionService.getPrescriptionsByCustomer(customerId, pageable);
-    return ResponseEntity.ok(prescriptions);
+    PrescriptionPageResponse response = new PrescriptionPageResponse();
+    response.setContent(prescriptions.getContent());
+    response.setTotalElements(prescriptions.getTotalElements());
+    response.setTotalPages(prescriptions.getTotalPages());
+    response.setNumber(prescriptions.getNumber());
+    response.setSize(prescriptions.getSize());
+    response.setFirst(prescriptions.isFirst());
+    response.setLast(prescriptions.isLast());
+    response.setEmpty(prescriptions.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/status/{status}")
@@ -121,13 +142,24 @@ public class PrescriptionController {
       responseCode = "200",
       description = "Successfully retrieved prescriptions",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
-  public ResponseEntity<Page<PrescriptionDto>> getPrescriptionsByStatus(
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = PrescriptionPageResponse.class)))
+  public ResponseEntity<PrescriptionPageResponse> getPrescriptionsByStatus(
       @Parameter(description = "Prescription status", required = true) @PathVariable String status,
       @PageableDefault(size = 20) Pageable pageable) {
     Page<PrescriptionDto> prescriptions =
         prescriptionService.getPrescriptionsByStatus(status, pageable);
-    return ResponseEntity.ok(prescriptions);
+    PrescriptionPageResponse response = new PrescriptionPageResponse();
+    response.setContent(prescriptions.getContent());
+    response.setTotalElements(prescriptions.getTotalElements());
+    response.setTotalPages(prescriptions.getTotalPages());
+    response.setNumber(prescriptions.getNumber());
+    response.setSize(prescriptions.getSize());
+    response.setFirst(prescriptions.isFirst());
+    response.setLast(prescriptions.isLast());
+    response.setEmpty(prescriptions.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @PutMapping("/{id}/status")

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.pharmacy.dto.IngredientStockDto;
+import com.pharmacy.dto.IngredientStockPageResponse;
 import com.pharmacy.service.IngredientStockService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -127,11 +128,22 @@ public class IngredientStockController {
       responseCode = "200",
       description = "Successfully retrieved ingredient stock",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
-  public ResponseEntity<Page<IngredientStockDto>> getAllIngredientStock(
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = IngredientStockPageResponse.class)))
+  public ResponseEntity<IngredientStockPageResponse> getAllIngredientStock(
       @PageableDefault(size = 20) Pageable pageable) {
     Page<IngredientStockDto> stocks = ingredientStockService.getAllIngredientStock(pageable);
-    return ResponseEntity.ok(stocks);
+    IngredientStockPageResponse response = new IngredientStockPageResponse();
+    response.setContent(stocks.getContent());
+    response.setTotalElements(stocks.getTotalElements());
+    response.setTotalPages(stocks.getTotalPages());
+    response.setNumber(stocks.getNumber());
+    response.setSize(stocks.getSize());
+    response.setFirst(stocks.isFirst());
+    response.setLast(stocks.isLast());
+    response.setEmpty(stocks.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/store/{storeId}")
@@ -146,15 +158,24 @@ public class IngredientStockController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = Page.class))),
+                    schema = @Schema(implementation = IngredientStockPageResponse.class))),
         @ApiResponse(responseCode = "404", description = "Store not found")
       })
-  public ResponseEntity<Page<IngredientStockDto>> getIngredientStockByStore(
+  public ResponseEntity<IngredientStockPageResponse> getIngredientStockByStore(
       @Parameter(description = "Store ID", required = true) @PathVariable Long storeId,
       @PageableDefault(size = 20) Pageable pageable) {
     Page<IngredientStockDto> stocks =
         ingredientStockService.getIngredientStockByStore(storeId, pageable);
-    return ResponseEntity.ok(stocks);
+    IngredientStockPageResponse response = new IngredientStockPageResponse();
+    response.setContent(stocks.getContent());
+    response.setTotalElements(stocks.getTotalElements());
+    response.setTotalPages(stocks.getTotalPages());
+    response.setNumber(stocks.getNumber());
+    response.setSize(stocks.getSize());
+    response.setFirst(stocks.isFirst());
+    response.setLast(stocks.isLast());
+    response.setEmpty(stocks.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/ingredient/{ingredientId}")
@@ -170,15 +191,24 @@ public class IngredientStockController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = Page.class))),
+                    schema = @Schema(implementation = IngredientStockPageResponse.class))),
         @ApiResponse(responseCode = "404", description = "Ingredient not found")
       })
-  public ResponseEntity<Page<IngredientStockDto>> getIngredientStockByIngredient(
+  public ResponseEntity<IngredientStockPageResponse> getIngredientStockByIngredient(
       @Parameter(description = "Ingredient ID", required = true) @PathVariable Long ingredientId,
       @PageableDefault(size = 20) Pageable pageable) {
     Page<IngredientStockDto> stocks =
         ingredientStockService.getIngredientStockByIngredient(ingredientId, pageable);
-    return ResponseEntity.ok(stocks);
+    IngredientStockPageResponse response = new IngredientStockPageResponse();
+    response.setContent(stocks.getContent());
+    response.setTotalElements(stocks.getTotalElements());
+    response.setTotalPages(stocks.getTotalPages());
+    response.setNumber(stocks.getNumber());
+    response.setSize(stocks.getSize());
+    response.setFirst(stocks.isFirst());
+    response.setLast(stocks.isLast());
+    response.setEmpty(stocks.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/store/{storeId}/ingredient/{ingredientId}/total")
