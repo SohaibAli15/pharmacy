@@ -64,20 +64,6 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Swagger/OpenAPI (OPTIONAL - disable in production) -->
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.3.0</version>
-            <optional>true</optional>  <!-- Not included in Railway build -->
-        </dependency>
-
-        <!-- Actuator (minimal for health check only) -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
