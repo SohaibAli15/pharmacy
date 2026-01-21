@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -177,7 +179,7 @@ public class RecipeService {
                     ri.setIngredient(ingredient);
 
                     ri.setQuantityRequired(riDto.getQuantityRequired());
-                    ri.setUnit(riDto.getUnit() != null ? riDto.getUnit() : ingredient.getUnit());
+                    ri.setUnit(ri.getUnit() != null ? riDto.getUnit() : ingredient.getUnit());
                     ri.setWastagePercent(
                         riDto.getWastagePercent() != null
                             ? riDto.getWastagePercent()
@@ -335,55 +337,122 @@ public class RecipeService {
         .collect(Collectors.toList());
   }
 
-  public RecipeDto copyRecipe(Long recipeId, String newRecipeCode, String newName) {
-    Recipe original =
+  // Pageable methods
+  public Page<RecipeDto> searchByName(String name, Pageable pageable) {
+    return recipeRepository.findByNameContainingIgnoreCase(name, pageable).map(this::toDto);
+  }
+
+  public Page<RecipeDto> listAll(Pageable pageable) {
+    return recipeRepository.findAll(pageable).map(this::toDto);
+  }
+
+  public Page<RecipeDto> listAllActive(Pageable pageable) {
+    return recipeRepository.findAllActiveRecipes(pageable).map(this::toDto);
+  }
+
+  public Page<RecipeDto> searchRecipes(
+      String category,
+      String subCategory,
+      String status,
+      Long productId,
+      String searchTerm,
+      Pageable pageable) {
+    return recipeRepository
+        .searchRecipes(category, subCategory, status, productId, searchTerm, pageable)
+        .map(this::toDto);
+  }
+
+  public Page<RecipeDto> findByCategory(String category, Pageable pageable) {
+    return recipeRepository.findByCategory(category, pageable).map(this::toDto);
+  }
+
+  public Page<RecipeDto> findByProduct(Long productId, Pageable pageable) {
+    return recipeRepository.findByProductId(productId, pageable).map(this::toDto);
+  }
+
+  /**
+   * Create a copy of an existing recipe with a new recipe code and optional new name. The
+   * ingredients are deep-copied (ingredient references are preserved), costs are recalculated, and
+   * the new recipe is saved as a draft.
+   */
+  public RecipeDto copyRecipe(Long id, String newRecipeCode, String newName) {
+    Recipe existing =
         recipeRepository
-            .findById(recipeId)
-            .orElseThrow(() -> new RuntimeException("Recipe not found: " + recipeId));
+            .findById(id)
+            .orElseThrow(() -> new RuntimeException("Recipe not found: " + id));
+
+    if (newRecipeCode == null || newRecipeCode.trim().isEmpty()) {
+      throw new RuntimeException("New recipe code must be provided");
+    }
+
+    if (recipeRepository.findByRecipeCode(newRecipeCode).isPresent()) {
+      throw new RuntimeException("Recipe code already exists: " + newRecipeCode);
+    }
 
     Recipe copy = new Recipe();
+    // Basic metadata
     copy.setRecipeCode(newRecipeCode);
-    copy.setName(newName != null ? newName : original.getName() + " (Copy)");
-    copy.setDescription(original.getDescription());
-    copy.setCategory(original.getCategory());
-    copy.setSubCategory(original.getSubCategory());
-    copy.setProduct(original.getProduct());
-    copy.setOutputQuantity(original.getOutputQuantity());
-    copy.setOutputUnit(original.getOutputUnit());
-    copy.setFixedProductionCost(original.getFixedProductionCost());
-    copy.setVariableProductionCost(original.getVariableProductionCost());
-    copy.setWastagePercent(original.getWastagePercent());
-    copy.setInstructions(original.getInstructions());
+    copy.setName(
+        newName != null && !newName.trim().isEmpty() ? newName : existing.getName() + " (Copy)");
+    copy.setDescription(existing.getDescription());
+    copy.setCategory(existing.getCategory());
+    copy.setSubCategory(existing.getSubCategory());
+
+    // Product link (reuse existing product reference)
+    copy.setProduct(existing.getProduct());
+
+    // Output and cost defaults
+    copy.setOutputQuantity(existing.getOutputQuantity());
+    copy.setOutputUnit(existing.getOutputUnit());
+    copy.setFixedProductionCost(existing.getFixedProductionCost());
+    copy.setVariableProductionCost(existing.getVariableProductionCost());
+    copy.setTotalIngredientCost(existing.getTotalIngredientCost());
+    copy.setTotalCost(existing.getTotalCost());
+    copy.setUnitPrice(existing.getUnitPrice());
+    copy.setWastagePercent(existing.getWastagePercent());
+
+    // Instructions and status
+    copy.setInstructions(existing.getInstructions());
     copy.setStatus("DRAFT");
-    copy.setIsActive(true);
+    copy.setIsActive(existing.getIsActive());
 
-    Recipe savedCopy = recipeRepository.save(copy);
+    // Audit fields
+    copy.setCreatedAt(LocalDateTime.now());
+    copy.setUpdatedAt(LocalDateTime.now());
+    copy.setCreatedBy(existing.getCreatedBy());
+    copy.setUpdatedBy(existing.getUpdatedBy());
 
-    // Copy ingredients
-    if (original.getIngredients() != null) {
-      final Recipe finalSavedCopy = savedCopy;
-      List<RecipeIngredient> copiedIngredients =
-          original.getIngredients().stream()
+    // Save first to obtain an ID for child ingredients
+    Recipe saved = recipeRepository.save(copy);
+
+    // Deep copy ingredients (preserve Ingredient entity references)
+    if (existing.getIngredients() != null && !existing.getIngredients().isEmpty()) {
+      final Recipe finalSaved = saved;
+      List<RecipeIngredient> ingredients =
+          existing.getIngredients().stream()
               .map(
                   ri -> {
-                    RecipeIngredient newRi = new RecipeIngredient();
-                    newRi.setRecipe(finalSavedCopy);
-                    newRi.setIngredient(ri.getIngredient());
-                    newRi.setQuantityRequired(ri.getQuantityRequired());
-                    newRi.setUnit(ri.getUnit());
-                    newRi.setWastagePercent(ri.getWastagePercent());
-                    newRi.setCostPerUnit(ri.getCostPerUnit());
-                    newRi.setSortOrder(ri.getSortOrder());
-                    return newRi;
+                    RecipeIngredient nri = new RecipeIngredient();
+                    nri.setRecipe(finalSaved);
+                    nri.setIngredient(ri.getIngredient());
+                    nri.setQuantityRequired(ri.getQuantityRequired());
+                    nri.setUnit(ri.getUnit());
+                    nri.setWastagePercent(ri.getWastagePercent());
+                    nri.setCostPerUnit(ri.getCostPerUnit());
+                    nri.setSortOrder(ri.getSortOrder());
+                    return nri;
                   })
               .collect(Collectors.toList());
 
-      savedCopy.setIngredients(copiedIngredients);
-      calculateRecipeCosts(savedCopy);
-      savedCopy = recipeRepository.save(savedCopy);
+      saved.setIngredients(ingredients);
+
+      // Recalculate costs for the copied recipe
+      calculateRecipeCosts(saved);
+
+      saved = recipeRepository.save(saved);
     }
 
-    return toDto(savedCopy);
+    return toDto(saved);
   }
 
   /**

@@ -4,6 +4,9 @@ package com.pharmacy.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -94,40 +97,60 @@ public class SaleController {
   }
 
   @GetMapping
-  @Operation(summary = "Get all sales", description = "Retrieve all sales transactions")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved all sales")
-  public ResponseEntity<List<SaleDto>> getAllSales() {
-    List<SaleDto> sales = saleService.getAllSales();
+  @Operation(
+      summary = "Get all sales",
+      description = "Retrieve all sales transactions with pagination")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved sales",
+      content =
+          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
+  public ResponseEntity<Page<SaleDto>> getAllSales(@PageableDefault(size = 20) Pageable pageable) {
+    Page<SaleDto> sales = saleService.getAllSales(pageable);
     return ResponseEntity.ok(sales);
   }
 
   @GetMapping("/store/{storeId}")
   @Operation(
       summary = "Get sales by store",
-      description = "Retrieve all sales for a specific store")
+      description = "Retrieve all sales for a specific store with pagination")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Successfully retrieved sales"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved sales",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Page.class))),
         @ApiResponse(responseCode = "404", description = "Store not found")
       })
-  public ResponseEntity<List<SaleDto>> getSalesByStore(
-      @Parameter(description = "Store ID", required = true) @PathVariable Long storeId) {
-    List<SaleDto> sales = saleService.getSalesByStore(storeId);
+  public ResponseEntity<Page<SaleDto>> getSalesByStore(
+      @Parameter(description = "Store ID", required = true) @PathVariable Long storeId,
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<SaleDto> sales = saleService.getSalesByStore(storeId, pageable);
     return ResponseEntity.ok(sales);
   }
 
   @GetMapping("/customer/{customerId}")
   @Operation(
       summary = "Get sales by customer",
-      description = "Retrieve all sales for a specific customer")
+      description = "Retrieve all sales for a specific customer with pagination")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Successfully retrieved sales"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved sales",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Page.class))),
         @ApiResponse(responseCode = "404", description = "Customer not found")
       })
-  public ResponseEntity<List<SaleDto>> getSalesByCustomer(
-      @Parameter(description = "Customer ID", required = true) @PathVariable Long customerId) {
-    List<SaleDto> sales = saleService.getSalesByCustomer(customerId);
+  public ResponseEntity<Page<SaleDto>> getSalesByCustomer(
+      @Parameter(description = "Customer ID", required = true) @PathVariable Long customerId,
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<SaleDto> sales = saleService.getSalesByCustomer(customerId, pageable);
     return ResponseEntity.ok(sales);
   }
 
@@ -156,12 +179,17 @@ public class SaleController {
   @GetMapping("/status/{status}")
   @Operation(
       summary = "Get sales by status",
-      description = "Retrieve sales filtered by status (COMPLETED, CANCELLED, RETURNED)")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved sales")
-  public ResponseEntity<List<SaleDto>> getSalesByStatus(
-      @Parameter(description = "Sale status", required = true) @PathVariable
-          Sale.SaleStatus status) {
-    List<SaleDto> sales = saleService.getSalesByStatus(status);
+      description =
+          "Retrieve sales filtered by status (COMPLETED, CANCELLED, RETURNED) with pagination")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved sales",
+      content =
+          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
+  public ResponseEntity<Page<SaleDto>> getSalesByStatus(
+      @Parameter(description = "Sale status", required = true) @PathVariable Sale.SaleStatus status,
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<SaleDto> sales = saleService.getSalesByStatus(status, pageable);
     return ResponseEntity.ok(sales);
   }
 

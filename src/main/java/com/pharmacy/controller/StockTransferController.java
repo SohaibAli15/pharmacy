@@ -3,6 +3,9 @@ package com.pharmacy.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -68,17 +71,19 @@ public class StockTransferController {
   }
 
   @GetMapping
-  @Operation(summary = "Get all stock transfers")
-  public ResponseEntity<List<StockTransferDto>> getAllStockTransfers() {
-    List<StockTransferDto> transfers = stockTransferService.getAllStockTransfers();
+  @Operation(summary = "Get all stock transfers with pagination")
+  public ResponseEntity<Page<StockTransferDto>> getAllStockTransfers(
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<StockTransferDto> transfers = stockTransferService.getAllStockTransfers(pageable);
     return ResponseEntity.ok(transfers);
   }
 
   @GetMapping("/store/{storeId}")
-  @Operation(summary = "Get stock transfers for a specific store")
-  public ResponseEntity<List<StockTransferDto>> getStockTransfersByStore(
-      @PathVariable Long storeId) {
-    List<StockTransferDto> transfers = stockTransferService.getStockTransfersByStore(storeId);
+  @Operation(summary = "Get stock transfers for a specific store with pagination")
+  public ResponseEntity<Page<StockTransferDto>> getStockTransfersByStore(
+      @PathVariable Long storeId, @PageableDefault(size = 20) Pageable pageable) {
+    Page<StockTransferDto> transfers =
+        stockTransferService.getStockTransfersByStore(storeId, pageable);
     return ResponseEntity.ok(transfers);
   }
 }

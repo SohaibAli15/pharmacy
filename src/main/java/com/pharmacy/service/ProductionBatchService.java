@@ -7,6 +7,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -294,16 +297,37 @@ public class ProductionBatchService {
         .collect(Collectors.toList());
   }
 
+  // Paged version
+  public Page<ProductionBatchDto> listAll(Pageable pageable) {
+    Page<ProductionBatch> page = productionBatchRepository.findAll(pageable);
+    List<ProductionBatchDto> dtos = page.stream().map(this::toDto).collect(Collectors.toList());
+    return new PageImpl<>(dtos, pageable, page.getTotalElements());
+  }
+
   public List<ProductionBatchDto> getByRecipe(Long recipeId) {
     return productionBatchRepository.findByRecipeId(recipeId).stream()
         .map(this::toDto)
         .collect(Collectors.toList());
   }
 
+  // Paged version
+  public Page<ProductionBatchDto> getByRecipe(Long recipeId, Pageable pageable) {
+    Page<ProductionBatch> page = productionBatchRepository.findByRecipeId(recipeId, pageable);
+    List<ProductionBatchDto> dtos = page.stream().map(this::toDto).collect(Collectors.toList());
+    return new PageImpl<>(dtos, pageable, page.getTotalElements());
+  }
+
   public List<ProductionBatchDto> getByStatus(String status) {
     return productionBatchRepository.findByStatus(status).stream()
         .map(this::toDto)
         .collect(Collectors.toList());
+  }
+
+  // Paged version
+  public Page<ProductionBatchDto> getByStatus(String status, Pageable pageable) {
+    Page<ProductionBatch> page = productionBatchRepository.findByStatus(status, pageable);
+    List<ProductionBatchDto> dtos = page.stream().map(this::toDto).collect(Collectors.toList());
+    return new PageImpl<>(dtos, pageable, page.getTotalElements());
   }
 
   public List<ProductionBatchDto> searchProductionBatches(
@@ -320,6 +344,30 @@ public class ProductionBatchService {
         .stream()
         .map(this::toDto)
         .collect(Collectors.toList());
+  }
+
+  // Paged version
+  public Page<ProductionBatchDto> searchProductionBatches(
+      String businessLocation,
+      String status,
+      Boolean isFinalized,
+      Long recipeId,
+      Long productId,
+      LocalDateTime startDate,
+      LocalDateTime endDate,
+      Pageable pageable) {
+    Page<ProductionBatch> page =
+        productionBatchRepository.searchProductionBatches(
+            businessLocation,
+            status,
+            isFinalized,
+            recipeId,
+            productId,
+            startDate,
+            endDate,
+            pageable);
+    List<ProductionBatchDto> dtos = page.stream().map(this::toDto).collect(Collectors.toList());
+    return new PageImpl<>(dtos, pageable, page.getTotalElements());
   }
 
   public List<String> getAllBusinessLocations() {

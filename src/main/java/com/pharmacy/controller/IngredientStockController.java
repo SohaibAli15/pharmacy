@@ -2,8 +2,10 @@
 package com.pharmacy.controller;
 
 import java.math.BigDecimal;
-import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -120,41 +122,62 @@ public class IngredientStockController {
   @GetMapping
   @Operation(
       summary = "Get all ingredient stock",
-      description = "Retrieve all ingredient stock entries across all stores")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved all ingredient stock")
-  public ResponseEntity<List<IngredientStockDto>> getAllIngredientStock() {
-    List<IngredientStockDto> stocks = ingredientStockService.getAllIngredientStock();
+      description = "Retrieve all ingredient stock entries across all stores with pagination")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved ingredient stock",
+      content =
+          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
+  public ResponseEntity<Page<IngredientStockDto>> getAllIngredientStock(
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<IngredientStockDto> stocks = ingredientStockService.getAllIngredientStock(pageable);
     return ResponseEntity.ok(stocks);
   }
 
   @GetMapping("/store/{storeId}")
   @Operation(
       summary = "Get ingredient stock by store",
-      description = "Retrieve all ingredient stock for a specific store")
+      description = "Retrieve all ingredient stock for a specific store with pagination")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Successfully retrieved ingredient stock"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved ingredient stock",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Page.class))),
         @ApiResponse(responseCode = "404", description = "Store not found")
       })
-  public ResponseEntity<List<IngredientStockDto>> getIngredientStockByStore(
-      @Parameter(description = "Store ID", required = true) @PathVariable Long storeId) {
-    List<IngredientStockDto> stocks = ingredientStockService.getIngredientStockByStore(storeId);
+  public ResponseEntity<Page<IngredientStockDto>> getIngredientStockByStore(
+      @Parameter(description = "Store ID", required = true) @PathVariable Long storeId,
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<IngredientStockDto> stocks =
+        ingredientStockService.getIngredientStockByStore(storeId, pageable);
     return ResponseEntity.ok(stocks);
   }
 
   @GetMapping("/ingredient/{ingredientId}")
   @Operation(
       summary = "Get ingredient stock by ingredient",
-      description = "Retrieve all stock entries for a specific ingredient across all stores")
+      description =
+          "Retrieve all stock entries for a specific ingredient across all stores with pagination")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Successfully retrieved ingredient stock"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved ingredient stock",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Page.class))),
         @ApiResponse(responseCode = "404", description = "Ingredient not found")
       })
-  public ResponseEntity<List<IngredientStockDto>> getIngredientStockByIngredient(
-      @Parameter(description = "Ingredient ID", required = true) @PathVariable Long ingredientId) {
-    List<IngredientStockDto> stocks =
-        ingredientStockService.getIngredientStockByIngredient(ingredientId);
+  public ResponseEntity<Page<IngredientStockDto>> getIngredientStockByIngredient(
+      @Parameter(description = "Ingredient ID", required = true) @PathVariable Long ingredientId,
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<IngredientStockDto> stocks =
+        ingredientStockService.getIngredientStockByIngredient(ingredientId, pageable);
     return ResponseEntity.ok(stocks);
   }
 

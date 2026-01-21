@@ -8,6 +8,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -206,28 +208,23 @@ public class PurchaseOrderService {
   }
 
   @Transactional(readOnly = true)
-  public List<PurchaseOrderDto> getAllPurchaseOrders() {
-    return purchaseOrderRepository.findAll().stream()
-        .map(this::mapToDto)
-        .collect(Collectors.toList());
+  public Page<PurchaseOrderDto> getAllPurchaseOrders(Pageable pageable) {
+    return purchaseOrderRepository.findAll(pageable).map(this::mapToDto);
   }
 
   @Transactional(readOnly = true)
-  public List<PurchaseOrderDto> getPurchaseOrdersByStatus(PurchaseOrder.OrderStatus status) {
-    return purchaseOrderRepository.findByStatus(status).stream()
-        .map(this::mapToDto)
-        .collect(Collectors.toList());
+  public Page<PurchaseOrderDto> getPurchaseOrdersByStatus(
+      PurchaseOrder.OrderStatus status, Pageable pageable) {
+    return purchaseOrderRepository.findByStatus(status, pageable).map(this::mapToDto);
   }
 
   @Transactional(readOnly = true)
-  public List<PurchaseOrderDto> getPurchaseOrdersBySupplier(Long supplierId) {
+  public Page<PurchaseOrderDto> getPurchaseOrdersBySupplier(Long supplierId, Pageable pageable) {
     Supplier supplier =
         supplierRepository
             .findById(supplierId)
             .orElseThrow(() -> new RuntimeException("Supplier not found"));
-    return purchaseOrderRepository.findBySupplier(supplier).stream()
-        .map(this::mapToDto)
-        .collect(Collectors.toList());
+    return purchaseOrderRepository.findBySupplier(supplier, pageable).map(this::mapToDto);
   }
 
   private String generateOrderNumber() {

@@ -1,8 +1,9 @@
 /* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -100,22 +101,34 @@ public class StoreController {
   }
 
   @GetMapping
-  @Operation(summary = "Get all stores", description = "Retrieve all registered stores")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved all stores")
-  public ResponseEntity<List<StoreDto>> getAllStores() {
-    List<StoreDto> stores = storeService.getAllStores();
+  @Operation(
+      summary = "Get all stores",
+      description = "Retrieve all registered stores with pagination")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved stores",
+      content =
+          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
+  public ResponseEntity<Page<StoreDto>> getAllStores(
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<StoreDto> stores = storeService.getAllStores(pageable);
     return ResponseEntity.ok(stores);
   }
 
   @GetMapping("/status/{status}")
   @Operation(
       summary = "Get stores by status",
-      description = "Retrieve stores filtered by status (ACTIVE, INACTIVE, CLOSED)")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved stores")
-  public ResponseEntity<List<StoreDto>> getStoresByStatus(
+      description = "Retrieve stores filtered by status (ACTIVE, INACTIVE, CLOSED) with pagination")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved stores",
+      content =
+          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
+  public ResponseEntity<Page<StoreDto>> getStoresByStatus(
       @Parameter(description = "Store status", required = true) @PathVariable
-          Store.StoreStatus status) {
-    List<StoreDto> stores = storeService.getStoresByStatus(status);
+          Store.StoreStatus status,
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<StoreDto> stores = storeService.getStoresByStatus(status, pageable);
     return ResponseEntity.ok(stores);
   }
 
@@ -124,11 +137,16 @@ public class StoreController {
       summary = "Get stores by type",
       description =
           "Retrieve stores filtered by type (WAREHOUSE, MANUFACTURING_UNIT, RETAIL_STORE,"
-              + " DISTRIBUTION_CENTER)")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved stores")
-  public ResponseEntity<List<StoreDto>> getStoresByType(
-      @Parameter(description = "Store type", required = true) @PathVariable Store.StoreType type) {
-    List<StoreDto> stores = storeService.getStoresByType(type);
+              + " DISTRIBUTION_CENTER) with pagination")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved stores",
+      content =
+          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
+  public ResponseEntity<Page<StoreDto>> getStoresByType(
+      @Parameter(description = "Store type", required = true) @PathVariable Store.StoreType type,
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<StoreDto> stores = storeService.getStoresByType(type, pageable);
     return ResponseEntity.ok(stores);
   }
 

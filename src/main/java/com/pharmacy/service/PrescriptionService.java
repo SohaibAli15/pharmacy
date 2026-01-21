@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,28 +81,41 @@ public class PrescriptionService {
   }
 
   @Transactional(readOnly = true)
-  public List<PrescriptionDto> getAllPrescriptions() {
-    return prescriptionRepository.findAll().stream()
-        .map(this::mapToDto)
-        .collect(Collectors.toList());
+  public Page<PrescriptionDto> getAllPrescriptions(Pageable pageable) {
+    return prescriptionRepository.findAll(pageable).map(this::mapToDto);
   }
 
   @Transactional(readOnly = true)
-  public List<PrescriptionDto> getPrescriptionsByCustomer(Long customerId) {
+  public Page<PrescriptionDto> getPrescriptionsByCustomer(Long customerId, Pageable pageable) {
     User customer =
         userRepository
             .findById(customerId)
             .orElseThrow(() -> new RuntimeException("Customer not found"));
-    return prescriptionRepository.findByCustomer(customer).stream()
-        .map(this::mapToDto)
-        .collect(Collectors.toList());
+    return prescriptionRepository.findByCustomer(customer, pageable).map(this::mapToDto);
+  }
+
+  @Transactional(readOnly = true)
+  public Page<PrescriptionDto> getPrescriptionsByStatus(String status, Pageable pageable) {
+    return prescriptionRepository.findByStatus(status, pageable).map(this::mapToDto);
+  }
+
+  // Backwards compatible list methods
+  @Transactional(readOnly = true)
+  public List<PrescriptionDto> getAllPrescriptions() {
+    return getAllPrescriptions(org.springframework.data.domain.PageRequest.of(0, 20)).getContent();
+  }
+
+  @Transactional(readOnly = true)
+  public List<PrescriptionDto> getPrescriptionsByCustomer(Long customerId) {
+    return getPrescriptionsByCustomer(
+            customerId, org.springframework.data.domain.PageRequest.of(0, 20))
+        .getContent();
   }
 
   @Transactional(readOnly = true)
   public List<PrescriptionDto> getPrescriptionsByStatus(String status) {
-    return prescriptionRepository.findByStatus(status).stream()
-        .map(this::mapToDto)
-        .collect(Collectors.toList());
+    return getPrescriptionsByStatus(status, org.springframework.data.domain.PageRequest.of(0, 20))
+        .getContent();
   }
 
   @Transactional
@@ -116,6 +131,9 @@ public class PrescriptionService {
 
   @Transactional
   public void deletePrescription(Long id) {
+    if (!prescriptionRepository.existsById(id)) {
+      throw new RuntimeException("Prescription not found");
+    }
     prescriptionRepository.deleteById(id);
   }
 

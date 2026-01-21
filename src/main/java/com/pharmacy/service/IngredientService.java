@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,10 +81,6 @@ public class IngredientService {
     return ingredientRepository.findById(id).map(this::toDto).orElse(null);
   }
 
-  public List<IngredientDto> listAll() {
-    return ingredientRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
-  }
-
   public List<IngredientDto> getLowStockIngredients() {
     return ingredientRepository.findAll().stream()
         .filter(i -> i.getCurrentStock().compareTo(i.getThresholdLow()) < 0)
@@ -95,5 +93,9 @@ public class IngredientService {
         .filter(i -> i.getCurrentStock().compareTo(i.getThresholdHigh()) > 0)
         .map(this::toDto)
         .collect(Collectors.toList());
+  }
+
+  public Page<IngredientDto> listAll(Pageable pageable) {
+    return ingredientRepository.findAll(pageable).map(this::toDto);
   }
 }

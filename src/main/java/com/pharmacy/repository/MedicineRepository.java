@@ -1,8 +1,8 @@
 /* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.repository;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,7 +10,7 @@ import com.pharmacy.entity.Medicine;
 
 @Repository
 public interface MedicineRepository extends JpaRepository<Medicine, Long> {
-  List<Medicine> findByNameContainingIgnoreCase(String name);
+  Page<Medicine> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
-  List<Medicine> findByCategory(String category);
+  Page<Medicine> findByCategory(String category, Pageable pageable);
 }

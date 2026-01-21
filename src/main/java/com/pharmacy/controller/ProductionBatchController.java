@@ -8,6 +8,9 @@ import java.util.Map;
 
 import jakarta.validation.Valid;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +42,7 @@ public class ProductionBatchController {
 
   @Operation(
       summary = "Get all production batches",
-      description = "Retrieve all production batches with complete details")
+      description = "Retrieve all production batches in the system with pagination")
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -48,19 +51,20 @@ public class ProductionBatchController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    array =
-                        @ArraySchema(schema = @Schema(implementation = ProductionBatchDto.class))))
+                    schema = @Schema(implementation = Page.class)))
       })
   @GetMapping
-  public ResponseEntity<List<ProductionBatchDto>> getAllProductionBatches() {
-    List<ProductionBatchDto> batches = productionBatchService.listAll();
+  public ResponseEntity<Page<ProductionBatchDto>> getAllProductionBatches(
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<ProductionBatchDto> batches = productionBatchService.listAll(pageable);
     return ResponseEntity.ok(batches);
   }
 
+  @GetMapping("/search")
   @Operation(
       summary = "Search production batches",
       description =
-          "Search production batches with multiple filter criteria including location, date range, and status")
+          "Search production batches with multiple filter criteria including location, date range, and status with pagination")
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -69,11 +73,9 @@ public class ProductionBatchController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    array =
-                        @ArraySchema(schema = @Schema(implementation = ProductionBatchDto.class))))
+                    schema = @Schema(implementation = Page.class)))
       })
-  @GetMapping("/search")
-  public ResponseEntity<List<ProductionBatchDto>> searchProductionBatches(
+  public ResponseEntity<Page<ProductionBatchDto>> searchProductionBatches(
       @Parameter(description = "Filter by business location", example = "Butt Brothers")
           @RequestParam(required = false)
           String businessLocation,
@@ -96,16 +98,18 @@ public class ProductionBatchController {
               example = "2026-12-31T23:59:59")
           @RequestParam(required = false)
           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-          LocalDateTime endDate) {
-    List<ProductionBatchDto> batches =
+          LocalDateTime endDate,
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<ProductionBatchDto> batches =
         productionBatchService.searchProductionBatches(
-            businessLocation, status, finalized, recipeId, productId, startDate, endDate);
+            businessLocation, status, finalized, recipeId, productId, startDate, endDate, pageable);
     return ResponseEntity.ok(batches);
   }
 
+  @GetMapping("/recipe/{recipeId}")
   @Operation(
       summary = "Get production batches by recipe",
-      description = "Retrieve all production batches for a specific recipe")
+      description = "Retrieve all production batches for a specific recipe with pagination")
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -114,19 +118,18 @@ public class ProductionBatchController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    array =
-                        @ArraySchema(schema = @Schema(implementation = ProductionBatchDto.class))))
+                    schema = @Schema(implementation = Page.class)))
       })
-  @GetMapping("/recipe/{recipeId}")
-  public ResponseEntity<List<ProductionBatchDto>> getProductionBatchesByRecipe(
-      @Parameter(description = "Recipe ID") @PathVariable Long recipeId) {
-    List<ProductionBatchDto> batches = productionBatchService.getByRecipe(recipeId);
+  public ResponseEntity<Page<ProductionBatchDto>> getProductionBatchesByRecipe(
+      @Parameter(description = "Recipe ID") @PathVariable Long recipeId,
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<ProductionBatchDto> batches = productionBatchService.getByRecipe(recipeId, pageable);
     return ResponseEntity.ok(batches);
   }
 
   @Operation(
       summary = "Get production batches by status",
-      description = "Retrieve all production batches with a specific status")
+      description = "Retrieve all production batches with a specific status with pagination")
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -135,13 +138,13 @@ public class ProductionBatchController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    array =
-                        @ArraySchema(schema = @Schema(implementation = ProductionBatchDto.class))))
+                    schema = @Schema(implementation = Page.class)))
       })
   @GetMapping("/status/{status}")
-  public ResponseEntity<List<ProductionBatchDto>> getProductionBatchesByStatus(
-      @Parameter(description = "Status value", example = "COMPLETED") @PathVariable String status) {
-    List<ProductionBatchDto> batches = productionBatchService.getByStatus(status);
+  public ResponseEntity<Page<ProductionBatchDto>> getProductionBatchesByStatus(
+      @Parameter(description = "Status value", example = "COMPLETED") @PathVariable String status,
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<ProductionBatchDto> batches = productionBatchService.getByStatus(status, pageable);
     return ResponseEntity.ok(batches);
   }
 

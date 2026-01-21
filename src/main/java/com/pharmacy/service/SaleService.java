@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -150,30 +152,26 @@ public class SaleService {
   }
 
   @Transactional(readOnly = true)
-  public List<SaleDto> getAllSales() {
-    return saleRepository.findAll().stream().map(this::mapToDto).collect(Collectors.toList());
+  public Page<SaleDto> getAllSales(Pageable pageable) {
+    return saleRepository.findAll(pageable).map(this::mapToDto);
   }
 
   @Transactional(readOnly = true)
-  public List<SaleDto> getSalesByStore(Long storeId) {
+  public Page<SaleDto> getSalesByStore(Long storeId, Pageable pageable) {
     Store store =
         storeRepository
             .findById(storeId)
             .orElseThrow(() -> new RuntimeException("Store not found"));
-    return saleRepository.findByStore(store).stream()
-        .map(this::mapToDto)
-        .collect(Collectors.toList());
+    return saleRepository.findByStore(store, pageable).map(this::mapToDto);
   }
 
   @Transactional(readOnly = true)
-  public List<SaleDto> getSalesByCustomer(Long customerId) {
+  public Page<SaleDto> getSalesByCustomer(Long customerId, Pageable pageable) {
     Customer customer =
         customerRepository
             .findById(customerId)
             .orElseThrow(() -> new RuntimeException("Customer not found"));
-    return saleRepository.findByCustomer(customer).stream()
-        .map(this::mapToDto)
-        .collect(Collectors.toList());
+    return saleRepository.findByCustomer(customer, pageable).map(this::mapToDto);
   }
 
   @Transactional(readOnly = true)
@@ -186,10 +184,32 @@ public class SaleService {
   }
 
   @Transactional(readOnly = true)
+  public Page<SaleDto> getSalesByStatus(Sale.SaleStatus status, Pageable pageable) {
+    return saleRepository.findByStatus(status, pageable).map(this::mapToDto);
+  }
+
+  // Backwards compatible list methods
+  @Transactional(readOnly = true)
+  public List<SaleDto> getAllSales() {
+    return getAllSales(org.springframework.data.domain.PageRequest.of(0, 20)).getContent();
+  }
+
+  @Transactional(readOnly = true)
+  public List<SaleDto> getSalesByStore(Long storeId) {
+    return getSalesByStore(storeId, org.springframework.data.domain.PageRequest.of(0, 20))
+        .getContent();
+  }
+
+  @Transactional(readOnly = true)
+  public List<SaleDto> getSalesByCustomer(Long customerId) {
+    return getSalesByCustomer(customerId, org.springframework.data.domain.PageRequest.of(0, 20))
+        .getContent();
+  }
+
+  @Transactional(readOnly = true)
   public List<SaleDto> getSalesByStatus(Sale.SaleStatus status) {
-    return saleRepository.findByStatus(status).stream()
-        .map(this::mapToDto)
-        .collect(Collectors.toList());
+    return getSalesByStatus(status, org.springframework.data.domain.PageRequest.of(0, 20))
+        .getContent();
   }
 
   @Transactional

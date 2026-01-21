@@ -3,8 +3,9 @@ package com.pharmacy.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,17 +81,27 @@ public class CustomerService {
   }
 
   @Transactional(readOnly = true)
+  public Page<CustomerDto> getAllCustomers(Pageable pageable) {
+    return customerRepository.findAll(pageable).map(this::mapToDto);
+  }
+
+  @Transactional(readOnly = true)
+  public Page<CustomerDto> searchCustomers(String searchTerm, Pageable pageable) {
+    return customerRepository
+        .findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
+            searchTerm, searchTerm, pageable)
+        .map(this::mapToDto);
+  }
+
+  @Transactional(readOnly = true)
   public List<CustomerDto> getAllCustomers() {
-    return customerRepository.findAll().stream().map(this::mapToDto).collect(Collectors.toList());
+    return getAllCustomers(org.springframework.data.domain.PageRequest.of(0, 20)).getContent();
   }
 
   @Transactional(readOnly = true)
   public List<CustomerDto> searchCustomers(String searchTerm) {
-    return customerRepository
-        .findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(searchTerm, searchTerm)
-        .stream()
-        .map(this::mapToDto)
-        .collect(Collectors.toList());
+    return searchCustomers(searchTerm, org.springframework.data.domain.PageRequest.of(0, 20))
+        .getContent();
   }
 
   @Transactional

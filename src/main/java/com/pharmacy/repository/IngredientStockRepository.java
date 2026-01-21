@@ -4,6 +4,8 @@ package com.pharmacy.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -14,9 +16,9 @@ import com.pharmacy.entity.Store;
 
 @Repository
 public interface IngredientStockRepository extends JpaRepository<IngredientStock, Long> {
-  List<IngredientStock> findByStore(Store store);
+  Page<IngredientStock> findByStore(Store store, Pageable pageable);
 
-  List<IngredientStock> findByIngredient(Ingredient ingredient);
+  Page<IngredientStock> findByIngredient(Ingredient ingredient, Pageable pageable);
 
   List<IngredientStock> findByStoreAndIngredient(Store store, Ingredient ingredient);
 

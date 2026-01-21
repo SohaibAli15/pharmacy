@@ -1,8 +1,8 @@
 /* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.repository;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,9 +11,10 @@ import com.pharmacy.entity.User;
 
 @Repository
 public interface PrescriptionRepository extends JpaRepository<Prescription, Long> {
-  List<Prescription> findByCustomer(User customer);
 
-  List<Prescription> findByPharmacist(User pharmacist);
+  Page<Prescription> findByCustomer(User customer, Pageable pageable);
 
-  List<Prescription> findByStatus(String status);
+  Page<Prescription> findByPharmacist(User pharmacist, Pageable pageable);
+
+  Page<Prescription> findByStatus(String status, Pageable pageable);
 }

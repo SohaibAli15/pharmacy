@@ -3,6 +3,9 @@ package com.pharmacy.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -113,37 +116,56 @@ public class PurchaseOrderController {
   @GetMapping
   @Operation(
       summary = "Get all purchase orders",
-      description = "Retrieve all purchase orders in the system")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved all purchase orders")
-  public ResponseEntity<List<PurchaseOrderDto>> getAllPurchaseOrders() {
-    List<PurchaseOrderDto> orders = purchaseOrderService.getAllPurchaseOrders();
+      description = "Retrieve all purchase orders in the system with pagination")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved purchase orders",
+      content =
+          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
+  public ResponseEntity<Page<PurchaseOrderDto>> getAllPurchaseOrders(
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<PurchaseOrderDto> orders = purchaseOrderService.getAllPurchaseOrders(pageable);
     return ResponseEntity.ok(orders);
   }
 
   @GetMapping("/status/{status}")
   @Operation(
       summary = "Get purchase orders by status",
-      description = "Retrieve purchase orders filtered by status")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved purchase orders")
-  public ResponseEntity<List<PurchaseOrderDto>> getPurchaseOrdersByStatus(
+      description = "Retrieve purchase orders filtered by status with pagination")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved purchase orders",
+      content =
+          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
+  public ResponseEntity<Page<PurchaseOrderDto>> getPurchaseOrdersByStatus(
       @Parameter(description = "Order status", required = true) @PathVariable
-          PurchaseOrder.OrderStatus status) {
-    List<PurchaseOrderDto> orders = purchaseOrderService.getPurchaseOrdersByStatus(status);
+          PurchaseOrder.OrderStatus status,
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<PurchaseOrderDto> orders =
+        purchaseOrderService.getPurchaseOrdersByStatus(status, pageable);
     return ResponseEntity.ok(orders);
   }
 
   @GetMapping("/supplier/{supplierId}")
   @Operation(
       summary = "Get purchase orders by supplier",
-      description = "Retrieve all purchase orders for a specific supplier")
+      description = "Retrieve all purchase orders for a specific supplier with pagination")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Successfully retrieved purchase orders"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved purchase orders",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Page.class))),
         @ApiResponse(responseCode = "404", description = "Supplier not found")
       })
-  public ResponseEntity<List<PurchaseOrderDto>> getPurchaseOrdersBySupplier(
-      @Parameter(description = "Supplier ID", required = true) @PathVariable Long supplierId) {
-    List<PurchaseOrderDto> orders = purchaseOrderService.getPurchaseOrdersBySupplier(supplierId);
+  public ResponseEntity<Page<PurchaseOrderDto>> getPurchaseOrdersBySupplier(
+      @Parameter(description = "Supplier ID", required = true) @PathVariable Long supplierId,
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<PurchaseOrderDto> orders =
+        purchaseOrderService.getPurchaseOrdersBySupplier(supplierId, pageable);
     return ResponseEntity.ok(orders);
   }
 }

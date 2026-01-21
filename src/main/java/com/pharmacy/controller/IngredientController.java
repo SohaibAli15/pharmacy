@@ -3,6 +3,9 @@ package com.pharmacy.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,16 +36,14 @@ public class IngredientController {
   @GetMapping
   @Operation(
       summary = "Get all ingredients",
-      description = "Retrieve all ingredients in the system")
+      description = "Retrieve all ingredients in the system with pagination")
   @ApiResponse(
       responseCode = "200",
-      description = "Successfully retrieved all ingredients",
+      description = "Successfully retrieved ingredients",
       content =
-          @Content(
-              mediaType = "application/json",
-              array = @ArraySchema(schema = @Schema(implementation = IngredientDto.class))))
-  public List<IngredientDto> getAllIngredients() {
-    return ingredientService.listAll();
+          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
+  public Page<IngredientDto> getAllIngredients(@PageableDefault(size = 20) Pageable pageable) {
+    return ingredientService.listAll(pageable);
   }
 
   @GetMapping("/low-stock")

@@ -4,8 +4,9 @@ package com.pharmacy.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -110,55 +111,78 @@ public class InventoryStockService {
   }
 
   @Transactional(readOnly = true)
-  public List<InventoryStockDto> getAllInventoryStock() {
-    return inventoryStockRepository.findAll().stream()
-        .map(this::mapToDto)
-        .collect(Collectors.toList());
+  public Page<InventoryStockDto> getAllInventoryStock(Pageable pageable) {
+    return inventoryStockRepository.findAll(pageable).map(this::mapToDto);
   }
 
   @Transactional(readOnly = true)
-  public List<InventoryStockDto> getInventoryByStore(Long storeId) {
+  public Page<InventoryStockDto> getInventoryByStore(Long storeId, Pageable pageable) {
     Store store =
         storeRepository
             .findById(storeId)
             .orElseThrow(() -> new RuntimeException("Store not found"));
-    return inventoryStockRepository.findByStore(store).stream()
-        .map(this::mapToDto)
-        .collect(Collectors.toList());
+    return inventoryStockRepository.findByStore(store, pageable).map(this::mapToDto);
   }
 
   @Transactional(readOnly = true)
-  public List<InventoryStockDto> getInventoryByMedicine(Long medicineId) {
+  public Page<InventoryStockDto> getInventoryByMedicine(Long medicineId, Pageable pageable) {
     Medicine medicine =
         medicineRepository
             .findById(medicineId)
             .orElseThrow(() -> new RuntimeException("Medicine not found"));
-    return inventoryStockRepository.findByMedicine(medicine).stream()
-        .map(this::mapToDto)
-        .collect(Collectors.toList());
+    return inventoryStockRepository.findByMedicine(medicine, pageable).map(this::mapToDto);
   }
 
   @Transactional(readOnly = true)
-  public List<InventoryStockDto> getLowStockItems(Long storeId) {
+  public Page<InventoryStockDto> getLowStockItems(Long storeId, Pageable pageable) {
     Store store =
         storeRepository
             .findById(storeId)
             .orElseThrow(() -> new RuntimeException("Store not found"));
-    return inventoryStockRepository.findLowStockItems(store).stream()
-        .map(this::mapToDto)
-        .collect(Collectors.toList());
+    return inventoryStockRepository.findLowStockItems(store, pageable).map(this::mapToDto);
   }
 
   @Transactional(readOnly = true)
-  public List<InventoryStockDto> getExpiringStock(Long storeId, int daysAhead) {
+  public Page<InventoryStockDto> getExpiringStock(Long storeId, int daysAhead, Pageable pageable) {
     Store store =
         storeRepository
             .findById(storeId)
             .orElseThrow(() -> new RuntimeException("Store not found"));
     LocalDate expiryDate = LocalDate.now().plusDays(daysAhead);
-    return inventoryStockRepository.findExpiringStock(store, expiryDate).stream()
-        .map(this::mapToDto)
-        .collect(Collectors.toList());
+    return inventoryStockRepository
+        .findExpiringStock(store, expiryDate, pageable)
+        .map(this::mapToDto);
+  }
+
+  // Backwards compatible list methods
+  @Transactional(readOnly = true)
+  public List<InventoryStockDto> getAllInventoryStock() {
+    return getAllInventoryStock(org.springframework.data.domain.PageRequest.of(0, 20)).getContent();
+  }
+
+  @Transactional(readOnly = true)
+  public List<InventoryStockDto> getInventoryByStore(Long storeId) {
+    return getInventoryByStore(storeId, org.springframework.data.domain.PageRequest.of(0, 20))
+        .getContent();
+  }
+
+  @Transactional(readOnly = true)
+  public List<InventoryStockDto> getInventoryByMedicine(Long medicineId) {
+    return getInventoryByMedicine(medicineId, org.springframework.data.domain.PageRequest.of(0, 20))
+        .getContent();
+  }
+
+  @Transactional(readOnly = true)
+  public List<InventoryStockDto> getLowStockItems(Long storeId) {
+    return getLowStockItems(storeId, org.springframework.data.domain.PageRequest.of(0, 20))
+        .getContent();
+  }
+
+  @Transactional(readOnly = true)
+  public List<InventoryStockDto> getExpiringStock(Long storeId, int daysAhead) {
+    return getExpiringStock(
+            storeId, daysAhead, org.springframework.data.domain.PageRequest.of(0, 20))
+        .getContent();
   }
 
   @Transactional

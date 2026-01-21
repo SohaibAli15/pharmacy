@@ -1,8 +1,9 @@
 /* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +12,6 @@ import com.pharmacy.service.MedicineService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -31,47 +31,44 @@ public class MedicineController {
   private final MedicineService medicineService;
 
   @GetMapping
-  @Operation(summary = "Get all medicines", description = "Retrieve all medicines in the catalog")
+  @Operation(
+      summary = "Get all medicines",
+      description = "Retrieve all medicines in the catalog with pagination")
   @ApiResponse(
       responseCode = "200",
-      description = "Successfully retrieved all medicines",
+      description = "Successfully retrieved medicines",
       content =
-          @Content(
-              mediaType = "application/json",
-              array = @ArraySchema(schema = @Schema(implementation = MedicineDto.class))))
-  public List<MedicineDto> getAllMedicines() {
-    return medicineService.listAll();
+          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
+  public Page<MedicineDto> getAllMedicines(@PageableDefault(size = 20) Pageable pageable) {
+    return medicineService.listAll(pageable);
   }
 
   @GetMapping("/search")
-  @Operation(summary = "Search medicines", description = "Search medicines by name")
+  @Operation(summary = "Search medicines", description = "Search medicines by name with pagination")
   @ApiResponse(
       responseCode = "200",
       description = "Successfully retrieved matching medicines",
       content =
-          @Content(
-              mediaType = "application/json",
-              array = @ArraySchema(schema = @Schema(implementation = MedicineDto.class))))
-  public List<MedicineDto> searchMedicines(
-      @Parameter(description = "Search query", required = true) @RequestParam("q") String q) {
-    return medicineService.searchByName(q);
+          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
+  public Page<MedicineDto> searchMedicines(
+      @Parameter(description = "Search query", required = true) @RequestParam("q") String q,
+      @PageableDefault(size = 20) Pageable pageable) {
+    return medicineService.searchByName(q, pageable);
   }
 
   @GetMapping("/category/{category}")
   @Operation(
       summary = "Get medicines by category",
-      description = "Retrieve medicines filtered by category")
+      description = "Retrieve medicines filtered by category with pagination")
   @ApiResponse(
       responseCode = "200",
       description = "Successfully retrieved medicines by category",
       content =
-          @Content(
-              mediaType = "application/json",
-              array = @ArraySchema(schema = @Schema(implementation = MedicineDto.class))))
-  public List<MedicineDto> getMedicinesByCategory(
-      @Parameter(description = "Medicine category", required = true) @PathVariable
-          String category) {
-    return medicineService.findByCategory(category);
+          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
+  public Page<MedicineDto> getMedicinesByCategory(
+      @Parameter(description = "Medicine category", required = true) @PathVariable String category,
+      @PageableDefault(size = 20) Pageable pageable) {
+    return medicineService.findByCategory(category, pageable);
   }
 
   @GetMapping("/{id}")

@@ -7,5 +7,4 @@ nixPkgs = ["...", "jdk17"]
 cmds = ["chmod +x mvnw", "./mvnw clean package -DskipTests -Dmaven.test.skip=true"]
 
 [start]
-cmd = "java -Xms128m -Xmx384m -XX:MaxMetaspaceSize=128m -XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+UseStringDeduplication -Djava.security.egd=file:/dev/./urandom -Dserver.port=$PORT -Dspring.profiles.active=railway -jar target/pharmacy-0.0.1-SNAPSHOT.jar"
-
+cmd = "java -Xms64m -Xmx256m -XX:MaxMetaspaceSize=96m -XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+UseStringDeduplication -Djava.security.egd=file:/dev/./urandom -Dserver.port=$PORT -Dspring.profiles.active=railway -jar target/pharmacy-0.0.1-SNAPSHOT.jar"

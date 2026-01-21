@@ -3,8 +3,9 @@ package com.pharmacy.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,22 +70,36 @@ public class StoreService {
   }
 
   @Transactional(readOnly = true)
+  public Page<StoreDto> getAllStores(Pageable pageable) {
+    return storeRepository.findAll(pageable).map(this::mapToDto);
+  }
+
+  @Transactional(readOnly = true)
+  public Page<StoreDto> getStoresByStatus(Store.StoreStatus status, Pageable pageable) {
+    return storeRepository.findByStatus(status, pageable).map(this::mapToDto);
+  }
+
+  @Transactional(readOnly = true)
+  public Page<StoreDto> getStoresByType(Store.StoreType type, Pageable pageable) {
+    return storeRepository.findByType(type, pageable).map(this::mapToDto);
+  }
+
+  // Backwards compatible list methods
+  @Transactional(readOnly = true)
   public List<StoreDto> getAllStores() {
-    return storeRepository.findAll().stream().map(this::mapToDto).collect(Collectors.toList());
+    return getAllStores(org.springframework.data.domain.PageRequest.of(0, 20)).getContent();
   }
 
   @Transactional(readOnly = true)
   public List<StoreDto> getStoresByStatus(Store.StoreStatus status) {
-    return storeRepository.findByStatus(status).stream()
-        .map(this::mapToDto)
-        .collect(Collectors.toList());
+    return getStoresByStatus(status, org.springframework.data.domain.PageRequest.of(0, 20))
+        .getContent();
   }
 
   @Transactional(readOnly = true)
   public List<StoreDto> getStoresByType(Store.StoreType type) {
-    return storeRepository.findByType(type).stream()
-        .map(this::mapToDto)
-        .collect(Collectors.toList());
+    return getStoresByType(type, org.springframework.data.domain.PageRequest.of(0, 20))
+        .getContent();
   }
 
   @Transactional

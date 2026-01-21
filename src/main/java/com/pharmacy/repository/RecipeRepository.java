@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -51,4 +53,34 @@ public interface RecipeRepository
   @Query("SELECT r FROM Recipe r WHERE r.unitPrice BETWEEN :minPrice AND :maxPrice")
   List<Recipe> findByPriceRange(
       @Param("minPrice") BigDecimal minPrice, @Param("maxPrice") BigDecimal maxPrice);
+
+  Page<Recipe> findByNameContainingIgnoreCase(String name, Pageable pageable);
+
+  Page<Recipe> findByCategory(String category, Pageable pageable);
+
+  Page<Recipe> findByCategoryAndSubCategory(String category, String subCategory, Pageable pageable);
+
+  Page<Recipe> findByProductId(Long productId, Pageable pageable);
+
+  Page<Recipe> findByStatus(String status, Pageable pageable);
+
+  Page<Recipe> findByIsActive(Boolean isActive, Pageable pageable);
+
+  @Query("SELECT r FROM Recipe r WHERE r.isActive = true AND r.status = 'ACTIVE'")
+  Page<Recipe> findAllActiveRecipes(Pageable pageable);
+
+  @Query(
+      "SELECT r FROM Recipe r WHERE "
+          + "(:category IS NULL OR r.category = :category) AND "
+          + "(:subCategory IS NULL OR r.subCategory = :subCategory) AND "
+          + "(:status IS NULL OR r.status = :status) AND "
+          + "(:productId IS NULL OR r.product.id = :productId) AND "
+          + "(:searchTerm IS NULL OR LOWER(r.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR LOWER(r.recipeCode) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
+  Page<Recipe> searchRecipes(
+      @Param("category") String category,
+      @Param("subCategory") String subCategory,
+      @Param("status") String status,
+      @Param("productId") Long productId,
+      @Param("searchTerm") String searchTerm,
+      Pageable pageable);
 }

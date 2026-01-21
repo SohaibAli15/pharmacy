@@ -1,9 +1,8 @@
 /* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,19 +72,15 @@ public class MedicineService {
     return medicineRepository.findById(id).map(this::toDto).orElse(null);
   }
 
-  public List<MedicineDto> searchByName(String name) {
-    return medicineRepository.findByNameContainingIgnoreCase(name).stream()
-        .map(this::toDto)
-        .collect(Collectors.toList());
+  public Page<MedicineDto> searchByName(String name, Pageable pageable) {
+    return medicineRepository.findByNameContainingIgnoreCase(name, pageable).map(this::toDto);
   }
 
-  public List<MedicineDto> findByCategory(String category) {
-    return medicineRepository.findByCategory(category).stream()
-        .map(this::toDto)
-        .collect(Collectors.toList());
+  public Page<MedicineDto> findByCategory(String category, Pageable pageable) {
+    return medicineRepository.findByCategory(category, pageable).map(this::toDto);
   }
 
-  public List<MedicineDto> listAll() {
-    return medicineRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
+  public Page<MedicineDto> listAll(Pageable pageable) {
+    return medicineRepository.findAll(pageable).map(this::toDto);
   }
 }

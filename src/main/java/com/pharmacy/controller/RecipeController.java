@@ -7,6 +7,9 @@ import java.util.Map;
 
 import jakarta.validation.Valid;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +19,6 @@ import com.pharmacy.service.RecipeService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -37,7 +39,8 @@ public class RecipeController {
 
   @Operation(
       summary = "Get all recipes",
-      description = "Retrieve all recipes with optional filtering for active recipes only")
+      description =
+          "Retrieve all recipes in the system with optional filtering for active recipes with pagination")
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -46,21 +49,25 @@ public class RecipeController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = RecipeDto.class))))
+                    schema = @Schema(implementation = Page.class)))
       })
   @GetMapping
-  public ResponseEntity<List<RecipeDto>> getAllRecipes(
+  public ResponseEntity<Page<RecipeDto>> getAllRecipes(
       @Parameter(description = "Filter for active recipes only") @RequestParam(required = false)
-          Boolean activeOnly) {
-    List<RecipeDto> recipes =
-        activeOnly != null && activeOnly ? recipeService.listAllActive() : recipeService.listAll();
+          Boolean activeOnly,
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<RecipeDto> recipes =
+        activeOnly != null && activeOnly
+            ? recipeService.listAllActive(pageable)
+            : recipeService.listAll(pageable);
     return ResponseEntity.ok(recipes);
   }
 
+  @GetMapping("/search")
   @Operation(
       summary = "Search recipes",
       description =
-          "Search recipes using multiple filter criteria including name, category, and product")
+          "Search recipes using multiple filter criteria including name, category, and product with pagination")
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -69,10 +76,9 @@ public class RecipeController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = RecipeDto.class))))
+                    schema = @Schema(implementation = Page.class)))
       })
-  @GetMapping("/search")
-  public ResponseEntity<List<RecipeDto>> searchRecipes(
+  public ResponseEntity<Page<RecipeDto>> searchRecipes(
       @Parameter(description = "Search query for recipe name") @RequestParam(required = false)
           String q,
       @Parameter(description = "Filter by category") @RequestParam(required = false)
@@ -83,15 +89,17 @@ public class RecipeController {
           @RequestParam(required = false)
           String status,
       @Parameter(description = "Filter by product ID") @RequestParam(required = false)
-          Long productId) {
-    List<RecipeDto> recipes =
-        recipeService.searchRecipes(category, subCategory, status, productId, q);
+          Long productId,
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<RecipeDto> recipes =
+        recipeService.searchRecipes(category, subCategory, status, productId, q, pageable);
     return ResponseEntity.ok(recipes);
   }
 
+  @GetMapping("/category/{category}")
   @Operation(
       summary = "Get recipes by category",
-      description = "Retrieve all recipes belonging to a specific category")
+      description = "Retrieve all recipes belonging to a specific category with pagination")
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -100,19 +108,19 @@ public class RecipeController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = RecipeDto.class))))
+                    schema = @Schema(implementation = Page.class)))
       })
-  @GetMapping("/category/{category}")
-  public ResponseEntity<List<RecipeDto>> getRecipesByCategory(
+  public ResponseEntity<Page<RecipeDto>> getRecipesByCategory(
       @Parameter(description = "Category name", example = "Packaging Material") @PathVariable
-          String category) {
-    List<RecipeDto> recipes = recipeService.findByCategory(category);
+          String category,
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<RecipeDto> recipes = recipeService.findByCategory(category, pageable);
     return ResponseEntity.ok(recipes);
   }
 
   @Operation(
       summary = "Get recipes by product",
-      description = "Retrieve all recipes associated with a specific product")
+      description = "Retrieve all recipes associated with a specific product with pagination")
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -121,12 +129,13 @@ public class RecipeController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = RecipeDto.class))))
+                    schema = @Schema(implementation = Page.class)))
       })
   @GetMapping("/product/{productId}")
-  public ResponseEntity<List<RecipeDto>> getRecipesByProduct(
-      @Parameter(description = "Product ID") @PathVariable Long productId) {
-    List<RecipeDto> recipes = recipeService.findByProduct(productId);
+  public ResponseEntity<Page<RecipeDto>> getRecipesByProduct(
+      @Parameter(description = "Product ID") @PathVariable Long productId,
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<RecipeDto> recipes = recipeService.findByProduct(productId, pageable);
     return ResponseEntity.ok(recipes);
   }
 

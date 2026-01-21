@@ -3,8 +3,9 @@ package com.pharmacy.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,19 +67,29 @@ public class AlertService {
     return alertRepository.findById(id).map(this::toDto).orElse(null);
   }
 
+  public Page<AlertDto> getUnreadAlerts(Pageable pageable) {
+    return alertRepository.findByIsReadFalse(pageable).map(this::toDto);
+  }
+
+  public Page<AlertDto> getByIngredient(Long ingredientId, Pageable pageable) {
+    return alertRepository.findByIngredientId(ingredientId, pageable).map(this::toDto);
+  }
+
+  public Page<AlertDto> listAll(Pageable pageable) {
+    return alertRepository.findAll(pageable).map(this::toDto);
+  }
+
+  // Backwards compatible List methods (optional) kept small by delegating to pageable
   public List<AlertDto> getUnreadAlerts() {
-    return alertRepository.findByIsReadFalse().stream()
-        .map(this::toDto)
-        .collect(Collectors.toList());
+    return getUnreadAlerts(org.springframework.data.domain.PageRequest.of(0, 20)).getContent();
   }
 
   public List<AlertDto> getByIngredient(Long ingredientId) {
-    return alertRepository.findByIngredientId(ingredientId).stream()
-        .map(this::toDto)
-        .collect(Collectors.toList());
+    return getByIngredient(ingredientId, org.springframework.data.domain.PageRequest.of(0, 20))
+        .getContent();
   }
 
   public List<AlertDto> listAll() {
-    return alertRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
+    return listAll(org.springframework.data.domain.PageRequest.of(0, 20)).getContent();
   }
 }

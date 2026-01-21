@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,15 +17,15 @@ import com.pharmacy.entity.Store;
 public interface StockTransferRepository extends JpaRepository<StockTransfer, Long> {
   Optional<StockTransfer> findByTransferNumber(String transferNumber);
 
-  List<StockTransfer> findByFromStore(Store fromStore);
+  Page<StockTransfer> findByFromStore(Store fromStore, Pageable pageable);
 
-  List<StockTransfer> findByToStore(Store toStore);
+  Page<StockTransfer> findByToStore(Store toStore, Pageable pageable);
 
-  List<StockTransfer> findByStatus(StockTransfer.TransferStatus status);
+  Page<StockTransfer> findByStatus(StockTransfer.TransferStatus status, Pageable pageable);
 
   List<StockTransfer> findByTransferDateBetween(LocalDate startDate, LocalDate endDate);
 
-  List<StockTransfer> findByFromStoreOrToStore(Store fromStore, Store toStore);
+  Page<StockTransfer> findByFromStoreOrToStore(Store fromStore, Store toStore, Pageable pageable);
 
   boolean existsByTransferNumber(String transferNumber);
 }

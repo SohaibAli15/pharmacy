@@ -1,8 +1,9 @@
 /* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -104,22 +105,35 @@ public class CustomerController {
   }
 
   @GetMapping
-  @Operation(summary = "Get all customers", description = "Retrieve all registered customers")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved all customers")
-  public ResponseEntity<List<CustomerDto>> getAllCustomers() {
-    List<CustomerDto> customers = customerService.getAllCustomers();
+  @Operation(
+      summary = "Get all customers",
+      description = "Retrieve all registered customers with pagination")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved customers",
+      content =
+          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
+  public ResponseEntity<Page<CustomerDto>> getAllCustomers(
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<CustomerDto> customers = customerService.getAllCustomers(pageable);
     return ResponseEntity.ok(customers);
   }
 
   @GetMapping("/search")
   @Operation(
       summary = "Search customers by name",
-      description = "Search for customers by first name, last name, or phone number")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved matching customers")
-  public ResponseEntity<List<CustomerDto>> searchCustomers(
+      description =
+          "Search for customers by first name, last name, or phone number with pagination")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved matching customers",
+      content =
+          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
+  public ResponseEntity<Page<CustomerDto>> searchCustomers(
       @Parameter(description = "Search term (name or phone)", required = true) @RequestParam
-          String searchTerm) {
-    List<CustomerDto> customers = customerService.searchCustomers(searchTerm);
+          String searchTerm,
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<CustomerDto> customers = customerService.searchCustomers(searchTerm, pageable);
     return ResponseEntity.ok(customers);
   }
 

@@ -1,8 +1,9 @@
 /* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -76,38 +77,56 @@ public class PrescriptionController {
   @GetMapping
   @Operation(
       summary = "Get all prescriptions",
-      description = "Retrieve all prescriptions in the system")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved all prescriptions")
-  public ResponseEntity<List<PrescriptionDto>> getAllPrescriptions() {
-    List<PrescriptionDto> prescriptions = prescriptionService.getAllPrescriptions();
+      description = "Retrieve all prescriptions in the system with pagination")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved prescriptions",
+      content =
+          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
+  public ResponseEntity<Page<PrescriptionDto>> getAllPrescriptions(
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<PrescriptionDto> prescriptions = prescriptionService.getAllPrescriptions(pageable);
     return ResponseEntity.ok(prescriptions);
   }
 
   @GetMapping("/customer/{customerId}")
   @Operation(
       summary = "Get prescriptions by customer",
-      description = "Retrieve all prescriptions for a specific customer")
+      description = "Retrieve all prescriptions for a specific customer with pagination")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Successfully retrieved prescriptions"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved prescriptions",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Page.class))),
         @ApiResponse(responseCode = "404", description = "Customer not found")
       })
-  public ResponseEntity<List<PrescriptionDto>> getPrescriptionsByCustomer(
-      @Parameter(description = "Customer ID", required = true) @PathVariable Long customerId) {
-    List<PrescriptionDto> prescriptions =
-        prescriptionService.getPrescriptionsByCustomer(customerId);
+  public ResponseEntity<Page<PrescriptionDto>> getPrescriptionsByCustomer(
+      @Parameter(description = "Customer ID", required = true) @PathVariable Long customerId,
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<PrescriptionDto> prescriptions =
+        prescriptionService.getPrescriptionsByCustomer(customerId, pageable);
     return ResponseEntity.ok(prescriptions);
   }
 
   @GetMapping("/status/{status}")
   @Operation(
       summary = "Get prescriptions by status",
-      description = "Retrieve prescriptions filtered by status (e.g., PENDING, DISPENSED, EXPIRED)")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved prescriptions")
-  public ResponseEntity<List<PrescriptionDto>> getPrescriptionsByStatus(
-      @Parameter(description = "Prescription status", required = true) @PathVariable
-          String status) {
-    List<PrescriptionDto> prescriptions = prescriptionService.getPrescriptionsByStatus(status);
+      description =
+          "Retrieve prescriptions filtered by status (e.g., PENDING, DISPENSED, EXPIRED) with pagination")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved prescriptions",
+      content =
+          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
+  public ResponseEntity<Page<PrescriptionDto>> getPrescriptionsByStatus(
+      @Parameter(description = "Prescription status", required = true) @PathVariable String status,
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<PrescriptionDto> prescriptions =
+        prescriptionService.getPrescriptionsByStatus(status, pageable);
     return ResponseEntity.ok(prescriptions);
   }
 

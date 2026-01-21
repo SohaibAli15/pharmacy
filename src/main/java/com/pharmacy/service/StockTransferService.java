@@ -8,6 +8,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -394,21 +396,31 @@ public class StockTransferService {
   }
 
   @Transactional(readOnly = true)
-  public List<StockTransferDto> getAllStockTransfers() {
-    return stockTransferRepository.findAll().stream()
-        .map(this::mapToDto)
-        .collect(Collectors.toList());
+  public Page<StockTransferDto> getAllStockTransfers(Pageable pageable) {
+    return stockTransferRepository.findAll(pageable).map(this::mapToDto);
   }
 
   @Transactional(readOnly = true)
-  public List<StockTransferDto> getStockTransfersByStore(Long storeId) {
+  public Page<StockTransferDto> getStockTransfersByStore(Long storeId, Pageable pageable) {
     Store store =
         storeRepository
             .findById(storeId)
             .orElseThrow(() -> new RuntimeException("Store not found"));
-    return stockTransferRepository.findByFromStoreOrToStore(store, store).stream()
-        .map(this::mapToDto)
-        .collect(Collectors.toList());
+    return stockTransferRepository
+        .findByFromStoreOrToStore(store, store, pageable)
+        .map(this::mapToDto);
+  }
+
+  // Backwards compatible list methods
+  @Transactional(readOnly = true)
+  public List<StockTransferDto> getAllStockTransfers() {
+    return getAllStockTransfers(org.springframework.data.domain.PageRequest.of(0, 20)).getContent();
+  }
+
+  @Transactional(readOnly = true)
+  public List<StockTransferDto> getStockTransfersByStore(Long storeId) {
+    return getStockTransfersByStore(storeId, org.springframework.data.domain.PageRequest.of(0, 20))
+        .getContent();
   }
 
   private String generateTransferNumber() {

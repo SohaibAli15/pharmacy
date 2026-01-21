@@ -1,8 +1,8 @@
 /* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.repository;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,7 +10,7 @@ import com.pharmacy.entity.Alert;
 
 @Repository
 public interface AlertRepository extends JpaRepository<Alert, Long> {
-  List<Alert> findByIsReadFalse();
+  Page<Alert> findByIsReadFalse(Pageable pageable);
 
-  List<Alert> findByIngredientId(Long ingredientId);
+  Page<Alert> findByIngredientId(Long ingredientId, Pageable pageable);
 }

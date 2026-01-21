@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,11 +18,11 @@ import com.pharmacy.entity.Store;
 public interface SaleRepository extends JpaRepository<Sale, Long> {
   Optional<Sale> findByInvoiceNumber(String invoiceNumber);
 
-  List<Sale> findByStore(Store store);
+  Page<Sale> findByStore(Store store, Pageable pageable);
 
-  List<Sale> findByCustomer(Customer customer);
+  Page<Sale> findByCustomer(Customer customer, Pageable pageable);
 
   List<Sale> findBySaleDateBetween(LocalDateTime start, LocalDateTime end);
 
-  List<Sale> findByStatus(Sale.SaleStatus status);
+  Page<Sale> findByStatus(Sale.SaleStatus status, Pageable pageable);
 }

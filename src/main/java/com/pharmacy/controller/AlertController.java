@@ -1,8 +1,9 @@
 /* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +12,6 @@ import com.pharmacy.service.AlertService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,37 +34,34 @@ public class AlertController {
   @GetMapping
   @Operation(
       summary = "Get all alerts",
-      description = "Retrieve all system alerts including low stock and expiry warnings")
+      description =
+          "Retrieve all system alerts including low stock and expiry warnings with pagination")
   @ApiResponse(
       responseCode = "200",
-      description = "Successfully retrieved all alerts",
+      description = "Successfully retrieved alerts",
       content =
-          @Content(
-              mediaType = "application/json",
-              array = @ArraySchema(schema = @Schema(implementation = AlertDto.class))))
-  public List<AlertDto> getAllAlerts() {
-    return alertService.listAll();
+          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
+  public Page<AlertDto> getAllAlerts(@PageableDefault(size = 20) Pageable pageable) {
+    return alertService.listAll(pageable);
   }
 
   @GetMapping("/unread")
   @Operation(
       summary = "Get unread alerts",
-      description = "Retrieve all unread/unacknowledged alerts")
+      description = "Retrieve all unread/unacknowledged alerts with pagination")
   @ApiResponse(
       responseCode = "200",
       description = "Successfully retrieved unread alerts",
       content =
-          @Content(
-              mediaType = "application/json",
-              array = @ArraySchema(schema = @Schema(implementation = AlertDto.class))))
-  public List<AlertDto> getUnread() {
-    return alertService.getUnreadAlerts();
+          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
+  public Page<AlertDto> getUnread(@PageableDefault(size = 20) Pageable pageable) {
+    return alertService.getUnreadAlerts(pageable);
   }
 
   @GetMapping("/ingredient/{ingredientId}")
   @Operation(
       summary = "Get alerts by ingredient",
-      description = "Retrieve alerts related to a specific ingredient")
+      description = "Retrieve alerts related to a specific ingredient with pagination")
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -73,12 +70,13 @@ public class AlertController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = AlertDto.class)))),
+                    schema = @Schema(implementation = Page.class))),
         @ApiResponse(responseCode = "404", description = "Ingredient not found")
       })
-  public List<AlertDto> getByIngredient(
-      @Parameter(description = "Ingredient ID", required = true) @PathVariable Long ingredientId) {
-    return alertService.getByIngredient(ingredientId);
+  public Page<AlertDto> getByIngredient(
+      @Parameter(description = "Ingredient ID", required = true) @PathVariable Long ingredientId,
+      @PageableDefault(size = 20) Pageable pageable) {
+    return alertService.getByIngredient(ingredientId, pageable);
   }
 
   @GetMapping("/{id}")

@@ -3,9 +3,9 @@ package com.pharmacy.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -118,32 +118,27 @@ public class IngredientStockService {
   }
 
   @Transactional(readOnly = true)
-  public List<IngredientStockDto> getAllIngredientStock() {
-    return ingredientStockRepository.findAll().stream()
-        .map(this::mapToDto)
-        .collect(Collectors.toList());
+  public Page<IngredientStockDto> getAllIngredientStock(Pageable pageable) {
+    return ingredientStockRepository.findAll(pageable).map(this::mapToDto);
   }
 
   @Transactional(readOnly = true)
-  public List<IngredientStockDto> getIngredientStockByStore(Long storeId) {
+  public Page<IngredientStockDto> getIngredientStockByStore(Long storeId, Pageable pageable) {
     Store store =
         storeRepository
             .findById(storeId)
             .orElseThrow(() -> new RuntimeException("Store not found"));
-    return ingredientStockRepository.findByStore(store).stream()
-        .map(this::mapToDto)
-        .collect(Collectors.toList());
+    return ingredientStockRepository.findByStore(store, pageable).map(this::mapToDto);
   }
 
   @Transactional(readOnly = true)
-  public List<IngredientStockDto> getIngredientStockByIngredient(Long ingredientId) {
+  public Page<IngredientStockDto> getIngredientStockByIngredient(
+      Long ingredientId, Pageable pageable) {
     Ingredient ingredient =
         ingredientRepository
             .findById(ingredientId)
             .orElseThrow(() -> new RuntimeException("Ingredient not found"));
-    return ingredientStockRepository.findByIngredient(ingredient).stream()
-        .map(this::mapToDto)
-        .collect(Collectors.toList());
+    return ingredientStockRepository.findByIngredient(ingredient, pageable).map(this::mapToDto);
   }
 
   @Transactional(readOnly = true)

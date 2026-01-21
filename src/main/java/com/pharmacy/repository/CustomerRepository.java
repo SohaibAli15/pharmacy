@@ -1,9 +1,10 @@
 /* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.repository;
 
-import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,12 +16,12 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
   Optional<Customer> findByEmail(String email);
 
-  List<Customer> findByStatus(Customer.CustomerStatus status);
+  Page<Customer> findByStatus(Customer.CustomerStatus status, Pageable pageable);
 
-  List<Customer> findByType(Customer.CustomerType type);
+  Page<Customer> findByType(Customer.CustomerType type, Pageable pageable);
 
-  List<Customer> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
-      String firstName, String lastName);
+  Page<Customer> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
+      String firstName, String lastName, Pageable pageable);
 
   boolean existsByCustomerCode(String customerCode);
 
