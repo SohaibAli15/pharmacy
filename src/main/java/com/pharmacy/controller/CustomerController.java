@@ -113,7 +113,9 @@ public class CustomerController {
       responseCode = "200",
       description = "Successfully retrieved customers",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomerPageResponse.class)))
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = CustomerPageResponse.class)))
   public ResponseEntity<CustomerPageResponse> getAllCustomers(
       @PageableDefault(size = 20) Pageable pageable) {
     Page<CustomerDto> customers = customerService.getAllCustomers(pageable);
@@ -138,7 +140,9 @@ public class CustomerController {
       responseCode = "200",
       description = "Successfully retrieved matching customers",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomerPageResponse.class)))
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = CustomerPageResponse.class)))
   public ResponseEntity<CustomerPageResponse> searchCustomers(
       @Parameter(description = "Search term (name or phone)", required = true) @RequestParam
           String searchTerm,

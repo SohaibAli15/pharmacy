@@ -109,7 +109,9 @@ public class StoreController {
       responseCode = "200",
       description = "Successfully retrieved stores",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = StorePageResponse.class)))
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = StorePageResponse.class)))
   public ResponseEntity<StorePageResponse> getAllStores(
       @PageableDefault(size = 20) Pageable pageable) {
     Page<StoreDto> stores = storeService.getAllStores(pageable);
@@ -133,7 +135,9 @@ public class StoreController {
       responseCode = "200",
       description = "Successfully retrieved stores",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = StorePageResponse.class)))
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = StorePageResponse.class)))
   public ResponseEntity<StorePageResponse> getStoresByStatus(
       @Parameter(description = "Store status", required = true) @PathVariable
           Store.StoreStatus status,
@@ -161,7 +165,9 @@ public class StoreController {
       responseCode = "200",
       description = "Successfully retrieved stores",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = StorePageResponse.class)))
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = StorePageResponse.class)))
   public ResponseEntity<StorePageResponse> getStoresByType(
       @Parameter(description = "Store type", required = true) @PathVariable Store.StoreType type,
       @PageableDefault(size = 20) Pageable pageable) {

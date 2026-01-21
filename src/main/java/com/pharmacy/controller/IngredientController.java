@@ -42,8 +42,11 @@ public class IngredientController {
       responseCode = "200",
       description = "Successfully retrieved ingredients",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = IngredientPageResponse.class)))
-  public ResponseEntity<IngredientPageResponse> getAllIngredients(@PageableDefault(size = 20) Pageable pageable) {
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = IngredientPageResponse.class)))
+  public ResponseEntity<IngredientPageResponse> getAllIngredients(
+      @PageableDefault(size = 20) Pageable pageable) {
     Page<IngredientDto> ingredients = ingredientService.listAll(pageable);
     IngredientPageResponse response = new IngredientPageResponse();
     response.setContent(ingredients.getContent());

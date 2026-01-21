@@ -39,8 +39,11 @@ public class MedicineController {
       responseCode = "200",
       description = "Successfully retrieved medicines",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = MedicinePageResponse.class)))
-  public ResponseEntity<MedicinePageResponse> getAllMedicines(@PageableDefault(size = 20) Pageable pageable) {
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = MedicinePageResponse.class)))
+  public ResponseEntity<MedicinePageResponse> getAllMedicines(
+      @PageableDefault(size = 20) Pageable pageable) {
     Page<MedicineDto> medicines = medicineService.listAll(pageable);
     MedicinePageResponse response = new MedicinePageResponse();
     response.setContent(medicines.getContent());
@@ -60,7 +63,9 @@ public class MedicineController {
       responseCode = "200",
       description = "Successfully retrieved matching medicines",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = MedicinePageResponse.class)))
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = MedicinePageResponse.class)))
   public ResponseEntity<MedicinePageResponse> searchMedicines(
       @Parameter(description = "Search query", required = true) @RequestParam("q") String q,
       @PageableDefault(size = 20) Pageable pageable) {
@@ -85,7 +90,9 @@ public class MedicineController {
       responseCode = "200",
       description = "Successfully retrieved medicines by category",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = MedicinePageResponse.class)))
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = MedicinePageResponse.class)))
   public ResponseEntity<MedicinePageResponse> getMedicinesByCategory(
       @Parameter(description = "Medicine category", required = true) @PathVariable String category,
       @PageableDefault(size = 20) Pageable pageable) {

@@ -14,10 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.pharmacy.dto.ErrorResponse;
 import com.pharmacy.dto.RecipeDto;
 import com.pharmacy.dto.RecipePageResponse;
 import com.pharmacy.dto.RecipeStatsResponse;
-import com.pharmacy.dto.ErrorResponse;
 import com.pharmacy.service.RecipeService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -256,7 +256,10 @@ public class RecipeController {
   @ApiResponses(
       value = {
         @ApiResponse(responseCode = "200", description = "Recipe updated successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Invalid input",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
         @ApiResponse(responseCode = "404", description = "Recipe not found")
       })
   @PutMapping("/{id}")
@@ -300,11 +303,17 @@ public class RecipeController {
   }
 
   /** Copy recipe from existing */
-  @Operation(summary = "Copy existing recipe", description = "Copy an existing recipe with a new code and optional name")
-  @ApiResponses(value = {
-    @ApiResponse(responseCode = "201", description = "Recipe copied successfully"),
-    @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-  })
+  @Operation(
+      summary = "Copy existing recipe",
+      description = "Copy an existing recipe with a new code and optional name")
+  @ApiResponses(
+      value = {
+        @ApiResponse(responseCode = "201", description = "Recipe copied successfully"),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Invalid input",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+      })
   @PostMapping("/{id}/copy")
   public ResponseEntity<?> copyRecipe(
       @PathVariable Long id,
