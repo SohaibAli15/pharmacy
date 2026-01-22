@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.pharmacy.dto.ErrorResponse;
+import com.pharmacy.dto.KeyCountDto;
 import com.pharmacy.dto.RecipeDto;
 import com.pharmacy.dto.RecipePageResponse;
 import com.pharmacy.dto.RecipeStatsResponse;
@@ -384,7 +385,11 @@ public class RecipeController {
           String category = recipe.getCategory() != null ? recipe.getCategory() : "Uncategorized";
           categoryCount.put(category, categoryCount.getOrDefault(category, 0L) + 1);
         });
-    statsResponse.setCategoryBreakdown(categoryCount);
+    List<KeyCountDto> categoryList =
+        categoryCount.entrySet().stream()
+            .map(e -> new KeyCountDto(e.getKey(), e.getValue()))
+            .toList();
+    statsResponse.setCategoryBreakdown(categoryList);
 
     return ResponseEntity.ok(statsResponse);
   }

@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.pharmacy.dto.KeyCountDto;
 import com.pharmacy.dto.ProductionBatchDto;
 import com.pharmacy.dto.ProductionBatchPageResponse;
 import com.pharmacy.dto.ProductionBatchStatsResponse;
@@ -425,8 +426,12 @@ public class ProductionBatchController {
 
     ProductionBatchStatsResponse stats = new ProductionBatchStatsResponse();
     stats.setTotalBatches(batches.size());
-    stats.setFinalizedBatches(batches.stream().filter(ProductionBatchDto::getIsFinalized).count());
-    stats.setPendingBatches(batches.stream().filter(b -> !b.getIsFinalized()).count());
+    long finalizedCount =
+        batches.stream().filter(b -> Boolean.TRUE.equals(b.getIsFinalized())).count();
+    long pendingCount =
+        batches.stream().filter(b -> !Boolean.TRUE.equals(b.getIsFinalized())).count();
+    stats.setFinalizedBatches(finalizedCount);
+    stats.setPendingBatches(pendingCount);
 
     // Group by status
     Map<String, Long> statusCount = new HashMap<>();
@@ -435,7 +440,12 @@ public class ProductionBatchController {
           String status = batch.getStatus() != null ? batch.getStatus() : "UNKNOWN";
           statusCount.put(status, statusCount.getOrDefault(status, 0L) + 1);
         });
-    stats.setStatusBreakdown(statusCount);
+    // Convert to list of KeyCountDto for clearer OpenAPI schema
+    List<KeyCountDto> statusList =
+        statusCount.entrySet().stream()
+            .map(e -> new KeyCountDto(e.getKey(), e.getValue()))
+            .toList();
+    stats.setStatusBreakdown(statusList);
 
     // Group by location
     Map<String, Long> locationCount = new HashMap<>();
@@ -445,7 +455,11 @@ public class ProductionBatchController {
               batch.getBusinessLocation() != null ? batch.getBusinessLocation() : "Unknown";
           locationCount.put(location, locationCount.getOrDefault(location, 0L) + 1);
         });
-    stats.setLocationBreakdown(locationCount);
+    List<KeyCountDto> locationList =
+        locationCount.entrySet().stream()
+            .map(e -> new KeyCountDto(e.getKey(), e.getValue()))
+            .toList();
+    stats.setLocationBreakdown(locationList);
 
     return ResponseEntity.ok(stats);
   }
