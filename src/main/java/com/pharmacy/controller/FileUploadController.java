@@ -146,7 +146,10 @@ public class FileUploadController {
   @Operation(summary = "Upload multiple files", description = "Upload multiple files at once")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Files uploaded successfully"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Files uploaded successfully",
+            content = @Content(mediaType = "application/json")),
         @ApiResponse(responseCode = "400", description = "Invalid files")
       })
   public ResponseEntity<Map<String, Object>> uploadMultipleFiles(
@@ -186,7 +189,13 @@ public class FileUploadController {
   @Operation(summary = "Download a file", description = "Download a previously uploaded file")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "File downloaded successfully"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "File downloaded successfully",
+            content =
+                @Content(
+                    mediaType = "application/octet-stream",
+                    schema = @Schema(type = "string", format = "binary"))),
         @ApiResponse(responseCode = "404", description = "File not found")
       })
   public ResponseEntity<Resource> downloadFile(
@@ -226,7 +235,10 @@ public class FileUploadController {
   @Operation(summary = "Delete a file", description = "Delete an uploaded file")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "File deleted successfully"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "File deleted successfully",
+            content = @Content(mediaType = "application/json")),
         @ApiResponse(responseCode = "404", description = "File not found")
       })
   public ResponseEntity<Map<String, String>> deleteFile(
@@ -264,7 +276,10 @@ public class FileUploadController {
   @Operation(
       summary = "List files by category",
       description = "Get a list of all files in a specific category")
-  @ApiResponse(responseCode = "200", description = "Files retrieved successfully")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Files retrieved successfully",
+      content = @Content(mediaType = "application/json"))
   public ResponseEntity<Map<String, Object>> listFiles(
       @Parameter(description = "File category", required = true) @PathVariable String category) {
 

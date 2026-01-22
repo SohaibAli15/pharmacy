@@ -64,7 +64,13 @@ public class IngredientStockController {
           "Update existing ingredient stock information including pricing and reorder levels")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Ingredient stock updated successfully"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Ingredient stock updated successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = IngredientStockDto.class))),
         @ApiResponse(responseCode = "404", description = "Ingredient stock not found")
       })
   public ResponseEntity<IngredientStockDto> updateIngredientStock(
@@ -82,7 +88,10 @@ public class IngredientStockController {
           "Adjust stock quantity (positive for addition, negative for reduction) with reason tracking")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Stock adjusted successfully"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Stock adjusted successfully",
+            content = @Content(mediaType = "application/json")),
         @ApiResponse(responseCode = "400", description = "Insufficient stock for reduction"),
         @ApiResponse(responseCode = "404", description = "Ingredient stock not found")
       })
@@ -218,7 +227,13 @@ public class IngredientStockController {
           "Calculate total available quantity of a specific ingredient in a specific store")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Successfully calculated total quantity"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully calculated total quantity",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Double.class))),
         @ApiResponse(responseCode = "404", description = "Store or ingredient not found")
       })
   public ResponseEntity<Double> getTotalQuantity(

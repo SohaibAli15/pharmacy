@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.pharmacy.dto.AlertDto;
+import com.pharmacy.dto.AlertPageResponse;
 import com.pharmacy.service.AlertService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,9 +41,22 @@ public class AlertController {
       responseCode = "200",
       description = "Successfully retrieved alerts",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
-  public Page<AlertDto> getAllAlerts(@PageableDefault(size = 20) Pageable pageable) {
-    return alertService.listAll(pageable);
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = AlertPageResponse.class)))
+  public ResponseEntity<AlertPageResponse> getAllAlerts(
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<AlertDto> alerts = alertService.listAll(pageable);
+    AlertPageResponse response = new AlertPageResponse();
+    response.setContent(alerts.getContent());
+    response.setTotalElements(alerts.getTotalElements());
+    response.setTotalPages(alerts.getTotalPages());
+    response.setNumber(alerts.getNumber());
+    response.setSize(alerts.getSize());
+    response.setFirst(alerts.isFirst());
+    response.setLast(alerts.isLast());
+    response.setEmpty(alerts.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/unread")
@@ -53,9 +67,22 @@ public class AlertController {
       responseCode = "200",
       description = "Successfully retrieved unread alerts",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
-  public Page<AlertDto> getUnread(@PageableDefault(size = 20) Pageable pageable) {
-    return alertService.getUnreadAlerts(pageable);
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = AlertPageResponse.class)))
+  public ResponseEntity<AlertPageResponse> getUnread(
+      @PageableDefault(size = 20) Pageable pageable) {
+    Page<AlertDto> alerts = alertService.getUnreadAlerts(pageable);
+    AlertPageResponse response = new AlertPageResponse();
+    response.setContent(alerts.getContent());
+    response.setTotalElements(alerts.getTotalElements());
+    response.setTotalPages(alerts.getTotalPages());
+    response.setNumber(alerts.getNumber());
+    response.setSize(alerts.getSize());
+    response.setFirst(alerts.isFirst());
+    response.setLast(alerts.isLast());
+    response.setEmpty(alerts.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/ingredient/{ingredientId}")
@@ -70,13 +97,23 @@ public class AlertController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = Page.class))),
+                    schema = @Schema(implementation = AlertPageResponse.class))),
         @ApiResponse(responseCode = "404", description = "Ingredient not found")
       })
-  public Page<AlertDto> getByIngredient(
+  public ResponseEntity<AlertPageResponse> getByIngredient(
       @Parameter(description = "Ingredient ID", required = true) @PathVariable Long ingredientId,
       @PageableDefault(size = 20) Pageable pageable) {
-    return alertService.getByIngredient(ingredientId, pageable);
+    Page<AlertDto> alerts = alertService.getByIngredient(ingredientId, pageable);
+    AlertPageResponse response = new AlertPageResponse();
+    response.setContent(alerts.getContent());
+    response.setTotalElements(alerts.getTotalElements());
+    response.setTotalPages(alerts.getTotalPages());
+    response.setNumber(alerts.getNumber());
+    response.setSize(alerts.getSize());
+    response.setFirst(alerts.isFirst());
+    response.setLast(alerts.isLast());
+    response.setEmpty(alerts.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/{id}")

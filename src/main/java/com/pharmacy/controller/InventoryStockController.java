@@ -63,7 +63,13 @@ public class InventoryStockController {
           "Update existing inventory stock information including pricing and reorder levels")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Inventory stock updated successfully"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Inventory stock updated successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = InventoryStockDto.class))),
         @ApiResponse(responseCode = "404", description = "Inventory stock not found")
       })
   public ResponseEntity<InventoryStockDto> updateInventoryStock(
@@ -80,7 +86,10 @@ public class InventoryStockController {
           "Adjust inventory quantity (positive for addition, negative for reduction) with reason tracking")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Stock adjusted successfully"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Stock adjusted successfully",
+            content = @Content(mediaType = "application/json")),
         @ApiResponse(responseCode = "400", description = "Insufficient stock for reduction"),
         @ApiResponse(responseCode = "404", description = "Inventory stock not found")
       })

@@ -58,7 +58,13 @@ public class CustomerController {
       description = "Update customer information including contact details and medical history")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Customer updated successfully"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Customer updated successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = CustomerDto.class))),
         @ApiResponse(responseCode = "404", description = "Customer not found"),
         @ApiResponse(responseCode = "400", description = "Invalid input")
       })
@@ -96,7 +102,13 @@ public class CustomerController {
       description = "Retrieve a customer by their unique customer code")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Customer found"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Customer found",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = CustomerDto.class))),
         @ApiResponse(responseCode = "404", description = "Customer not found")
       })
   public ResponseEntity<CustomerDto> getCustomerByCode(

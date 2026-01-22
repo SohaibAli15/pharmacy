@@ -157,7 +157,8 @@ public class ManufacturingReportController {
       value = {
         @ApiResponse(
             responseCode = "200",
-            description = "Successfully generated cost variance report")
+            description = "Successfully generated cost variance report",
+            content = @Content(mediaType = "application/json"))
       })
   @GetMapping("/cost-variance")
   public ResponseEntity<Map<String, Object>> getCostVarianceReport(

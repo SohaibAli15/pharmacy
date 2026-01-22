@@ -63,7 +63,13 @@ public class StoreController {
       description = "Update store information including location and manager details")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Store updated successfully"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Store updated successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = StoreDto.class))),
         @ApiResponse(responseCode = "404", description = "Store not found")
       })
   public ResponseEntity<StoreDto> updateStore(
@@ -77,7 +83,13 @@ public class StoreController {
   @Operation(summary = "Get store by ID", description = "Retrieve a specific store by its ID")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Store found"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Store found",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = StoreDto.class))),
         @ApiResponse(responseCode = "404", description = "Store not found")
       })
   public ResponseEntity<StoreDto> getStoreById(
@@ -92,7 +104,13 @@ public class StoreController {
       description = "Retrieve a store by its unique store code")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Store found"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Store found",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = StoreDto.class))),
         @ApiResponse(responseCode = "404", description = "Store not found")
       })
   public ResponseEntity<StoreDto> getStoreByCode(

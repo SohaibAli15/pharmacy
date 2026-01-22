@@ -17,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.pharmacy.dto.ProductionBatchDto;
+import com.pharmacy.dto.ProductionBatchPageResponse;
+import com.pharmacy.dto.ProductionBatchStatsResponse;
 import com.pharmacy.service.ProductionBatchService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,13 +53,22 @@ public class ProductionBatchController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = Page.class)))
+                    schema = @Schema(implementation = ProductionBatchPageResponse.class)))
       })
   @GetMapping
-  public ResponseEntity<Page<ProductionBatchDto>> getAllProductionBatches(
+  public ResponseEntity<ProductionBatchPageResponse> getAllProductionBatches(
       @PageableDefault(size = 20) Pageable pageable) {
     Page<ProductionBatchDto> batches = productionBatchService.listAll(pageable);
-    return ResponseEntity.ok(batches);
+    ProductionBatchPageResponse response = new ProductionBatchPageResponse();
+    response.setContent(batches.getContent());
+    response.setTotalElements(batches.getTotalElements());
+    response.setTotalPages(batches.getTotalPages());
+    response.setNumber(batches.getNumber());
+    response.setSize(batches.getSize());
+    response.setFirst(batches.isFirst());
+    response.setLast(batches.isLast());
+    response.setEmpty(batches.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/search")
@@ -73,9 +84,9 @@ public class ProductionBatchController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = Page.class)))
+                    schema = @Schema(implementation = ProductionBatchPageResponse.class)))
       })
-  public ResponseEntity<Page<ProductionBatchDto>> searchProductionBatches(
+  public ResponseEntity<ProductionBatchPageResponse> searchProductionBatches(
       @Parameter(description = "Filter by business location", example = "Butt Brothers")
           @RequestParam(required = false)
           String businessLocation,
@@ -103,7 +114,16 @@ public class ProductionBatchController {
     Page<ProductionBatchDto> batches =
         productionBatchService.searchProductionBatches(
             businessLocation, status, finalized, recipeId, productId, startDate, endDate, pageable);
-    return ResponseEntity.ok(batches);
+    ProductionBatchPageResponse response = new ProductionBatchPageResponse();
+    response.setContent(batches.getContent());
+    response.setTotalElements(batches.getTotalElements());
+    response.setTotalPages(batches.getTotalPages());
+    response.setNumber(batches.getNumber());
+    response.setSize(batches.getSize());
+    response.setFirst(batches.isFirst());
+    response.setLast(batches.isLast());
+    response.setEmpty(batches.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/recipe/{recipeId}")
@@ -118,13 +138,22 @@ public class ProductionBatchController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = Page.class)))
+                    schema = @Schema(implementation = ProductionBatchPageResponse.class)))
       })
-  public ResponseEntity<Page<ProductionBatchDto>> getProductionBatchesByRecipe(
+  public ResponseEntity<ProductionBatchPageResponse> getProductionBatchesByRecipe(
       @Parameter(description = "Recipe ID") @PathVariable Long recipeId,
       @PageableDefault(size = 20) Pageable pageable) {
     Page<ProductionBatchDto> batches = productionBatchService.getByRecipe(recipeId, pageable);
-    return ResponseEntity.ok(batches);
+    ProductionBatchPageResponse response = new ProductionBatchPageResponse();
+    response.setContent(batches.getContent());
+    response.setTotalElements(batches.getTotalElements());
+    response.setTotalPages(batches.getTotalPages());
+    response.setNumber(batches.getNumber());
+    response.setSize(batches.getSize());
+    response.setFirst(batches.isFirst());
+    response.setLast(batches.isLast());
+    response.setEmpty(batches.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @Operation(
@@ -138,14 +167,23 @@ public class ProductionBatchController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = Page.class)))
+                    schema = @Schema(implementation = ProductionBatchPageResponse.class)))
       })
   @GetMapping("/status/{status}")
-  public ResponseEntity<Page<ProductionBatchDto>> getProductionBatchesByStatus(
+  public ResponseEntity<ProductionBatchPageResponse> getProductionBatchesByStatus(
       @Parameter(description = "Status value", example = "COMPLETED") @PathVariable String status,
       @PageableDefault(size = 20) Pageable pageable) {
     Page<ProductionBatchDto> batches = productionBatchService.getByStatus(status, pageable);
-    return ResponseEntity.ok(batches);
+    ProductionBatchPageResponse response = new ProductionBatchPageResponse();
+    response.setContent(batches.getContent());
+    response.setTotalElements(batches.getTotalElements());
+    response.setTotalPages(batches.getTotalPages());
+    response.setNumber(batches.getNumber());
+    response.setSize(batches.getSize());
+    response.setFirst(batches.isFirst());
+    response.setLast(batches.isLast());
+    response.setEmpty(batches.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @Operation(
@@ -367,10 +405,10 @@ public class ProductionBatchController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = Map.class)))
+                    schema = @Schema(implementation = ProductionBatchStatsResponse.class)))
       })
   @GetMapping("/stats")
-  public ResponseEntity<Map<String, Object>> getProductionStats(
+  public ResponseEntity<ProductionBatchStatsResponse> getProductionStats(
       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
           LocalDateTime startDate,
       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -385,11 +423,10 @@ public class ProductionBatchController {
       batches = productionBatchService.listAll();
     }
 
-    Map<String, Object> stats = new HashMap<>();
-    stats.put("totalBatches", batches.size());
-    stats.put(
-        "finalizedBatches", batches.stream().filter(ProductionBatchDto::getIsFinalized).count());
-    stats.put("pendingBatches", batches.stream().filter(b -> !b.getIsFinalized()).count());
+    ProductionBatchStatsResponse stats = new ProductionBatchStatsResponse();
+    stats.setTotalBatches(batches.size());
+    stats.setFinalizedBatches(batches.stream().filter(ProductionBatchDto::getIsFinalized).count());
+    stats.setPendingBatches(batches.stream().filter(b -> !b.getIsFinalized()).count());
 
     // Group by status
     Map<String, Long> statusCount = new HashMap<>();
@@ -398,7 +435,7 @@ public class ProductionBatchController {
           String status = batch.getStatus() != null ? batch.getStatus() : "UNKNOWN";
           statusCount.put(status, statusCount.getOrDefault(status, 0L) + 1);
         });
-    stats.put("statusBreakdown", statusCount);
+    stats.setStatusBreakdown(statusCount);
 
     // Group by location
     Map<String, Long> locationCount = new HashMap<>();
@@ -408,7 +445,7 @@ public class ProductionBatchController {
               batch.getBusinessLocation() != null ? batch.getBusinessLocation() : "Unknown";
           locationCount.put(location, locationCount.getOrDefault(location, 0L) + 1);
         });
-    stats.put("locationBreakdown", locationCount);
+    stats.setLocationBreakdown(locationCount);
 
     return ResponseEntity.ok(stats);
   }

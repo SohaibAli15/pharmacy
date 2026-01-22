@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.pharmacy.dto.SaleDto;
+import com.pharmacy.dto.SalePageResponse;
 import com.pharmacy.entity.Sale;
 import com.pharmacy.service.SaleService;
 
@@ -86,7 +87,13 @@ public class SaleController {
       description = "Retrieve a sale transaction by its invoice number")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Sale found"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Sale found",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = SaleDto.class))),
         @ApiResponse(responseCode = "404", description = "Sale not found")
       })
   public ResponseEntity<SaleDto> getSaleByInvoice(
@@ -104,10 +111,22 @@ public class SaleController {
       responseCode = "200",
       description = "Successfully retrieved sales",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
-  public ResponseEntity<Page<SaleDto>> getAllSales(@PageableDefault(size = 20) Pageable pageable) {
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = SalePageResponse.class)))
+  public ResponseEntity<SalePageResponse> getAllSales(
+      @PageableDefault(size = 20) Pageable pageable) {
     Page<SaleDto> sales = saleService.getAllSales(pageable);
-    return ResponseEntity.ok(sales);
+    SalePageResponse response = new SalePageResponse();
+    response.setContent(sales.getContent());
+    response.setTotalElements(sales.getTotalElements());
+    response.setTotalPages(sales.getTotalPages());
+    response.setNumber(sales.getNumber());
+    response.setSize(sales.getSize());
+    response.setFirst(sales.isFirst());
+    response.setLast(sales.isLast());
+    response.setEmpty(sales.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/store/{storeId}")
@@ -122,14 +141,23 @@ public class SaleController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = Page.class))),
+                    schema = @Schema(implementation = SalePageResponse.class))),
         @ApiResponse(responseCode = "404", description = "Store not found")
       })
-  public ResponseEntity<Page<SaleDto>> getSalesByStore(
+  public ResponseEntity<SalePageResponse> getSalesByStore(
       @Parameter(description = "Store ID", required = true) @PathVariable Long storeId,
       @PageableDefault(size = 20) Pageable pageable) {
     Page<SaleDto> sales = saleService.getSalesByStore(storeId, pageable);
-    return ResponseEntity.ok(sales);
+    SalePageResponse response = new SalePageResponse();
+    response.setContent(sales.getContent());
+    response.setTotalElements(sales.getTotalElements());
+    response.setTotalPages(sales.getTotalPages());
+    response.setNumber(sales.getNumber());
+    response.setSize(sales.getSize());
+    response.setFirst(sales.isFirst());
+    response.setLast(sales.isLast());
+    response.setEmpty(sales.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/customer/{customerId}")
@@ -144,14 +172,23 @@ public class SaleController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = Page.class))),
+                    schema = @Schema(implementation = SalePageResponse.class))),
         @ApiResponse(responseCode = "404", description = "Customer not found")
       })
-  public ResponseEntity<Page<SaleDto>> getSalesByCustomer(
+  public ResponseEntity<SalePageResponse> getSalesByCustomer(
       @Parameter(description = "Customer ID", required = true) @PathVariable Long customerId,
       @PageableDefault(size = 20) Pageable pageable) {
     Page<SaleDto> sales = saleService.getSalesByCustomer(customerId, pageable);
-    return ResponseEntity.ok(sales);
+    SalePageResponse response = new SalePageResponse();
+    response.setContent(sales.getContent());
+    response.setTotalElements(sales.getTotalElements());
+    response.setTotalPages(sales.getTotalPages());
+    response.setNumber(sales.getNumber());
+    response.setSize(sales.getSize());
+    response.setFirst(sales.isFirst());
+    response.setLast(sales.isLast());
+    response.setEmpty(sales.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/date-range")
@@ -185,12 +222,23 @@ public class SaleController {
       responseCode = "200",
       description = "Successfully retrieved sales",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
-  public ResponseEntity<Page<SaleDto>> getSalesByStatus(
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = SalePageResponse.class)))
+  public ResponseEntity<SalePageResponse> getSalesByStatus(
       @Parameter(description = "Sale status", required = true) @PathVariable Sale.SaleStatus status,
       @PageableDefault(size = 20) Pageable pageable) {
     Page<SaleDto> sales = saleService.getSalesByStatus(status, pageable);
-    return ResponseEntity.ok(sales);
+    SalePageResponse response = new SalePageResponse();
+    response.setContent(sales.getContent());
+    response.setTotalElements(sales.getTotalElements());
+    response.setTotalPages(sales.getTotalPages());
+    response.setNumber(sales.getNumber());
+    response.setSize(sales.getSize());
+    response.setFirst(sales.isFirst());
+    response.setLast(sales.isLast());
+    response.setEmpty(sales.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @PostMapping("/{id}/cancel")
@@ -199,7 +247,13 @@ public class SaleController {
       description = "Cancel a sale and restore inventory stock to the store")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Sale cancelled successfully"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Sale cancelled successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = SaleDto.class))),
         @ApiResponse(responseCode = "404", description = "Sale not found"),
         @ApiResponse(responseCode = "400", description = "Sale is already cancelled")
       })
@@ -215,7 +269,13 @@ public class SaleController {
       description = "Process a sale return and restore inventory stock to the store")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Sale returned successfully"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Sale returned successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = SaleDto.class))),
         @ApiResponse(responseCode = "404", description = "Sale not found"),
         @ApiResponse(responseCode = "400", description = "Sale is already returned")
       })

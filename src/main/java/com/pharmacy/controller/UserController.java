@@ -52,7 +52,15 @@ public class UserController {
 
   @GetMapping
   @Operation(summary = "Get all users", description = "Retrieve all registered system users")
-  @ApiResponse(responseCode = "200", description = "Successfully retrieved all users")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Successfully retrieved all users",
+      content =
+          @Content(
+              mediaType = "application/json",
+              array =
+                  @io.swagger.v3.oas.annotations.media.ArraySchema(
+                      schema = @Schema(implementation = User.class))))
   public ResponseEntity<List<User>> getAllUsers() {
     List<User> users = userService.findAllUsers();
     return ResponseEntity.ok(users);

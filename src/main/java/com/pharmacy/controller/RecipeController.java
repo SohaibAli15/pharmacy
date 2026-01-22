@@ -183,7 +183,13 @@ public class RecipeController {
       description = "Retrieve a specific recipe by its unique identifier")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Recipe found"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Recipe found",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = RecipeDto.class))),
         @ApiResponse(responseCode = "404", description = "Recipe not found")
       })
   @GetMapping("/{id}")
@@ -226,7 +232,13 @@ public class RecipeController {
       description = "Create a new pharmaceutical recipe with ingredients and cost calculations")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "201", description = "Recipe created successfully"),
+        @ApiResponse(
+            responseCode = "201",
+            description = "Recipe created successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = RecipeDto.class))),
         @ApiResponse(
             responseCode = "400",
             description = "Invalid input or recipe code already exists",
@@ -255,7 +267,13 @@ public class RecipeController {
       description = "Update recipe details, ingredients, and recalculate costs")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Recipe updated successfully"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Recipe updated successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = RecipeDto.class))),
         @ApiResponse(
             responseCode = "400",
             description = "Invalid input",
@@ -308,7 +326,13 @@ public class RecipeController {
       description = "Copy an existing recipe with a new code and optional name")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "201", description = "Recipe copied successfully"),
+        @ApiResponse(
+            responseCode = "201",
+            description = "Recipe copied successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = RecipeDto.class))),
         @ApiResponse(
             responseCode = "400",
             description = "Invalid input",

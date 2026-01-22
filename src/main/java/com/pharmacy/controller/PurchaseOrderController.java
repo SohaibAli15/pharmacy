@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.pharmacy.dto.PurchaseOrderDto;
 import com.pharmacy.dto.PurchaseOrderItemDto;
+import com.pharmacy.dto.PurchaseOrderPageResponse;
 import com.pharmacy.entity.PurchaseOrder;
 import com.pharmacy.service.PurchaseOrderService;
 
@@ -63,7 +64,13 @@ public class PurchaseOrderController {
       description = "Update the status of a purchase order (APPROVED, REJECTED, etc.)")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Status updated successfully"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Status updated successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = PurchaseOrderDto.class))),
         @ApiResponse(responseCode = "404", description = "Purchase order not found"),
         @ApiResponse(responseCode = "400", description = "Invalid status transition")
       })
@@ -81,7 +88,13 @@ public class PurchaseOrderController {
       description = "Process the receipt of items from a purchase order with quality checks")
   @ApiResponses(
       value = {
-        @ApiResponse(responseCode = "200", description = "Items received successfully"),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Items received successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = PurchaseOrderDto.class))),
         @ApiResponse(responseCode = "404", description = "Purchase order not found"),
         @ApiResponse(responseCode = "400", description = "Invalid received quantities")
       })
@@ -121,11 +134,22 @@ public class PurchaseOrderController {
       responseCode = "200",
       description = "Successfully retrieved purchase orders",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
-  public ResponseEntity<Page<PurchaseOrderDto>> getAllPurchaseOrders(
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = PurchaseOrderPageResponse.class)))
+  public ResponseEntity<PurchaseOrderPageResponse> getAllPurchaseOrders(
       @PageableDefault(size = 20) Pageable pageable) {
     Page<PurchaseOrderDto> orders = purchaseOrderService.getAllPurchaseOrders(pageable);
-    return ResponseEntity.ok(orders);
+    PurchaseOrderPageResponse response = new PurchaseOrderPageResponse();
+    response.setContent(orders.getContent());
+    response.setTotalElements(orders.getTotalElements());
+    response.setTotalPages(orders.getTotalPages());
+    response.setNumber(orders.getNumber());
+    response.setSize(orders.getSize());
+    response.setFirst(orders.isFirst());
+    response.setLast(orders.isLast());
+    response.setEmpty(orders.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/status/{status}")
@@ -136,14 +160,25 @@ public class PurchaseOrderController {
       responseCode = "200",
       description = "Successfully retrieved purchase orders",
       content =
-          @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class)))
-  public ResponseEntity<Page<PurchaseOrderDto>> getPurchaseOrdersByStatus(
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = PurchaseOrderPageResponse.class)))
+  public ResponseEntity<PurchaseOrderPageResponse> getPurchaseOrdersByStatus(
       @Parameter(description = "Order status", required = true) @PathVariable
           PurchaseOrder.OrderStatus status,
       @PageableDefault(size = 20) Pageable pageable) {
     Page<PurchaseOrderDto> orders =
         purchaseOrderService.getPurchaseOrdersByStatus(status, pageable);
-    return ResponseEntity.ok(orders);
+    PurchaseOrderPageResponse response = new PurchaseOrderPageResponse();
+    response.setContent(orders.getContent());
+    response.setTotalElements(orders.getTotalElements());
+    response.setTotalPages(orders.getTotalPages());
+    response.setNumber(orders.getNumber());
+    response.setSize(orders.getSize());
+    response.setFirst(orders.isFirst());
+    response.setLast(orders.isLast());
+    response.setEmpty(orders.isEmpty());
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/supplier/{supplierId}")
@@ -158,14 +193,23 @@ public class PurchaseOrderController {
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = Page.class))),
+                    schema = @Schema(implementation = PurchaseOrderPageResponse.class))),
         @ApiResponse(responseCode = "404", description = "Supplier not found")
       })
-  public ResponseEntity<Page<PurchaseOrderDto>> getPurchaseOrdersBySupplier(
+  public ResponseEntity<PurchaseOrderPageResponse> getPurchaseOrdersBySupplier(
       @Parameter(description = "Supplier ID", required = true) @PathVariable Long supplierId,
       @PageableDefault(size = 20) Pageable pageable) {
     Page<PurchaseOrderDto> orders =
         purchaseOrderService.getPurchaseOrdersBySupplier(supplierId, pageable);
-    return ResponseEntity.ok(orders);
+    PurchaseOrderPageResponse response = new PurchaseOrderPageResponse();
+    response.setContent(orders.getContent());
+    response.setTotalElements(orders.getTotalElements());
+    response.setTotalPages(orders.getTotalPages());
+    response.setNumber(orders.getNumber());
+    response.setSize(orders.getSize());
+    response.setFirst(orders.isFirst());
+    response.setLast(orders.isLast());
+    response.setEmpty(orders.isEmpty());
+    return ResponseEntity.ok(response);
   }
 }
