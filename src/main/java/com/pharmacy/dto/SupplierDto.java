@@ -31,4 +31,6 @@ public class SupplierDto {
   private String code;
   private String name;
   private Long id;
+  private Integer totalOrders;
+  private java.math.BigDecimal outstandingAmount;
 }

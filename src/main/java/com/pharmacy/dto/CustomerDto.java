@@ -37,4 +37,6 @@ public class CustomerDto {
   private String notes;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
+  private Integer totalOrders;
+  private java.math.BigDecimal outstandingAmount;
 }

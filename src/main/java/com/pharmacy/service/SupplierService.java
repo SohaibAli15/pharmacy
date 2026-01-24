@@ -1,15 +1,18 @@
 /* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pharmacy.dto.SupplierDto;
 import com.pharmacy.entity.Supplier;
+import com.pharmacy.repository.PurchaseOrderRepository;
 import com.pharmacy.repository.SupplierRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -19,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class SupplierService {
 
   private final SupplierRepository supplierRepository;
+  private final PurchaseOrderRepository purchaseOrderRepository;
 
   @Transactional
   public SupplierDto createSupplier(SupplierDto supplierDto) {
@@ -118,6 +122,21 @@ public class SupplierService {
     dto.setPaymentTermsDays(supplier.getPaymentTermsDays());
     dto.setCreatedAt(supplier.getCreatedAt());
     dto.setUpdatedAt(supplier.getUpdatedAt());
+    // Calculate total orders
+    int totalOrders =
+        purchaseOrderRepository.findBySupplier(supplier, Pageable.unpaged()).getContent().size();
+    dto.setTotalOrders(totalOrders);
+    // Calculate outstanding amount (sum of totalAmount for orders not RECEIVED or CANCELLED)
+    BigDecimal outstanding =
+        purchaseOrderRepository.findBySupplier(supplier, Pageable.unpaged()).getContent().stream()
+            .filter(
+                po ->
+                    po.getStatus() != com.pharmacy.entity.PurchaseOrder.OrderStatus.RECEIVED
+                        && po.getStatus()
+                            != com.pharmacy.entity.PurchaseOrder.OrderStatus.CANCELLED)
+            .map(com.pharmacy.entity.PurchaseOrder::getTotalAmount)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    dto.setOutstandingAmount(outstanding);
     return dto;
   }
 

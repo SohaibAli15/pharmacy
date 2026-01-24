@@ -25,33 +25,23 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "Purchase Orders", description = "Endpoints for managing Purchase Orders")
 @RestController
 @RequestMapping("/api/v1/purchase-orders")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
-@Tag(
-    name = "Purchase Order Management",
-    description = "APIs for managing purchase orders from suppliers with receiving workflow (v1)")
 public class PurchaseOrderController {
 
   private final PurchaseOrderService purchaseOrderService;
 
-  @PostMapping
   @Operation(
       summary = "Create a new purchase order",
       description = "Create a new purchase order from a supplier with ordered items")
-  @ApiResponses(
-      value = {
-        @ApiResponse(
-            responseCode = "201",
-            description = "Purchase order created successfully",
-            content =
-                @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = PurchaseOrderDto.class))),
-        @ApiResponse(responseCode = "400", description = "Invalid input"),
-        @ApiResponse(responseCode = "404", description = "Supplier not found")
-      })
+  @ApiResponse(
+      responseCode = "201",
+      description = "Purchase order created successfully",
+      content = @Content(schema = @Schema(implementation = PurchaseOrderDto.class)))
+  @PostMapping
   public ResponseEntity<PurchaseOrderDto> createPurchaseOrder(
       @RequestBody PurchaseOrderDto purchaseOrderDto) {
     PurchaseOrderDto created = purchaseOrderService.createPurchaseOrder(purchaseOrderDto);
@@ -62,18 +52,13 @@ public class PurchaseOrderController {
   @Operation(
       summary = "Update purchase order status",
       description = "Update the status of a purchase order (APPROVED, REJECTED, etc.)")
-  @ApiResponses(
-      value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Status updated successfully",
-            content =
-                @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = PurchaseOrderDto.class))),
-        @ApiResponse(responseCode = "404", description = "Purchase order not found"),
-        @ApiResponse(responseCode = "400", description = "Invalid status transition")
-      })
+  @ApiResponse(
+      responseCode = "200",
+      description = "Status updated successfully",
+      content =
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = PurchaseOrderDto.class)))
   public ResponseEntity<PurchaseOrderDto> updateOrderStatus(
       @Parameter(description = "Purchase order ID", required = true) @PathVariable Long id,
       @Parameter(description = "New status", required = true) @RequestParam
@@ -86,18 +71,13 @@ public class PurchaseOrderController {
   @Operation(
       summary = "Receive items from purchase order",
       description = "Process the receipt of items from a purchase order with quality checks")
-  @ApiResponses(
-      value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Items received successfully",
-            content =
-                @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = PurchaseOrderDto.class))),
-        @ApiResponse(responseCode = "404", description = "Purchase order not found"),
-        @ApiResponse(responseCode = "400", description = "Invalid received quantities")
-      })
+  @ApiResponse(
+      responseCode = "200",
+      description = "Items received successfully",
+      content =
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = PurchaseOrderDto.class)))
   public ResponseEntity<PurchaseOrderDto> receiveItems(
       @Parameter(description = "Purchase order ID", required = true) @PathVariable Long id,
       @RequestBody List<PurchaseOrderItemDto> receivedItems) {
@@ -109,17 +89,13 @@ public class PurchaseOrderController {
   @Operation(
       summary = "Get purchase order by ID",
       description = "Retrieve a specific purchase order by its ID")
-  @ApiResponses(
-      value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Purchase order found",
-            content =
-                @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = PurchaseOrderDto.class))),
-        @ApiResponse(responseCode = "404", description = "Purchase order not found")
-      })
+  @ApiResponse(
+      responseCode = "200",
+      description = "Purchase order found",
+      content =
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = PurchaseOrderDto.class)))
   public ResponseEntity<PurchaseOrderDto> getPurchaseOrderById(
       @Parameter(description = "Purchase order ID", required = true) @PathVariable Long id) {
     PurchaseOrderDto order = purchaseOrderService.getPurchaseOrderById(id);

@@ -284,4 +284,27 @@ public class SaleController {
     SaleDto returned = saleService.returnSale(id);
     return ResponseEntity.ok(returned);
   }
+
+  @PatchMapping("/{id}/status")
+  @Operation(
+      summary = "Update sale status",
+      description =
+          "Update the status of a sale order (CONFIRMED, IN_PRODUCTION, DISPATCHED, COMPLETED, etc.)")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Sale status updated successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = SaleDto.class))),
+        @ApiResponse(responseCode = "404", description = "Sale not found"),
+        @ApiResponse(responseCode = "400", description = "Invalid status transition")
+      })
+  public ResponseEntity<SaleDto> updateSaleStatus(
+      @PathVariable Long id, @RequestParam Sale.SaleStatus status) {
+    SaleDto updated = saleService.updateSaleStatus(id, status);
+    return ResponseEntity.ok(updated);
+  }
 }

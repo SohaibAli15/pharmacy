@@ -1,6 +1,7 @@
 /* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pharmacy.dto.CustomerDto;
 import com.pharmacy.entity.Customer;
 import com.pharmacy.repository.CustomerRepository;
+import com.pharmacy.repository.SaleRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class CustomerService {
 
   private final CustomerRepository customerRepository;
+  private final SaleRepository saleRepository;
 
   @Transactional
   public CustomerDto createCustomer(CustomerDto customerDto) {
@@ -137,6 +140,17 @@ public class CustomerService {
     dto.setNotes(customer.getNotes());
     dto.setCreatedAt(customer.getCreatedAt());
     dto.setUpdatedAt(customer.getUpdatedAt());
+    // Calculate total orders
+    int totalOrders =
+        saleRepository.findByCustomer(customer, Pageable.unpaged()).getContent().size();
+    dto.setTotalOrders(totalOrders);
+    // Calculate outstanding amount (sum of totalAmount for sales with status PENDING)
+    BigDecimal outstanding =
+        saleRepository.findByCustomer(customer, Pageable.unpaged()).getContent().stream()
+            .filter(sale -> sale.getStatus() == com.pharmacy.entity.Sale.SaleStatus.PENDING)
+            .map(com.pharmacy.entity.Sale::getTotalAmount)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    dto.setOutstandingAmount(outstanding);
     return dto;
   }
 

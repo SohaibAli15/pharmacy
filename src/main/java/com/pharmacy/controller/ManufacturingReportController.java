@@ -7,16 +7,23 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.pharmacy.dto.InventoryStockDto;
 import com.pharmacy.dto.ProductionBatchDto;
+import com.pharmacy.dto.SaleDto;
+import com.pharmacy.entity.Sale;
+import com.pharmacy.service.InventoryStockService;
 import com.pharmacy.service.ProductionBatchService;
+import com.pharmacy.service.SaleService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,7 +43,11 @@ import lombok.RequiredArgsConstructor;
         "Analytics and reporting endpoints for manufacturing operations and GMP compliance (v1)")
 public class ManufacturingReportController {
 
-  private final ProductionBatchService productionBatchService;
+  @Autowired private SaleService saleService;
+  @Autowired private ProductionBatchService productionBatchService;
+  @Autowired private InventoryStockService inventoryStockService;
+
+  // Add other services as needed (e.g., QCService, DispatchService, etc.)
 
   @Operation(
       summary = "Material Consumption Report",
@@ -385,5 +396,270 @@ public class ManufacturingReportController {
     report.put("recipes", sortedRecipes);
 
     return ResponseEntity.ok(report);
+  }
+
+  @Operation(
+      summary = "Demo Manufacturing Workflow",
+      description =
+          "Runs a complete demo of the manufacturing workflow, simulating all key steps for training or demonstration purposes. Steps include: Create Sales Order, Generate Work Order, Issue Materials, Foil Printing/Production, Quality Control, Receive Finished Goods, Dispatch and Invoice.")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Demo workflow executed successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema =
+                        @Schema(
+                            type = "object",
+                            example =
+                                "{\"status\":\"success\",\"steps\":[\"Create Sales Order\",\"Generate Work Order\",\"Issue Materials\",\"Foil Printing/Production\",\"Quality Control\",\"Receive Finished Goods\",\"Dispatch and Invoice\"]}")))
+      })
+  @PostMapping("/demo-workflow")
+  public ResponseEntity<Map<String, Object>> runDemoWorkflow() {
+    List<String> steps =
+        Arrays.asList(
+            "Create Sales Order",
+            "Generate Work Order",
+            "Issue Materials",
+            "Foil Printing/Production",
+            "Quality Control",
+            "Receive Finished Goods",
+            "Dispatch and Invoice");
+    Map<String, Object> result = new HashMap<>();
+    result.put("status", "success");
+    result.put("steps", steps);
+    result.put(
+        "message", "Demo workflow executed. All steps simulated for training/demo purposes.");
+    return ResponseEntity.ok(result);
+  }
+
+  @Operation(
+      summary = "Create Sales Order (Manufacturing Step 1)",
+      description = "Step 1: Create a sales order as the first step in the manufacturing workflow.")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Sales order created",
+      content =
+          @Content(
+              schema =
+                  @Schema(
+                      type = "object",
+                      example = "{\"status\":\"success\",\"salesOrderId\":123}")))
+  @PostMapping("/step/create-sales-order")
+  public ResponseEntity<Map<String, Object>> createSalesOrder(
+      @RequestBody Map<String, Object> salesOrderRequest) {
+    // Convert request map to SaleDto (manual mapping for now)
+    SaleDto saleDto = new SaleDto();
+    saleDto.setStoreId(
+        salesOrderRequest.get("storeId") != null
+            ? Long.valueOf(salesOrderRequest.get("storeId").toString())
+            : null);
+    saleDto.setCustomerId(
+        salesOrderRequest.get("customerId") != null
+            ? Long.valueOf(salesOrderRequest.get("customerId").toString())
+            : null);
+    saleDto.setPharmacistId(
+        salesOrderRequest.get("pharmacistId") != null
+            ? Long.valueOf(salesOrderRequest.get("pharmacistId").toString())
+            : null);
+    saleDto.setSubtotal(
+        salesOrderRequest.get("subtotal") != null
+            ? new BigDecimal(salesOrderRequest.get("subtotal").toString())
+            : null);
+    saleDto.setDiscount(
+        salesOrderRequest.get("discount") != null
+            ? new BigDecimal(salesOrderRequest.get("discount").toString())
+            : null);
+    saleDto.setTaxAmount(
+        salesOrderRequest.get("taxAmount") != null
+            ? new BigDecimal(salesOrderRequest.get("taxAmount").toString())
+            : null);
+    saleDto.setTotalAmount(
+        salesOrderRequest.get("totalAmount") != null
+            ? new BigDecimal(salesOrderRequest.get("totalAmount").toString())
+            : null);
+    saleDto.setPaymentMethod(
+        salesOrderRequest.get("paymentMethod") != null
+            ? Sale.PaymentMethod.valueOf(salesOrderRequest.get("paymentMethod").toString())
+            : null);
+    saleDto.setNotes((String) salesOrderRequest.get("notes"));
+    // TODO: Map items if present
+    SaleDto sale = saleService.createSale(saleDto);
+    Map<String, Object> result = new HashMap<>();
+    result.put("status", "success");
+    result.put("salesOrderId", sale.getId());
+    return ResponseEntity.ok(result);
+  }
+
+  @Operation(
+      summary = "Generate Work Order (Manufacturing Step 2)",
+      description = "Step 2: Generate a work order/job card for the manufacturing batch.")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Work order generated",
+      content =
+          @Content(
+              schema =
+                  @Schema(
+                      type = "object",
+                      example = "{\"status\":\"success\",\"workOrderId\":456}")))
+  @PostMapping("/step/generate-work-order")
+  public ResponseEntity<Map<String, Object>> generateWorkOrder(
+      @RequestBody ProductionBatchDto workOrderRequest) {
+    ProductionBatchDto batch = productionBatchService.create(workOrderRequest);
+    Map<String, Object> result = new HashMap<>();
+    result.put("status", "success");
+    result.put("workOrderId", batch.getId());
+    return ResponseEntity.ok(result);
+  }
+
+  @Operation(
+      summary = "Issue Materials (Manufacturing Step 3)",
+      description = "Step 3: Issue materials to production for the batch.")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Materials issued",
+      content =
+          @Content(
+              schema =
+                  @Schema(type = "object", example = "{\"status\":\"success\",\"issued\":true}")))
+  @PostMapping("/step/issue-materials")
+  public ResponseEntity<Map<String, Object>> issueMaterials(
+      @RequestBody Map<String, Object> issueRequest) {
+    // Example expects: {stockId, quantity, reason}
+    Long stockId =
+        issueRequest.get("stockId") != null
+            ? Long.valueOf(issueRequest.get("stockId").toString())
+            : null;
+    Integer quantity =
+        issueRequest.get("quantity") != null
+            ? Integer.valueOf(issueRequest.get("quantity").toString())
+            : null;
+    String reason = (String) issueRequest.get("reason");
+    if (stockId != null && quantity != null) {
+      inventoryStockService.adjustStock(
+          stockId, -quantity, reason != null ? reason : "Issued to production");
+    }
+    Map<String, Object> result = new HashMap<>();
+    result.put("status", "success");
+    result.put("issued", true);
+    return ResponseEntity.ok(result);
+  }
+
+  @Operation(
+      summary = "Foil Printing/Production (Manufacturing Step 4)",
+      description = "Step 4: Perform foil printing/production as a single step for this process.")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Foil printing/production completed",
+      content =
+          @Content(
+              schema =
+                  @Schema(
+                      type = "object",
+                      example = "{\"status\":\"success\",\"foilPrinted\":true}")))
+  @PostMapping("/step/foil-printing")
+  public ResponseEntity<Map<String, Object>> foilPrinting(
+      @RequestBody Map<String, Object> foilRequest) {
+    // Example expects: {batchId, status}
+    Long batchId =
+        foilRequest.get("batchId") != null
+            ? Long.valueOf(foilRequest.get("batchId").toString())
+            : null;
+    String status = (String) foilRequest.get("status");
+    if (batchId != null && status != null) {
+      ProductionBatchDto batch = productionBatchService.getById(batchId);
+      batch.setStatus(status);
+      productionBatchService.update(batchId, batch);
+    }
+    Map<String, Object> result = new HashMap<>();
+    result.put("status", "success");
+    result.put("foilPrinted", true);
+    return ResponseEntity.ok(result);
+  }
+
+  @Operation(
+      summary = "Quality Control (Manufacturing Step 5)",
+      description = "Step 5: Perform quality control for the batch.")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Quality control completed",
+      content =
+          @Content(
+              schema =
+                  @Schema(type = "object", example = "{\"status\":\"success\",\"qcPassed\":true}")))
+  @PostMapping("/step/quality-control")
+  public ResponseEntity<Map<String, Object>> qualityControl(
+      @RequestBody Map<String, Object> qcRequest) {
+    // Example expects: {batchId, qcPassed}
+    Long batchId =
+        qcRequest.get("batchId") != null ? Long.valueOf(qcRequest.get("batchId").toString()) : null;
+    Boolean qcPassed =
+        qcRequest.get("qcPassed") != null
+            ? Boolean.valueOf(qcRequest.get("qcPassed").toString())
+            : null;
+    if (batchId != null && qcPassed != null) {
+      ProductionBatchDto batch = productionBatchService.getById(batchId);
+      batch.setStatus(qcPassed ? "QC_PASSED" : "QC_FAILED");
+      productionBatchService.update(batchId, batch);
+    }
+    Map<String, Object> result = new HashMap<>();
+    result.put("status", "success");
+    result.put("qcPassed", qcPassed != null ? qcPassed : false);
+    return ResponseEntity.ok(result);
+  }
+
+  @Operation(
+      summary = "Receive Finished Goods (Manufacturing Step 6)",
+      description = "Step 6: Receive finished goods into inventory.")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Finished goods received",
+      content =
+          @Content(
+              schema =
+                  @Schema(type = "object", example = "{\"status\":\"success\",\"received\":true}")))
+  @PostMapping("/step/receive-finished-goods")
+  public ResponseEntity<Map<String, Object>> receiveFinishedGoods(
+      @RequestBody InventoryStockDto receiveRequest) {
+    InventoryStockDto stock = inventoryStockService.addInventoryStock(receiveRequest);
+    Map<String, Object> result = new HashMap<>();
+    result.put("status", "success");
+    result.put("received", true);
+    result.put("stockId", stock.getId());
+    return ResponseEntity.ok(result);
+  }
+
+  @Operation(
+      summary = "Dispatch and Invoice (Manufacturing Step 7)",
+      description = "Step 7: Dispatch finished goods and generate invoice.")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Goods dispatched and invoice generated",
+      content =
+          @Content(
+              schema =
+                  @Schema(
+                      type = "object",
+                      example = "{\"status\":\"success\",\"dispatched\":true,\"invoiceId\":789}")))
+  @PostMapping("/step/dispatch-invoice")
+  public ResponseEntity<Map<String, Object>> dispatchAndInvoice(
+      @RequestBody Map<String, Object> dispatchRequest) {
+    // Example expects: {saleId, status}
+    Long saleId =
+        dispatchRequest.get("saleId") != null
+            ? Long.valueOf(dispatchRequest.get("saleId").toString())
+            : null;
+    String status = (String) dispatchRequest.get("status");
+    if (saleId != null && status != null) {
+      saleService.updateSaleStatus(saleId, Sale.SaleStatus.valueOf(status));
+    }
+    Map<String, Object> result = new HashMap<>();
+    result.put("status", "success");
+    result.put("dispatched", true);
+    result.put("invoiceId", saleId);
+    return ResponseEntity.ok(result);
   }
 }

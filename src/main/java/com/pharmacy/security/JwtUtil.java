@@ -19,9 +19,18 @@ public class JwtUtil {
   @Value("${jwt.secret}")
   private String secret;
 
-  private final long EXPIRATION_TIME = 1000 * 60 * 60 * 10; // 10 hours
+  private final long EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 24 hours
 
+  /**
+   * The secret key for HS256 must be at least 256 bits (32+ ASCII chars). Example:
+   * my-very-strong-secret-key-123456 If not, JWT will throw WeakKeyException.
+   */
   private SecretKey getSigningKey() {
+    if (secret == null || secret.length() < 32) {
+      throw new IllegalArgumentException(
+          "JWT secret key must be at least 32 characters for HS256 security. Current length: "
+              + (secret == null ? 0 : secret.length()));
+    }
     return Keys.hmacShaKeyFor(secret.getBytes());
   }
 

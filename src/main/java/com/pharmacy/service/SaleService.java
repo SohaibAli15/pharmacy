@@ -270,6 +270,17 @@ public class SaleService {
     return mapToDto(returnedSale);
   }
 
+  @Transactional
+  public SaleDto updateSaleStatus(Long id, Sale.SaleStatus status) {
+    Sale sale =
+        saleRepository.findById(id).orElseThrow(() -> new RuntimeException("Sale not found"));
+    // Add business rules for valid transitions if needed
+    sale.setStatus(status);
+    sale.setUpdatedAt(LocalDateTime.now());
+    Sale updated = saleRepository.save(sale);
+    return mapToDto(updated);
+  }
+
   private String generateInvoiceNumber(Store store) {
     String storeCode = store.getCode();
     String datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));

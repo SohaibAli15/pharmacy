@@ -93,6 +93,9 @@ public class Sale {
   }
 
   public enum SaleStatus {
+    CONFIRMED,
+    IN_PRODUCTION,
+    DISPATCHED,
     COMPLETED,
     PENDING,
     CANCELLED,
