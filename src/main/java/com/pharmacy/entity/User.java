@@ -3,6 +3,7 @@ package com.pharmacy.entity;
 
 import jakarta.persistence.*;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,9 @@ public class User {
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
+  @Schema(
+      description = "Role of the user. Possible values: ADMIN, PHARMACIST, CUSTOMER",
+      example = "ADMIN")
   private Role role;
 
   public enum Role {

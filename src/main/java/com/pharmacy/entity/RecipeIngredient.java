@@ -33,6 +33,14 @@ public class RecipeIngredient {
   @JoinColumn(name = "ingredient_id", nullable = false)
   private Ingredient ingredient;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "category_id")
+  private Category category;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "sub_category_id")
+  private SubCategory subCategory;
+
   @Column(nullable = false, precision = 15, scale = 4)
   private BigDecimal quantityRequired; // Required quantity per batch
 
@@ -59,7 +67,8 @@ public class RecipeIngredient {
   protected void calculateFinalQuantity() {
     if (wastagePercent != null && wastagePercent.compareTo(BigDecimal.ZERO) > 0) {
       BigDecimal wastageMultiplier =
-          BigDecimal.ONE.add(wastagePercent.divide(new BigDecimal("100")));
+          BigDecimal.ONE.add(
+              wastagePercent.divide(new BigDecimal("100"), 4, BigDecimal.ROUND_HALF_UP));
       finalQuantity = quantityRequired.multiply(wastageMultiplier);
     } else {
       finalQuantity = quantityRequired;

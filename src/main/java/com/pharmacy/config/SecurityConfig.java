@@ -1,8 +1,10 @@
 /* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,7 +13,11 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.pharmacy.security.JwtAuthenticationFilter;
 import com.pharmacy.service.CustomUserDetailsService;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +29,8 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
   private final CustomUserDetailsService customUserDetailsService;
+
+  @Autowired private JwtAuthenticationFilter jwtAuthenticationFilter;
 
   @Bean
   public PasswordEncoder passwordEncoder() {
@@ -38,42 +46,52 @@ public class SecurityConfig {
   }
 
   @Bean
+  public AuthenticationManager authenticationManager(
+      org.springframework.security.config.annotation.authentication.configuration
+              .AuthenticationConfiguration
+          configuration)
+      throws Exception {
+    return configuration.getAuthenticationManager();
+  }
+
+  // Remove or comment out the temporary SecurityFilterChain
+  // @Bean
+  // public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+  //   http.csrf(AbstractHttpConfigurer::disable)
+  //       .authorizeHttpRequests(
+  //           authz ->
+  //               authz
+  //                   .requestMatchers("/api/v1/auth/login", "/swagger-ui/**",
+  // "/swagger-ui.html").permitAll()
+  //                   .anyRequest().authenticated())
+  //       .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+  //   return http.build();
+  // }
+
+  // Enable production configuration for role-based authorization
+  @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
             authz ->
                 authz
-                    // TEMPORARY: Allow all requests without authentication
+                    .requestMatchers("/api/v1/auth/login", "/swagger-ui/**", "/swagger-ui.html")
+                    .permitAll()
                     .anyRequest()
-                    .permitAll());
-
+                    .authenticated())
+        .httpBasic(httpBasic -> {})
+        .authenticationProvider(authenticationProvider())
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
 
-  // PRODUCTION CONFIGURATION (Commented for now - uncomment when ready to add authentication)
-  //    @Bean
-  //    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-  //        http
-  //            .csrf(csrf -> csrf.disable())
-  //            .authorizeHttpRequests(authz -> authz
-  //                // Allow public access to Swagger UI and API documentation
-  //                .requestMatchers("/swagger-ui/**", "/swagger-ui.html").permitAll()
-  //                .requestMatchers("/v3/api-docs/**", "/api-docs/**").permitAll()
-  //                .requestMatchers("/swagger-resources/**", "/webjars/**").permitAll()
-  //                // Allow public access to actuator health endpoint
-  //                .requestMatchers("/actuator/health/**").permitAll()
-  //                // API endpoints - require authentication and specific roles
-  //                .requestMatchers("/api/users/**").hasRole("ADMIN")
-  //                .requestMatchers("/api/medicines/**").hasAnyRole("ADMIN", "PHARMACIST")
-  //                .requestMatchers("/api/prescriptions/**").hasAnyRole("ADMIN", "PHARMACIST")
-  //                .requestMatchers("/api/sales/**").hasAnyRole("ADMIN", "PHARMACIST")
-  //                .requestMatchers("/api/**").hasAnyRole("ADMIN", "PHARMACIST", "USER")
-  //                // All other requests require authentication
-  //                .anyRequest().authenticated()
-  //            )
-  //            .httpBasic(httpBasic -> {})
-  //            .authenticationProvider(authenticationProvider());
-  //
-  //        return http.build();
-  //    }
+  @Bean
+  public WebMvcConfigurer corsConfigurer() {
+    return new WebMvcConfigurer() {
+      @Override
+      public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**").allowedOrigins("*").allowedMethods("*");
+      }
+    };
+  }
 }
