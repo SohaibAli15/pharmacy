@@ -62,13 +62,13 @@ public class Customer {
 
   @Column private String medicalConditions;
 
-  @Column(nullable = false)
-  @Enumerated(EnumType.STRING)
-  private CustomerType type;
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "type_id", nullable = false)
+  private CustomerTypeEntity type;
 
-  @Column(nullable = false)
-  @Enumerated(EnumType.STRING)
-  private CustomerStatus status;
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "status_id", nullable = false)
+  private CustomerStatusEntity status;
 
   @Column private String notes;
 
@@ -93,18 +93,5 @@ public class Customer {
     MALE,
     FEMALE,
     OTHER
-  }
-
-  public enum CustomerType {
-    REGULAR,
-    VIP,
-    WHOLESALE,
-    INSTITUTIONAL
-  }
-
-  public enum CustomerStatus {
-    ACTIVE,
-    INACTIVE,
-    BLOCKED
   }
 }

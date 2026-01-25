@@ -26,9 +26,9 @@ public class Store {
   @Column(nullable = false)
   private String name;
 
-  @Column(nullable = false)
-  @Enumerated(EnumType.STRING)
-  private StoreType type;
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "type_id", nullable = false)
+  private StoreTypeEntity type;
 
   @Column(nullable = false)
   private String address;
@@ -49,9 +49,9 @@ public class Store {
   @JoinColumn(name = "manager_id")
   private User manager;
 
-  @Column(nullable = false)
-  @Enumerated(EnumType.STRING)
-  private StoreStatus status;
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "status_id", nullable = false)
+  private StoreStatusEntity status;
 
   @Column private String notes;
 
@@ -70,18 +70,5 @@ public class Store {
   @PreUpdate
   protected void onUpdate() {
     updatedAt = LocalDateTime.now();
-  }
-
-  public enum StoreType {
-    WAREHOUSE,
-    RETAIL_STORE,
-    DISTRIBUTION_CENTER,
-    MANUFACTURING_UNIT
-  }
-
-  public enum StoreStatus {
-    ACTIVE,
-    INACTIVE,
-    MAINTENANCE
   }
 }

@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.pharmacy.dto.SupplierDto;
-import com.pharmacy.entity.Supplier;
+import com.pharmacy.entity.SupplierStatusEntity;
 import com.pharmacy.service.SupplierService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -143,7 +143,7 @@ public class SupplierController {
               array = @ArraySchema(schema = @Schema(implementation = SupplierDto.class))))
   public ResponseEntity<List<SupplierDto>> getSuppliersByStatus(
       @Parameter(description = "Supplier status", required = true) @PathVariable
-          Supplier.SupplierStatus status) {
+          SupplierStatusEntity status) {
     List<SupplierDto> suppliers = supplierService.getSuppliersByStatus(status);
     return ResponseEntity.ok(suppliers);
   }

@@ -24,9 +24,9 @@ public class Alert {
   @JoinColumn(name = "ingredient_id", nullable = false)
   private Ingredient ingredient;
 
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
-  private AlertType alertType;
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "alert_type_id", nullable = false)
+  private AlertTypeEntity alertType;
 
   @Column(nullable = false)
   private String message;
@@ -36,9 +36,4 @@ public class Alert {
 
   @Column(nullable = false)
   private Boolean isRead = false;
-
-  public enum AlertType {
-    LOW_STOCK,
-    HIGH_STOCK
-  }
 }

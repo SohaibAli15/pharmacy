@@ -50,9 +50,9 @@ public class Supplier {
 
   @Column private String bankAccount;
 
-  @Column(nullable = false)
-  @Enumerated(EnumType.STRING)
-  private SupplierStatus status;
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "status_id", nullable = false)
+  private SupplierStatusEntity status;
 
   @Column private String notes;
 
@@ -73,11 +73,5 @@ public class Supplier {
   @PreUpdate
   protected void onUpdate() {
     updatedAt = LocalDateTime.now();
-  }
-
-  public enum SupplierStatus {
-    ACTIVE,
-    INACTIVE,
-    BLOCKED
   }
 }

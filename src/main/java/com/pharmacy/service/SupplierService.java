@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pharmacy.dto.SupplierDto;
 import com.pharmacy.entity.Supplier;
+import com.pharmacy.entity.SupplierStatusEntity;
 import com.pharmacy.repository.PurchaseOrderRepository;
 import com.pharmacy.repository.SupplierRepository;
 
@@ -81,7 +82,7 @@ public class SupplierService {
   }
 
   @Transactional(readOnly = true)
-  public List<SupplierDto> getSuppliersByStatus(Supplier.SupplierStatus status) {
+  public List<SupplierDto> getSuppliersByStatus(SupplierStatusEntity status) {
     return supplierRepository.findByStatus(status).stream()
         .map(this::mapToDto)
         .collect(Collectors.toList());

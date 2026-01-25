@@ -3,7 +3,7 @@ package com.pharmacy.dto;
 
 import java.time.LocalDateTime;
 
-import com.pharmacy.entity.Supplier;
+import com.pharmacy.entity.SupplierStatusEntity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,7 +17,7 @@ public class SupplierDto {
   private LocalDateTime createdAt;
   private Integer paymentTermsDays;
   private String notes;
-  private Supplier.SupplierStatus status;
+  private SupplierStatusEntity status;
   private String bankAccount;
   private String taxId;
   private String zipCode;
