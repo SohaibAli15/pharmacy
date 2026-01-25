@@ -1,7 +1,6 @@
 /* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.service;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,7 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pharmacy.dto.CustomerDto;
 import com.pharmacy.entity.Customer;
+import com.pharmacy.entity.CustomerStatusEntity;
+import com.pharmacy.entity.CustomerTypeEntity;
 import com.pharmacy.repository.CustomerRepository;
+import com.pharmacy.repository.CustomerStatusRepository;
+import com.pharmacy.repository.CustomerTypeRepository;
 import com.pharmacy.repository.SaleRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -20,8 +23,9 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
-
   private final CustomerRepository customerRepository;
+  private final CustomerTypeRepository customerTypeRepository;
+  private final CustomerStatusRepository customerStatusRepository;
   private final SaleRepository saleRepository;
 
   @Transactional
@@ -135,21 +139,27 @@ public class CustomerService {
     dto.setInsuranceNumber(customer.getInsuranceNumber());
     dto.setAllergies(customer.getAllergies());
     dto.setMedicalConditions(customer.getMedicalConditions());
-    dto.setType(customer.getType());
-    dto.setStatus(customer.getStatus());
+    dto.setTypeId(customer.getType() != null ? customer.getType().getId() : null);
+    dto.setStatusId(customer.getStatus() != null ? customer.getStatus().getId() : null);
     dto.setNotes(customer.getNotes());
     dto.setCreatedAt(customer.getCreatedAt());
     dto.setUpdatedAt(customer.getUpdatedAt());
     // Calculate total orders
     int totalOrders =
-        saleRepository.findByCustomer(customer, Pageable.unpaged()).getContent().size();
+        saleRepository
+            .findByCustomer(customer, org.springframework.data.domain.Pageable.unpaged())
+            .getContent()
+            .size();
     dto.setTotalOrders(totalOrders);
     // Calculate outstanding amount (sum of totalAmount for sales with status PENDING)
-    BigDecimal outstanding =
-        saleRepository.findByCustomer(customer, Pageable.unpaged()).getContent().stream()
+    java.math.BigDecimal outstanding =
+        saleRepository
+            .findByCustomer(customer, org.springframework.data.domain.Pageable.unpaged())
+            .getContent()
+            .stream()
             .filter(sale -> sale.getStatus() == com.pharmacy.entity.Sale.SaleStatus.PENDING)
             .map(com.pharmacy.entity.Sale::getTotalAmount)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+            .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
     dto.setOutstandingAmount(outstanding);
     return dto;
   }
@@ -173,8 +183,20 @@ public class CustomerService {
     customer.setInsuranceNumber(dto.getInsuranceNumber());
     customer.setAllergies(dto.getAllergies());
     customer.setMedicalConditions(dto.getMedicalConditions());
-    customer.setType(dto.getType());
-    customer.setStatus(dto.getStatus());
+    if (dto.getTypeId() != null) {
+      CustomerTypeEntity type =
+          customerTypeRepository
+              .findById(dto.getTypeId())
+              .orElseThrow(() -> new RuntimeException("Customer type not found"));
+      customer.setType(type);
+    }
+    if (dto.getStatusId() != null) {
+      CustomerStatusEntity status =
+          customerStatusRepository
+              .findById(dto.getStatusId())
+              .orElseThrow(() -> new RuntimeException("Customer status not found"));
+      customer.setStatus(status);
+    }
     customer.setNotes(dto.getNotes());
     return customer;
   }
@@ -197,8 +219,20 @@ public class CustomerService {
     customer.setInsuranceNumber(dto.getInsuranceNumber());
     customer.setAllergies(dto.getAllergies());
     customer.setMedicalConditions(dto.getMedicalConditions());
-    customer.setType(dto.getType());
-    customer.setStatus(dto.getStatus());
+    if (dto.getTypeId() != null) {
+      CustomerTypeEntity type =
+          customerTypeRepository
+              .findById(dto.getTypeId())
+              .orElseThrow(() -> new RuntimeException("Customer type not found"));
+      customer.setType(type);
+    }
+    if (dto.getStatusId() != null) {
+      CustomerStatusEntity status =
+          customerStatusRepository
+              .findById(dto.getStatusId())
+              .orElseThrow(() -> new RuntimeException("Customer status not found"));
+      customer.setStatus(status);
+    }
     customer.setNotes(dto.getNotes());
   }
 }

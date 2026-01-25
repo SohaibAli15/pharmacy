@@ -15,6 +15,8 @@ import com.pharmacy.entity.StoreStatusEntity;
 import com.pharmacy.entity.StoreTypeEntity;
 import com.pharmacy.entity.User;
 import com.pharmacy.repository.StoreRepository;
+import com.pharmacy.repository.StoreStatusRepository;
+import com.pharmacy.repository.StoreTypeRepository;
 import com.pharmacy.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -22,9 +24,10 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class StoreService {
-
   private final StoreRepository storeRepository;
   private final UserRepository userRepository;
+  private final StoreTypeRepository storeTypeRepository;
+  private final StoreStatusRepository storeStatusRepository;
 
   @Transactional
   public StoreDto createStore(StoreDto storeDto) {
@@ -117,7 +120,7 @@ public class StoreService {
     dto.setId(store.getId());
     dto.setCode(store.getCode());
     dto.setName(store.getName());
-    dto.setType(store.getType());
+    dto.setStoreTypeId(store.getType() != null ? store.getType().getId() : null);
     dto.setAddress(store.getAddress());
     dto.setCity(store.getCity());
     dto.setState(store.getState());
@@ -125,11 +128,8 @@ public class StoreService {
     dto.setZipCode(store.getZipCode());
     dto.setPhone(store.getPhone());
     dto.setEmail(store.getEmail());
-    if (store.getManager() != null) {
-      dto.setManagerId(store.getManager().getId());
-      dto.setManagerName(store.getManager().getUsername());
-    }
-    dto.setStatus(store.getStatus());
+    dto.setManagerId(store.getManager() != null ? store.getManager().getId() : null);
+    dto.setStoreStatusId(store.getStatus() != null ? store.getStatus().getId() : null);
     dto.setNotes(store.getNotes());
     dto.setCreatedAt(store.getCreatedAt());
     dto.setUpdatedAt(store.getUpdatedAt());
@@ -140,7 +140,13 @@ public class StoreService {
     Store store = new Store();
     store.setCode(dto.getCode());
     store.setName(dto.getName());
-    store.setType(dto.getType());
+    if (dto.getStoreTypeId() != null) {
+      StoreTypeEntity type =
+          storeTypeRepository
+              .findById(dto.getStoreTypeId())
+              .orElseThrow(() -> new RuntimeException("Store type not found"));
+      store.setType(type);
+    }
     store.setAddress(dto.getAddress());
     store.setCity(dto.getCity());
     store.setState(dto.getState());
@@ -155,7 +161,13 @@ public class StoreService {
               .orElseThrow(() -> new RuntimeException("Manager not found"));
       store.setManager(manager);
     }
-    store.setStatus(dto.getStatus());
+    if (dto.getStoreStatusId() != null) {
+      StoreStatusEntity status =
+          storeStatusRepository
+              .findById(dto.getStoreStatusId())
+              .orElseThrow(() -> new RuntimeException("Store status not found"));
+      store.setStatus(status);
+    }
     store.setNotes(dto.getNotes());
     return store;
   }
@@ -163,7 +175,13 @@ public class StoreService {
   private void updateEntityFromDto(Store store, StoreDto dto) {
     store.setCode(dto.getCode());
     store.setName(dto.getName());
-    store.setType(dto.getType());
+    if (dto.getStoreTypeId() != null) {
+      StoreTypeEntity type =
+          storeTypeRepository
+              .findById(dto.getStoreTypeId())
+              .orElseThrow(() -> new RuntimeException("Store type not found"));
+      store.setType(type);
+    }
     store.setAddress(dto.getAddress());
     store.setCity(dto.getCity());
     store.setState(dto.getState());
@@ -178,7 +196,13 @@ public class StoreService {
               .orElseThrow(() -> new RuntimeException("Manager not found"));
       store.setManager(manager);
     }
-    store.setStatus(dto.getStatus());
+    if (dto.getStoreStatusId() != null) {
+      StoreStatusEntity status =
+          storeStatusRepository
+              .findById(dto.getStoreStatusId())
+              .orElseThrow(() -> new RuntimeException("Store status not found"));
+      store.setStatus(status);
+    }
     store.setNotes(dto.getNotes());
   }
 }
