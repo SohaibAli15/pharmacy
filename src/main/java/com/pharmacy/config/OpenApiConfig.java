@@ -192,9 +192,7 @@ public class OpenApiConfig {
                 new Tag()
                     .name("Stock Transfer Management")
                     .description("Transfer stock between stores with approval workflow"),
-                new Tag()
-                    .name("Customer Management")
-                    .description("Manage customer database"),
+                new Tag().name("Customer Management").description("Manage customer database"),
                 new Tag()
                     .name("Sales Management")
                     .description("Point of sale transactions with FIFO inventory management"),
@@ -222,8 +220,6 @@ public class OpenApiConfig {
                     .description("Stock adjustment report for products (no medicines)"),
                 new Tag()
                     .name("Product Stock Transfer Report")
-                    .description("Stock transfer report for products (no medicines)")
-            )
-        );
+                    .description("Stock transfer report for products (no medicines)")));
   }
 }
