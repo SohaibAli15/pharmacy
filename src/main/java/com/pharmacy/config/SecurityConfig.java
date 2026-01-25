@@ -107,16 +107,18 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
+    // Allow all localhost origins (any port) and your production frontends
     configuration.setAllowedOriginPatterns(
         Arrays.asList(
+            "http://localhost:*",
+            "http://127.0.0.1:*",
             "https://pharma-x-lac.vercel.app",
-            "https://salex-pharma.up.railway.app",
-            "http://localhost",
-            "http://127.0.0.1")); // allow only specific origins (frontend, backend, local dev)
+            "https://salex-pharma.up.railway.app"));
     configuration.setAllowedMethods(
         Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
     configuration.setAllowedHeaders(List.of("*"));
-    configuration.setAllowCredentials(true); // allow credentials for these origins
+    configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
+    configuration.setAllowCredentials(true); // Required for cookies/Authorization headers
     configuration.setMaxAge(3600L);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
