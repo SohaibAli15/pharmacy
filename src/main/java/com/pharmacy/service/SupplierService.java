@@ -15,6 +15,7 @@ import com.pharmacy.entity.Supplier;
 import com.pharmacy.entity.SupplierStatusEntity;
 import com.pharmacy.repository.PurchaseOrderRepository;
 import com.pharmacy.repository.SupplierRepository;
+import com.pharmacy.repository.SupplierStatusEntityRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +25,7 @@ public class SupplierService {
 
   private final SupplierRepository supplierRepository;
   private final PurchaseOrderRepository purchaseOrderRepository;
+  private final SupplierStatusEntityRepository supplierStatusEntityRepository;
 
   @Transactional
   public SupplierDto createSupplier(SupplierDto supplierDto) {
@@ -118,7 +120,7 @@ public class SupplierService {
     dto.setZipCode(supplier.getZipCode());
     dto.setTaxId(supplier.getTaxId());
     dto.setBankAccount(supplier.getBankAccount());
-    dto.setStatus(supplier.getStatus());
+    dto.setStatusId(supplier.getStatus() != null ? supplier.getStatus().getId() : null);
     dto.setNotes(supplier.getNotes());
     dto.setPaymentTermsDays(supplier.getPaymentTermsDays());
     dto.setCreatedAt(supplier.getCreatedAt());
@@ -155,7 +157,12 @@ public class SupplierService {
     supplier.setZipCode(dto.getZipCode());
     supplier.setTaxId(dto.getTaxId());
     supplier.setBankAccount(dto.getBankAccount());
-    supplier.setStatus(dto.getStatus());
+    if (dto.getStatusId() != null) {
+      supplier.setStatus(
+          supplierStatusEntityRepository
+              .findById(dto.getStatusId())
+              .orElseThrow(() -> new RuntimeException("Supplier status not found")));
+    }
     supplier.setNotes(dto.getNotes());
     supplier.setPaymentTermsDays(dto.getPaymentTermsDays());
     return supplier;
@@ -174,7 +181,12 @@ public class SupplierService {
     supplier.setZipCode(dto.getZipCode());
     supplier.setTaxId(dto.getTaxId());
     supplier.setBankAccount(dto.getBankAccount());
-    supplier.setStatus(dto.getStatus());
+    if (dto.getStatusId() != null) {
+      supplier.setStatus(
+          supplierStatusEntityRepository
+              .findById(dto.getStatusId())
+              .orElseThrow(() -> new RuntimeException("Supplier status not found")));
+    }
     supplier.setNotes(dto.getNotes());
     supplier.setPaymentTermsDays(dto.getPaymentTermsDays());
   }

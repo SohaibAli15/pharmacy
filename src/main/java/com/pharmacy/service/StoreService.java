@@ -4,6 +4,8 @@ package com.pharmacy.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class StoreService {
+  private static final Logger log = LoggerFactory.getLogger(StoreService.class);
   private final StoreRepository storeRepository;
   private final UserRepository userRepository;
   private final StoreTypeRepository storeTypeRepository;
@@ -31,15 +34,19 @@ public class StoreService {
 
   @Transactional
   public StoreDto createStore(StoreDto storeDto) {
+    log.info("Creating store with code: {}", storeDto.getCode());
     if (storeRepository.existsByCode(storeDto.getCode())) {
+      log.error("Store code already exists: {}", storeDto.getCode());
       throw new RuntimeException("Store code already exists");
     }
 
     Store store = mapToEntity(storeDto);
+    log.debug("Mapped Store entity: {}", store);
     store.setCreatedAt(LocalDateTime.now());
     store.setUpdatedAt(LocalDateTime.now());
 
     Store savedStore = storeRepository.save(store);
+    log.info("Store saved with id: {}", savedStore.getId());
     return mapToDto(savedStore);
   }
 
@@ -146,6 +153,7 @@ public class StoreService {
               .findById(dto.getStoreTypeId())
               .orElseThrow(() -> new RuntimeException("Store type not found"));
       store.setType(type);
+      log.debug("Set store type: {}", type);
     }
     store.setAddress(dto.getAddress());
     store.setCity(dto.getCity());
@@ -160,13 +168,20 @@ public class StoreService {
               .findById(dto.getManagerId())
               .orElseThrow(() -> new RuntimeException("Manager not found"));
       store.setManager(manager);
+      log.debug("Set manager: {}", manager);
     }
     if (dto.getStoreStatusId() != null) {
       StoreStatusEntity status =
           storeStatusRepository
               .findById(dto.getStoreStatusId())
-              .orElseThrow(() -> new RuntimeException("Store status not found"));
+              .orElseThrow(
+                  () ->
+                      new RuntimeException(
+                          "Store status not found for id: " + dto.getStoreStatusId()));
       store.setStatus(status);
+      log.debug("Set store status: {}", status);
+    } else {
+      log.error("Store status ID is null in DTO");
     }
     store.setNotes(dto.getNotes());
     return store;

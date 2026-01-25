@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.pharmacy.dto.UserDto;
 import com.pharmacy.entity.User;
 import com.pharmacy.service.UserService;
 
@@ -45,8 +46,8 @@ public class UserController {
                     schema = @Schema(implementation = User.class))),
         @ApiResponse(responseCode = "400", description = "Invalid input or duplicate username")
       })
-  public ResponseEntity<User> createUser(@RequestBody User user) {
-    User savedUser = userService.saveUser(user);
+  public ResponseEntity<User> createUser(@RequestBody UserDto userDto) {
+    User savedUser = userService.saveUser(userDto);
     return ResponseEntity.ok(savedUser);
   }
 

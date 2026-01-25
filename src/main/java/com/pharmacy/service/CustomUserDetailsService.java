@@ -42,4 +42,10 @@ public class CustomUserDetailsService implements UserDetailsService {
         .disabled(false)
         .build();
   }
+
+  public User getUserEntityByUsername(String username) {
+    return userRepository
+        .findByUsername(username)
+        .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+  }
 }
