@@ -16,7 +16,6 @@ import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
@@ -162,9 +161,8 @@ public class OpenApiConfig {
                         .addProperty("success", new Schema<>().type("boolean"))
                         .addProperty("message", new Schema<>().type("string"))
                         .addProperty("data", new Schema<>().type("object"))))
-
         // Global Security Requirement (optional - can be overridden per endpoint)
-        .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
+        // .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
         .tags(
             List.of(
                 new Tag()

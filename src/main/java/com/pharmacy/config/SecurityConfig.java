@@ -1,6 +1,7 @@
 /* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.config;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -75,7 +76,12 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             authz ->
                 authz
-                    .requestMatchers("/api/v1/auth/login", "/swagger-ui/**", "/swagger-ui.html")
+                    .requestMatchers(
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/v3/api-docs/**",
+                        "/swagger-resources/**",
+                        "/webjars/**")
                     .permitAll()
                     .anyRequest()
                     .authenticated())
@@ -88,10 +94,17 @@ public class SecurityConfig {
   @Bean
   public WebMvcConfigurer corsConfigurer() {
     return new WebMvcConfigurer() {
-        @Override
-        public void addCorsMappings(CorsRegistry registry) {
-            registry.addMapping("/**").allowedOrigins("*").allowedMethods("*");
-        }
+      @Override
+      public void addCorsMappings(@NonNull CorsRegistry registry) {
+        registry
+            .addMapping("/**")
+            .allowedOriginPatterns("*") // allow all origins, including with credentials
+            .allowedMethods("*")
+            .allowedHeaders("*")
+            .exposedHeaders("Authorization", "Content-Type", "X-Requested-With", "X-API-KEY")
+            .allowCredentials(true)
+            .maxAge(3600);
+      }
     };
   }
 }
