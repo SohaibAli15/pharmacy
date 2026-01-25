@@ -27,7 +27,7 @@ public class ProductionBatchService {
 
   private final ProductionBatchRepository productionBatchRepository;
   private final RecipeRepository recipeRepository;
-  private final MedicineRepository medicineRepository;
+  private final ProductRepository productRepository;
   private final IngredientRepository ingredientRepository;
   private final ProductionBatchMaterialRepository materialRepository;
 
@@ -101,7 +101,7 @@ public class ProductionBatchService {
     pb.setRecipe(recipe);
 
     if (dto.getProductId() != null) {
-      Medicine product = medicineRepository.findById(dto.getProductId()).orElse(null);
+      Product product = productRepository.findById(dto.getProductId()).orElse(null);
       pb.setProduct(product);
     } else if (recipe.getProduct() != null) {
       pb.setProduct(recipe.getProduct());
@@ -405,9 +405,9 @@ public class ProductionBatchService {
 
     // Add finished product to inventory if applicable
     if (pb.getProduct() != null) {
-      Medicine product = pb.getProduct();
-      // Update medicine stock (assuming Medicine has stock field similar to Ingredient)
-      medicineRepository.save(product);
+      Product product = pb.getProduct();
+      // Update product stock (if needed)
+      productRepository.save(product);
     }
 
     pb.setIsFinalized(true);

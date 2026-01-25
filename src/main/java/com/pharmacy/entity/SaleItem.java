@@ -25,8 +25,8 @@ public class SaleItem {
   private Sale sale;
 
   @ManyToOne
-  @JoinColumn(name = "medicine_id", nullable = false)
-  private Medicine medicine;
+  @JoinColumn(name = "product_id", nullable = false)
+  private Product product;
 
   @Column(nullable = false)
   private Integer quantity;

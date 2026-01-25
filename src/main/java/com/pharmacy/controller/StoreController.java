@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.pharmacy.dto.StoreDto;
 import com.pharmacy.dto.StorePageResponse;
-import com.pharmacy.entity.Store;
+import com.pharmacy.entity.StoreStatusEntity;
+import com.pharmacy.entity.StoreTypeEntity;
 import com.pharmacy.service.StoreService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -158,7 +159,7 @@ public class StoreController {
               schema = @Schema(implementation = StorePageResponse.class)))
   public ResponseEntity<StorePageResponse> getStoresByStatus(
       @Parameter(description = "Store status", required = true) @PathVariable
-          Store.StoreStatus status,
+          StoreStatusEntity status,
       @PageableDefault(size = 20) Pageable pageable) {
     Page<StoreDto> stores = storeService.getStoresByStatus(status, pageable);
     StorePageResponse response = new StorePageResponse();
@@ -187,7 +188,7 @@ public class StoreController {
               mediaType = "application/json",
               schema = @Schema(implementation = StorePageResponse.class)))
   public ResponseEntity<StorePageResponse> getStoresByType(
-      @Parameter(description = "Store type", required = true) @PathVariable Store.StoreType type,
+      @Parameter(description = "Store type", required = true) @PathVariable StoreTypeEntity type,
       @PageableDefault(size = 20) Pageable pageable) {
     Page<StoreDto> stores = storeService.getStoresByType(type, pageable);
     StorePageResponse response = new StorePageResponse();

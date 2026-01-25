@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.pharmacy.entity.Customer;
+import com.pharmacy.entity.CustomerStatusEntity;
+import com.pharmacy.entity.CustomerTypeEntity;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
@@ -16,9 +18,9 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
   Optional<Customer> findByEmail(String email);
 
-  Page<Customer> findByStatus(Customer.CustomerStatus status, Pageable pageable);
+  Page<Customer> findByStatus(CustomerStatusEntity status, Pageable pageable);
 
-  Page<Customer> findByType(Customer.CustomerType type, Pageable pageable);
+  Page<Customer> findByType(CustomerTypeEntity type, Pageable pageable);
 
   Page<Customer> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
       String firstName, String lastName, Pageable pageable);

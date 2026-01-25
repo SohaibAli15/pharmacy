@@ -3,7 +3,8 @@ package com.pharmacy.dto;
 
 import java.time.LocalDateTime;
 
-import com.pharmacy.entity.Store;
+import com.pharmacy.entity.StoreStatusEntity;
+import com.pharmacy.entity.StoreTypeEntity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,7 +17,7 @@ public class StoreDto {
   private Long id;
   private String code;
   private String name;
-  private Store.StoreType type;
+  private StoreTypeEntity type;
   private String address;
   private String city;
   private String state;
@@ -26,7 +27,7 @@ public class StoreDto {
   private String email;
   private Long managerId;
   private String managerName;
-  private Store.StoreStatus status;
+  private StoreStatusEntity status;
   private String notes;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;

@@ -51,8 +51,7 @@ public class SecurityConfig {
   public AuthenticationManager authenticationManager(
       org.springframework.security.config.annotation.authentication.configuration
               .AuthenticationConfiguration
-          configuration)
-      throws Exception {
+          configuration) {
     return configuration.getAuthenticationManager();
   }
 
@@ -72,7 +71,7 @@ public class SecurityConfig {
 
   // Enable production configuration for role-based authorization
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) {
     http.csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
             authz ->
@@ -83,12 +82,19 @@ public class SecurityConfig {
                         "/swagger-ui/**",
                         "/swagger-ui.html",
                         "/v3/api-docs/**",
+                        "/api-docs",
+                        "/api-docs/**",
+                        "/api-docs/swagger-config",
                         "/swagger-resources/**",
-                        "/webjars/**")
+                        "/webjars/**",
+                        "/v3/api-docs",
+                        "/swagger-resources",
+                        "/swagger-resources/configuration/ui",
+                        "/swagger-resources/configuration/security",
+                        "/api/v1/auth/login")
                     .permitAll()
                     .anyRequest()
                     .authenticated())
-        .httpBasic(httpBasic -> {})
         .authenticationProvider(authenticationProvider())
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();

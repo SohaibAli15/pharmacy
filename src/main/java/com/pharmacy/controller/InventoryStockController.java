@@ -184,11 +184,11 @@ public class InventoryStockController {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping("/medicine/{medicineId}")
+  @GetMapping("/product/{productId}")
   @Operation(
-      summary = "Get inventory by medicine",
+      summary = "Get inventory by product",
       description =
-          "Retrieve all stock entries for a specific medicine across all stores with pagination")
+          "Retrieve all stock entries for a specific product across all stores with pagination")
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -198,13 +198,13 @@ public class InventoryStockController {
                 @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = InventoryStockPageResponse.class))),
-        @ApiResponse(responseCode = "404", description = "Medicine not found")
+        @ApiResponse(responseCode = "404", description = "Product not found")
       })
-  public ResponseEntity<InventoryStockPageResponse> getInventoryByMedicine(
-      @Parameter(description = "Medicine ID", required = true) @PathVariable Long medicineId,
+  public ResponseEntity<InventoryStockPageResponse> getInventoryByProduct(
+      @Parameter(description = "Product ID", required = true) @PathVariable Long productId,
       @PageableDefault(size = 20) Pageable pageable) {
     Page<InventoryStockDto> stocks =
-        inventoryStockService.getInventoryByMedicine(medicineId, pageable);
+        inventoryStockService.getInventoryByProduct(productId, pageable);
     InventoryStockPageResponse response = new InventoryStockPageResponse();
     response.setContent(stocks.getContent());
     response.setTotalElements(stocks.getTotalElements());

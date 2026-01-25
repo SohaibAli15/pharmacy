@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Table(
     name = "inventory_stock",
     uniqueConstraints = {
-      @UniqueConstraint(columnNames = {"store_id", "medicine_id", "batch_number"})
+      @UniqueConstraint(columnNames = {"store_id", "product_id", "batch_number"})
     })
 @Data
 @NoArgsConstructor
@@ -31,8 +31,8 @@ public class InventoryStock {
   private Store store;
 
   @ManyToOne
-  @JoinColumn(name = "medicine_id", nullable = false)
-  private Medicine medicine;
+  @JoinColumn(name = "product_id", nullable = false)
+  private Product product;
 
   @Column(nullable = false)
   private String batchNumber;

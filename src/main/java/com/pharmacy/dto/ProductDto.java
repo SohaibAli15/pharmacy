@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import lombok.Data;
 
 @Data
-public class MedicineDto {
+public class ProductDto {
   private Long id;
   private String name;
   private String description;

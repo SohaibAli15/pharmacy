@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pharmacy.dto.StoreDto;
 import com.pharmacy.entity.Store;
+import com.pharmacy.entity.StoreStatusEntity;
+import com.pharmacy.entity.StoreTypeEntity;
 import com.pharmacy.entity.User;
 import com.pharmacy.repository.StoreRepository;
 import com.pharmacy.repository.UserRepository;
@@ -75,12 +77,12 @@ public class StoreService {
   }
 
   @Transactional(readOnly = true)
-  public Page<StoreDto> getStoresByStatus(Store.StoreStatus status, Pageable pageable) {
+  public Page<StoreDto> getStoresByStatus(StoreStatusEntity status, Pageable pageable) {
     return storeRepository.findByStatus(status, pageable).map(this::mapToDto);
   }
 
   @Transactional(readOnly = true)
-  public Page<StoreDto> getStoresByType(Store.StoreType type, Pageable pageable) {
+  public Page<StoreDto> getStoresByType(StoreTypeEntity type, Pageable pageable) {
     return storeRepository.findByType(type, pageable).map(this::mapToDto);
   }
 
@@ -91,13 +93,13 @@ public class StoreService {
   }
 
   @Transactional(readOnly = true)
-  public List<StoreDto> getStoresByStatus(Store.StoreStatus status) {
+  public List<StoreDto> getStoresByStatus(StoreStatusEntity status) {
     return getStoresByStatus(status, org.springframework.data.domain.PageRequest.of(0, 20))
         .getContent();
   }
 
   @Transactional(readOnly = true)
-  public List<StoreDto> getStoresByType(Store.StoreType type) {
+  public List<StoreDto> getStoresByType(StoreTypeEntity type) {
     return getStoresByType(type, org.springframework.data.domain.PageRequest.of(0, 20))
         .getContent();
   }

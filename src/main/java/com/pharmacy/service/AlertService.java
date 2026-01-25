@@ -11,7 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pharmacy.dto.AlertDto;
 import com.pharmacy.entity.Alert;
+import com.pharmacy.entity.AlertTypeEntity;
 import com.pharmacy.repository.AlertRepository;
+import com.pharmacy.repository.AlertTypeRepository;
 import com.pharmacy.repository.IngredientRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -23,13 +25,14 @@ public class AlertService {
 
   private final AlertRepository alertRepository;
   private final IngredientRepository ingredientRepository;
+  private final AlertTypeRepository alertTypeRepository;
 
   public AlertDto toDto(Alert a) {
     AlertDto dto = new AlertDto();
     dto.setId(a.getId());
     dto.setIngredientId(a.getIngredient().getId());
     dto.setIngredientName(a.getIngredient().getName());
-    dto.setAlertType(a.getAlertType().name());
+    dto.setAlertType(a.getAlertType().getName());
     dto.setMessage(a.getMessage());
     dto.setTimestamp(a.getTimestamp());
     dto.setIsRead(a.getIsRead());
@@ -40,7 +43,11 @@ public class AlertService {
     Alert a = new Alert();
     a.setId(dto.getId());
     a.setIngredient(ingredientRepository.findById(dto.getIngredientId()).orElseThrow());
-    a.setAlertType(Alert.AlertType.valueOf(dto.getAlertType()));
+    AlertTypeEntity alertType =
+        alertTypeRepository
+            .findByName(dto.getAlertType())
+            .orElseThrow(() -> new RuntimeException("AlertType not found: " + dto.getAlertType()));
+    a.setAlertType(alertType);
     a.setMessage(dto.getMessage());
     a.setTimestamp(dto.getTimestamp() != null ? dto.getTimestamp() : LocalDateTime.now());
     a.setIsRead(dto.getIsRead() != null ? dto.getIsRead() : false);

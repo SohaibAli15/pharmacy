@@ -14,11 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pharmacy.dto.RecipeDto;
 import com.pharmacy.dto.RecipeIngredientDto;
-import com.pharmacy.entity.Medicine;
+import com.pharmacy.entity.Product;
 import com.pharmacy.entity.Recipe;
 import com.pharmacy.entity.RecipeIngredient;
 import com.pharmacy.repository.IngredientRepository;
-import com.pharmacy.repository.MedicineRepository;
+import com.pharmacy.repository.ProductRepository;
 import com.pharmacy.repository.RecipeRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class RecipeService {
 
   private final RecipeRepository recipeRepository;
   private final IngredientRepository ingredientRepository;
-  private final MedicineRepository medicineRepository;
+  private final ProductRepository productRepository;
 
   public RecipeDto toDto(Recipe r) {
     RecipeDto dto = new RecipeDto();
@@ -109,7 +109,7 @@ public class RecipeService {
 
     // Set product if provided
     if (dto.getProductId() != null) {
-      Medicine product = medicineRepository.findById(dto.getProductId()).orElse(null);
+      Product product = productRepository.findById(dto.getProductId()).orElse(null);
       r.setProduct(product);
     }
 
@@ -215,7 +215,7 @@ public class RecipeService {
     existing.setSubCategory(dto.getSubCategory());
 
     if (dto.getProductId() != null) {
-      Medicine product = medicineRepository.findById(dto.getProductId()).orElse(null);
+      Product product = productRepository.findById(dto.getProductId()).orElse(null);
       existing.setProduct(product);
     }
 

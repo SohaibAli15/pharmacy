@@ -1,14 +1,10 @@
 /* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.repository;
 
-import java.util.Optional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.pharmacy.entity.AlertTypeEntity;
+import com.pharmacy.entity.MaterialIssue;
 
 @Repository
-public interface AlertTypeRepository extends JpaRepository<AlertTypeEntity, Long> {
-  Optional<AlertTypeEntity> findByName(String name);
-}
+public interface MaterialIssueRepository extends JpaRepository<MaterialIssue, Long> {}

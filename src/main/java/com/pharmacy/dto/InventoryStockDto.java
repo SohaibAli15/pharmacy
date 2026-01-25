@@ -16,8 +16,8 @@ public class InventoryStockDto {
   private Long id;
   private Long storeId;
   private String storeName;
-  private Long medicineId;
-  private String medicineName;
+  private Long productId;
+  private String productName;
   private String batchNumber;
   private Integer quantity;
   private BigDecimal costPrice;

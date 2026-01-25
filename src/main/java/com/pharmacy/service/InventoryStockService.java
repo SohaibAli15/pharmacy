@@ -12,10 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pharmacy.dto.InventoryStockDto;
 import com.pharmacy.entity.InventoryStock;
-import com.pharmacy.entity.Medicine;
+import com.pharmacy.entity.Product;
 import com.pharmacy.entity.Store;
 import com.pharmacy.repository.InventoryStockRepository;
-import com.pharmacy.repository.MedicineRepository;
+import com.pharmacy.repository.ProductRepository;
 import com.pharmacy.repository.StoreRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class InventoryStockService {
 
   private final InventoryStockRepository inventoryStockRepository;
   private final StoreRepository storeRepository;
-  private final MedicineRepository medicineRepository;
+  private final ProductRepository productRepository;
 
   @Transactional
   public InventoryStockDto addInventoryStock(InventoryStockDto dto) {
@@ -34,23 +34,23 @@ public class InventoryStockService {
         storeRepository
             .findById(dto.getStoreId())
             .orElseThrow(() -> new RuntimeException("Store not found"));
-    Medicine medicine =
-        medicineRepository
-            .findById(dto.getMedicineId())
-            .orElseThrow(() -> new RuntimeException("Medicine not found"));
+    Product product =
+        productRepository
+            .findById(dto.getProductId())
+            .orElseThrow(() -> new RuntimeException("Product not found"));
 
     // Check if batch already exists
     inventoryStockRepository
-        .findByStoreAndMedicineAndBatchNumber(store, medicine, dto.getBatchNumber())
+        .findByStoreAndProductAndBatchNumber(store, product, dto.getBatchNumber())
         .ifPresent(
             s -> {
               throw new RuntimeException(
-                  "Batch number already exists for this medicine in this store");
+                  "Batch number already exists for this product in this store");
             });
 
     InventoryStock stock = new InventoryStock();
     stock.setStore(store);
-    stock.setMedicine(medicine);
+    stock.setProduct(product);
     stock.setBatchNumber(dto.getBatchNumber());
     stock.setQuantity(dto.getQuantity());
     stock.setCostPrice(dto.getCostPrice());
@@ -125,12 +125,12 @@ public class InventoryStockService {
   }
 
   @Transactional(readOnly = true)
-  public Page<InventoryStockDto> getInventoryByMedicine(Long medicineId, Pageable pageable) {
-    Medicine medicine =
-        medicineRepository
-            .findById(medicineId)
-            .orElseThrow(() -> new RuntimeException("Medicine not found"));
-    return inventoryStockRepository.findByMedicine(medicine, pageable).map(this::mapToDto);
+  public Page<InventoryStockDto> getInventoryByProduct(Long productId, Pageable pageable) {
+    Product product =
+        productRepository
+            .findById(productId)
+            .orElseThrow(() -> new RuntimeException("Product not found"));
+    return inventoryStockRepository.findByProduct(product, pageable).map(this::mapToDto);
   }
 
   @Transactional(readOnly = true)
@@ -167,8 +167,8 @@ public class InventoryStockService {
   }
 
   @Transactional(readOnly = true)
-  public List<InventoryStockDto> getInventoryByMedicine(Long medicineId) {
-    return getInventoryByMedicine(medicineId, org.springframework.data.domain.PageRequest.of(0, 20))
+  public List<InventoryStockDto> getInventoryByProduct(Long productId) {
+    return getInventoryByProduct(productId, org.springframework.data.domain.PageRequest.of(0, 20))
         .getContent();
   }
 
@@ -198,8 +198,8 @@ public class InventoryStockService {
     dto.setId(stock.getId());
     dto.setStoreId(stock.getStore().getId());
     dto.setStoreName(stock.getStore().getName());
-    dto.setMedicineId(stock.getMedicine().getId());
-    dto.setMedicineName(stock.getMedicine().getName());
+    dto.setProductId(stock.getProduct().getId());
+    dto.setProductName(stock.getProduct().getName());
     dto.setBatchNumber(stock.getBatchNumber());
     dto.setQuantity(stock.getQuantity());
     dto.setCostPrice(stock.getCostPrice());

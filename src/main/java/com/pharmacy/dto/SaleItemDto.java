@@ -13,10 +13,10 @@ import lombok.NoArgsConstructor;
 public class SaleItemDto {
   private Long id;
   private Long saleId;
-  private Long medicineId;
-  private String medicineName;
-  private String medicineCode;
   private Integer quantity;
   private BigDecimal unitPrice;
   private BigDecimal totalPrice;
+  private Long productId;
+  private String productName;
+  private String productCode;
 }

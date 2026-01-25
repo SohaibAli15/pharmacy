@@ -29,7 +29,7 @@ public class SaleService {
   private final StoreRepository storeRepository;
   private final CustomerRepository customerRepository;
   private final UserRepository userRepository;
-  private final MedicineRepository medicineRepository;
+  private final ProductRepository productRepository;
   private final InventoryStockRepository inventoryStockRepository;
 
   @Transactional
@@ -79,17 +79,17 @@ public class SaleService {
     // Process sale items and update inventory
     List<SaleItem> saleItems = new ArrayList<>();
     for (SaleItemDto itemDto : dto.getItems()) {
-      Medicine medicine =
-          medicineRepository
-              .findById(itemDto.getMedicineId())
+      Product product =
+          productRepository
+              .findById(itemDto.getProductId())
               .orElseThrow(
-                  () -> new RuntimeException("Medicine not found: " + itemDto.getMedicineId()));
+                  () -> new RuntimeException("Product not found: " + itemDto.getProductId()));
 
-      // Check stock availability - find any available stock for this medicine in the store
+      // Check stock availability - find any available stock for this product in the store
       List<InventoryStock> stockList =
-          inventoryStockRepository.findByStoreAndMedicine(store, medicine);
+          inventoryStockRepository.findByStoreAndProduct(store, product);
       if (stockList.isEmpty()) {
-        throw new RuntimeException("Medicine not available in store: " + medicine.getName());
+        throw new RuntimeException("Product not available in store: " + product.getName());
       }
 
       // Calculate total available quantity
@@ -97,8 +97,8 @@ public class SaleService {
 
       if (totalAvailable < itemDto.getQuantity()) {
         throw new RuntimeException(
-            "Insufficient stock for medicine: "
-                + medicine.getName()
+            "Insufficient stock for product: "
+                + product.getName()
                 + ". Available: "
                 + totalAvailable
                 + ", Required: "
@@ -108,7 +108,7 @@ public class SaleService {
       // Create sale item
       SaleItem saleItem = new SaleItem();
       saleItem.setSale(savedSale);
-      saleItem.setMedicine(medicine);
+      saleItem.setProduct(product);
       saleItem.setQuantity(itemDto.getQuantity());
       saleItem.setUnitPrice(itemDto.getUnitPrice());
       saleItem.setTotalPrice(itemDto.getTotalPrice());
@@ -224,7 +224,7 @@ public class SaleService {
     // Restore inventory stock
     for (SaleItem item : sale.getItems()) {
       List<InventoryStock> stockList =
-          inventoryStockRepository.findByStoreAndMedicine(sale.getStore(), item.getMedicine());
+          inventoryStockRepository.findByStoreAndProduct(sale.getStore(), item.getProduct());
       if (!stockList.isEmpty()) {
         // Add to the first available stock record
         InventoryStock stock = stockList.get(0);
@@ -253,7 +253,7 @@ public class SaleService {
     // Restore inventory stock
     for (SaleItem item : sale.getItems()) {
       List<InventoryStock> stockList =
-          inventoryStockRepository.findByStoreAndMedicine(sale.getStore(), item.getMedicine());
+          inventoryStockRepository.findByStoreAndProduct(sale.getStore(), item.getProduct());
       if (!stockList.isEmpty()) {
         // Add to the first available stock record
         InventoryStock stock = stockList.get(0);
@@ -327,9 +327,9 @@ public class SaleService {
     SaleItemDto dto = new SaleItemDto();
     dto.setId(item.getId());
     dto.setSaleId(item.getSale().getId());
-    dto.setMedicineId(item.getMedicine().getId());
-    dto.setMedicineName(item.getMedicine().getName());
-    dto.setMedicineCode("MED-" + item.getMedicine().getId()); // Generate code from ID
+    dto.setProductId(item.getProduct().getId());
+    dto.setProductName(item.getProduct().getName());
+    dto.setProductCode("PROD-" + item.getProduct().getId()); // Generate code from ID
     dto.setQuantity(item.getQuantity());
     dto.setUnitPrice(item.getUnitPrice());
     dto.setTotalPrice(item.getTotalPrice());

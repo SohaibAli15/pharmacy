@@ -45,7 +45,7 @@ public class Recipe {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "productId")
-  private Medicine product; // Link to finished product
+  private Product product; // Link to finished product
 
   // Production output specifications
   @Column(nullable = false, precision = 15, scale = 3)

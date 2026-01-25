@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pharmacy.dto.AlertDto;
-import com.pharmacy.entity.Alert;
+import com.pharmacy.entity.AlertTypeEntity;
+import com.pharmacy.repository.AlertTypeRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +21,7 @@ public class ThresholdAlertService {
 
   private final IngredientService ingredientService;
   private final AlertService alertService;
+  private final AlertTypeRepository alertTypeRepository;
 
   // Run every 5 minutes
   @Scheduled(fixedRate = 300000)
@@ -30,12 +32,15 @@ public class ThresholdAlertService {
       List<AlertDto> existingAlerts = alertService.getByIngredient(ingredient.getId());
       boolean alreadyExists =
           existingAlerts.stream()
-              .anyMatch(
-                  a -> a.getAlertType().equals(Alert.AlertType.LOW_STOCK.name()) && !a.getIsRead());
+              .anyMatch(a -> a.getAlertType().equals("LOW_STOCK") && !a.getIsRead());
       if (!alreadyExists) {
         AlertDto alert = new AlertDto();
         alert.setIngredientId(ingredient.getId());
-        alert.setAlertType(Alert.AlertType.LOW_STOCK.name());
+        AlertTypeEntity lowStockType =
+            alertTypeRepository
+                .findByName("LOW_STOCK")
+                .orElseThrow(() -> new RuntimeException("AlertType LOW_STOCK not found"));
+        alert.setAlertType(lowStockType.getName());
         alert.setMessage(
             "Low stock alert: "
                 + ingredient.getName()
@@ -47,7 +52,6 @@ public class ThresholdAlertService {
         alert.setTimestamp(LocalDateTime.now());
         alert.setIsRead(false);
         alertService.create(alert);
-        // Here you can add notification logic, e.g., email, SMS
         sendNotification(alert);
       }
     }
@@ -57,13 +61,15 @@ public class ThresholdAlertService {
       List<AlertDto> existingAlerts = alertService.getByIngredient(ingredient.getId());
       boolean alreadyExists =
           existingAlerts.stream()
-              .anyMatch(
-                  a ->
-                      a.getAlertType().equals(Alert.AlertType.HIGH_STOCK.name()) && !a.getIsRead());
+              .anyMatch(a -> a.getAlertType().equals("HIGH_STOCK") && !a.getIsRead());
       if (!alreadyExists) {
         AlertDto alert = new AlertDto();
         alert.setIngredientId(ingredient.getId());
-        alert.setAlertType(Alert.AlertType.HIGH_STOCK.name());
+        AlertTypeEntity highStockType =
+            alertTypeRepository
+                .findByName("HIGH_STOCK")
+                .orElseThrow(() -> new RuntimeException("AlertType HIGH_STOCK not found"));
+        alert.setAlertType(highStockType.getName());
         alert.setMessage(
             "High stock alert: "
                 + ingredient.getName()

@@ -28,7 +28,7 @@ public class StockTransferService {
   private final StockTransferItemRepository stockTransferItemRepository;
   private final StoreRepository storeRepository;
   private final UserRepository userRepository;
-  private final MedicineRepository medicineRepository;
+  private final ProductRepository productRepository;
   private final IngredientRepository ingredientRepository;
   private final InventoryStockRepository inventoryStockRepository;
   private final IngredientStockRepository ingredientStockRepository;
@@ -77,12 +77,12 @@ public class StockTransferService {
         StockTransferItem item = new StockTransferItem();
         item.setStockTransfer(savedTransfer);
 
-        if (itemDto.getMedicineId() != null) {
-          Medicine medicine =
-              medicineRepository
-                  .findById(itemDto.getMedicineId())
-                  .orElseThrow(() -> new RuntimeException("Medicine not found"));
-          item.setMedicine(medicine);
+        if (itemDto.getProductId() != null) {
+          Product product =
+              productRepository
+                  .findById(itemDto.getProductId())
+                  .orElseThrow(() -> new RuntimeException("Product not found"));
+          item.setProduct(product);
         }
 
         if (itemDto.getIngredientId() != null) {
@@ -121,10 +121,10 @@ public class StockTransferService {
 
     // Check stock availability
     for (StockTransferItem item : transfer.getItems()) {
-      if (item.getMedicine() != null) {
-        checkMedicineStock(
+      if (item.getProduct() != null) {
+        checkProductStock(
             transfer.getFromStore(),
-            item.getMedicine(),
+            item.getProduct(),
             item.getRequestedQuantity(),
             item.getBatchNumber());
       } else if (item.getIngredient() != null) {
@@ -164,10 +164,10 @@ public class StockTransferService {
 
     // Deduct stock from source store
     for (StockTransferItem item : transfer.getItems()) {
-      if (item.getMedicine() != null) {
-        deductMedicineStock(
+      if (item.getProduct() != null) {
+        deductProductStock(
             transfer.getFromStore(),
-            item.getMedicine(),
+            item.getProduct(),
             item.getApprovedQuantity(),
             item.getBatchNumber());
       } else if (item.getIngredient() != null) {
@@ -224,8 +224,8 @@ public class StockTransferService {
 
       // Add stock to destination store
       if (newReceived.compareTo(BigDecimal.ZERO) > 0) {
-        if (item.getMedicine() != null) {
-          addMedicineStock(transfer.getToStore(), item, newReceived);
+        if (item.getProduct() != null) {
+          addProductStock(transfer.getToStore(), item, newReceived);
         } else if (item.getIngredient() != null) {
           addIngredientStock(transfer.getToStore(), item, newReceived);
         }
@@ -241,14 +241,14 @@ public class StockTransferService {
     return mapToDto(transfer);
   }
 
-  private void checkMedicineStock(
-      Store store, Medicine medicine, BigDecimal requiredQty, String batchNumber) {
-    List<InventoryStock> stocks = inventoryStockRepository.findByStoreAndMedicine(store, medicine);
+  private void checkProductStock(
+      Store store, Product product, BigDecimal requiredQty, String batchNumber) {
+    List<InventoryStock> stocks = inventoryStockRepository.findByStoreAndProduct(store, product);
 
     if (batchNumber != null && !batchNumber.isEmpty()) {
       InventoryStock stock =
           inventoryStockRepository
-              .findByStoreAndMedicineAndBatchNumber(store, medicine, batchNumber)
+              .findByStoreAndProductAndBatchNumber(store, product, batchNumber)
               .orElseThrow(() -> new RuntimeException("Batch not found in source store"));
 
       if (stock.getQuantity() < requiredQty.intValue()) {
@@ -257,7 +257,7 @@ public class StockTransferService {
     } else {
       int totalQty = stocks.stream().mapToInt(InventoryStock::getQuantity).sum();
       if (totalQty < requiredQty.intValue()) {
-        throw new RuntimeException("Insufficient stock for medicine: " + medicine.getName());
+        throw new RuntimeException("Insufficient stock for product: " + product.getName());
       }
     }
   }
@@ -285,12 +285,12 @@ public class StockTransferService {
     }
   }
 
-  private void deductMedicineStock(
-      Store store, Medicine medicine, BigDecimal quantity, String batchNumber) {
+  private void deductProductStock(
+      Store store, Product product, BigDecimal quantity, String batchNumber) {
     if (batchNumber != null && !batchNumber.isEmpty()) {
       InventoryStock stock =
           inventoryStockRepository
-              .findByStoreAndMedicineAndBatchNumber(store, medicine, batchNumber)
+              .findByStoreAndProductAndBatchNumber(store, product, batchNumber)
               .orElseThrow(() -> new RuntimeException("Batch not found"));
 
       stock.setQuantity(stock.getQuantity() - quantity.intValue());
@@ -313,10 +313,10 @@ public class StockTransferService {
     }
   }
 
-  private void addMedicineStock(Store store, StockTransferItem item, BigDecimal quantity) {
+  private void addProductStock(Store store, StockTransferItem item, BigDecimal quantity) {
     InventoryStock existingStock =
         inventoryStockRepository
-            .findByStoreAndMedicineAndBatchNumber(store, item.getMedicine(), item.getBatchNumber())
+            .findByStoreAndProductAndBatchNumber(store, item.getProduct(), item.getBatchNumber())
             .orElse(null);
 
     if (existingStock != null) {
@@ -326,12 +326,12 @@ public class StockTransferService {
     } else {
       InventoryStock newStock = new InventoryStock();
       newStock.setStore(store);
-      newStock.setMedicine(item.getMedicine());
+      newStock.setProduct(item.getProduct());
       newStock.setBatchNumber(item.getBatchNumber());
       newStock.setQuantity(quantity.intValue());
       newStock.setCostPrice(BigDecimal.ZERO);
-      newStock.setSellingPrice(item.getMedicine().getPrice());
-      newStock.setExpiryDate(item.getMedicine().getExpiryDate());
+      newStock.setSellingPrice(item.getProduct().getPrice());
+      newStock.setExpiryDate(item.getProduct().getExpiryDate());
       newStock.setCreatedAt(LocalDateTime.now());
       newStock.setUpdatedAt(LocalDateTime.now());
       inventoryStockRepository.save(newStock);
@@ -474,9 +474,9 @@ public class StockTransferService {
     dto.setId(item.getId());
     dto.setStockTransferId(item.getStockTransfer().getId());
 
-    if (item.getMedicine() != null) {
-      dto.setMedicineId(item.getMedicine().getId());
-      dto.setMedicineName(item.getMedicine().getName());
+    if (item.getProduct() != null) {
+      dto.setProductId(item.getProduct().getId());
+      dto.setProductName(item.getProduct().getName());
     }
 
     if (item.getIngredient() != null) {

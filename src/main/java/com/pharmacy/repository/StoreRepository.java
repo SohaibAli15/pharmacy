@@ -10,14 +10,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.pharmacy.entity.Store;
+import com.pharmacy.entity.StoreStatusEntity;
+import com.pharmacy.entity.StoreTypeEntity;
 
 @Repository
 public interface StoreRepository extends JpaRepository<Store, Long> {
   Optional<Store> findByCode(String code);
 
-  Page<Store> findByStatus(Store.StoreStatus status, Pageable pageable);
+  Page<Store> findByStatus(StoreStatusEntity status, Pageable pageable);
 
-  Page<Store> findByType(Store.StoreType type, Pageable pageable);
+  Page<Store> findByType(StoreTypeEntity type, Pageable pageable);
 
   List<Store> findByNameContainingIgnoreCase(String name);
 

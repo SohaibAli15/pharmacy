@@ -37,25 +37,24 @@ public class OpenApiConfig {
                 .title(applicationName + " - Complete API Documentation")
                 .description(
                     """
-                                **Complete Pharmacy Management System API - End-to-End Solution**
+                                **Complete Product Management System API - End-to-End Solution**
 
-                                This comprehensive API provides complete pharmacy management functionality from suppliers to customers:
+                                This comprehensive API provides complete product management functionality from suppliers to customers:
 
                                 **🔄 Complete Business Flow:**
-                                Suppliers → Purchase Orders → Ingredients → Manufacturing → Medicines → Stock Transfers → Retail Stores → Sales → Customers
+                                Suppliers → Purchase Orders → Ingredients → Manufacturing → Products → Stock Transfers → Retail Stores → Sales → Customers
 
                                 **📦 Core Modules:**
                                 - **Supplier Management** - Manage ingredient suppliers
                                 - **Purchase Order Management** - Order raw materials
                                 - **Store Management** - Multi-store support (Warehouse, Manufacturing, Retail, Distribution)
                                 - **Ingredient Management** - Raw material inventory with batch tracking
-                                - **Recipe Management** - Define medicine formulations
-                                - **Production/Manufacturing** - Manufacture medicines from ingredients
-                                - **Medicine Management** - Finished product catalog
+                                - **Recipe Management** - Define product formulations
+                                - **Production/Manufacturing** - Manufacture products from ingredients
+                                - **Product Management** - Finished product catalog
                                 - **Inventory Management** - Stock tracking per store with batch & expiry
                                 - **Stock Transfer Management** - Transfer stock between stores with approval workflow
-                                - **Customer Management** - Customer database with medical history
-                                - **Prescription Management** - Medical prescriptions
+                                - **Customer Management** - Customer database
                                 - **Sales Management** - Point of sale with FIFO inventory
                                 - **Alert System** - Low stock and expiry alerts
 
@@ -185,20 +184,17 @@ public class OpenApiConfig {
                     .name("Production Management")
                     .description("Track production batches and material consumption"),
                 new Tag()
-                    .name("Medicine Management")
-                    .description("Manage finished medicine products catalog"),
+                    .name("Product Management")
+                    .description("Manage finished products (no medicines, no prescriptions)"),
                 new Tag()
                     .name("Inventory Management")
-                    .description("Track medicine stock per store with batch and expiry tracking"),
+                    .description("Track product stock per store with batch and expiry tracking"),
                 new Tag()
                     .name("Stock Transfer Management")
                     .description("Transfer stock between stores with approval workflow"),
                 new Tag()
                     .name("Customer Management")
-                    .description("Manage customer database with medical history"),
-                new Tag()
-                    .name("Prescription Management")
-                    .description("Manage medical prescriptions and prescription items"),
+                    .description("Manage customer database"),
                 new Tag()
                     .name("Sales Management")
                     .description("Point of sale transactions with FIFO inventory management"),
@@ -210,6 +206,24 @@ public class OpenApiConfig {
                     .description("Manage system users and authentication"),
                 new Tag()
                     .name("Reports & Analytics")
-                    .description("Manufacturing reports, sales reports, and analytics")));
+                    .description("Manufacturing reports, sales reports, and analytics"),
+                new Tag()
+                    .name("Stock Transfer Reports")
+                    .description("Reports for stock transfers between stores"),
+                // Add new tags for updated workflow (no medicine, only product)
+                new Tag()
+                    .name("Product Sales Report")
+                    .description("Sales report for products (no medicines)"),
+                new Tag()
+                    .name("Product Inventory Report")
+                    .description("Inventory report for products (no medicines)"),
+                new Tag()
+                    .name("Product Stock Adjustment Report")
+                    .description("Stock adjustment report for products (no medicines)"),
+                new Tag()
+                    .name("Product Stock Transfer Report")
+                    .description("Stock transfer report for products (no medicines)")
+            )
+        );
   }
 }

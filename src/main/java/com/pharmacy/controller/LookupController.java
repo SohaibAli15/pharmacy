@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pharmacy.repository.CategoryRepository;
 import com.pharmacy.repository.IngredientRepository;
-import com.pharmacy.repository.MedicineRepository;
+import com.pharmacy.repository.ProductRepository;
 import com.pharmacy.repository.StoreRepository;
 import com.pharmacy.repository.SubCategoryRepository;
 import com.pharmacy.repository.SupplierRepository;
@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/lookup")
 @RequiredArgsConstructor
 public class LookupController {
-  private final MedicineRepository medicineRepository;
+  private final ProductRepository productRepository;
   private final StoreRepository storeRepository;
   private final SupplierRepository supplierRepository;
   private final IngredientRepository ingredientRepository;
@@ -31,7 +31,7 @@ public class LookupController {
   @GetMapping("")
   public Map<String, Object> getAllLookups() {
     Map<String, Object> result = new HashMap<>();
-    result.put("medicines", medicineRepository.findAll());
+    result.put("products", productRepository.findAll());
     result.put("stores", storeRepository.findAll());
     result.put("suppliers", supplierRepository.findAll());
     result.put("ingredients", ingredientRepository.findAll());

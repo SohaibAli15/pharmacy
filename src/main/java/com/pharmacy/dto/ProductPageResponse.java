@@ -6,8 +6,8 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class PrescriptionPageResponse {
-  private List<PrescriptionDto> content;
+public class ProductPageResponse {
+  private List<ProductDto> content;
   private long totalElements;
   private int totalPages;
   private int number; // current page number (0-based)

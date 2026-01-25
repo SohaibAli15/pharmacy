@@ -25,8 +25,8 @@ public class StockTransferItem {
   private StockTransfer stockTransfer;
 
   @ManyToOne
-  @JoinColumn(name = "medicine_id")
-  private Medicine medicine;
+  @JoinColumn(name = "product_id")
+  private Product product;
 
   @ManyToOne
   @JoinColumn(name = "ingredient_id")

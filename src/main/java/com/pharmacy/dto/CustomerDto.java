@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.pharmacy.entity.Customer;
+import com.pharmacy.entity.CustomerStatusEntity;
+import com.pharmacy.entity.CustomerTypeEntity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,8 +34,8 @@ public class CustomerDto {
   private String insuranceNumber;
   private String allergies;
   private String medicalConditions;
-  private Customer.CustomerType type;
-  private Customer.CustomerStatus status;
+  private CustomerTypeEntity type;
+  private CustomerStatusEntity status;
   private String notes;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;

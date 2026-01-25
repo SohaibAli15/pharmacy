@@ -45,7 +45,7 @@ public class ProductionBatch {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "product_id")
-  private Medicine product; // Link to finished product
+  private Product product; // Link to finished product
 
   @Column(nullable = false, precision = 15, scale = 3)
   private BigDecimal quantityProduced; // Actual quantity produced
@@ -97,6 +97,10 @@ public class ProductionBatch {
       fetch = FetchType.LAZY,
       orphanRemoval = true)
   private List<ProductionBatchMaterial> materialsConsumed;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "work_order_id")
+  private WorkOrder workOrder;
 
   // Audit fields
   @Column(nullable = false)

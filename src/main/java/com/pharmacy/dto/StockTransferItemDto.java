@@ -15,8 +15,8 @@ import lombok.NoArgsConstructor;
 public class StockTransferItemDto {
   private Long id;
   private Long stockTransferId;
-  private Long medicineId;
-  private String medicineName;
+  private Long productId;
+  private String productName;
   private Long ingredientId;
   private String ingredientName;
   private String batchNumber;
