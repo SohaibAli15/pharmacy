@@ -2,8 +2,8 @@
 package com.pharmacy.config;
 
 import java.util.Arrays;
+import java.util.List;
 
-import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,8 +21,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.pharmacy.security.JwtAuthenticationFilter;
 import com.pharmacy.service.CustomUserDetailsService;
@@ -107,31 +105,18 @@ public class SecurityConfig {
   }
 
   @Bean
-  public WebMvcConfigurer corsConfigurer() {
-    return new WebMvcConfigurer() {
-      @Override
-      public void addCorsMappings(@NonNull CorsRegistry registry) {
-        registry
-            .addMapping("/**")
-            .allowedOriginPatterns("*") // allow all origins, including with credentials
-            .allowedMethods("*")
-            .allowedHeaders("*")
-            .exposedHeaders("Authorization", "Content-Type", "X-Requested-With", "X-API-KEY")
-            .allowCredentials(true)
-            .maxAge(3600);
-      }
-    };
-  }
-
-  @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+    configuration.setAllowedOriginPatterns(
+        Arrays.asList(
+            "https://pharma-x-lac.vercel.app",
+            "https://salex-pharma.up.railway.app",
+            "http://localhost",
+            "http://127.0.0.1")); // allow only specific origins (frontend, backend, local dev)
     configuration.setAllowedMethods(
         Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-    configuration.setAllowedHeaders(Arrays.asList("*"));
-    configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
-    configuration.setAllowCredentials(true);
+    configuration.setAllowedHeaders(List.of("*"));
+    configuration.setAllowCredentials(true); // allow credentials for these origins
     configuration.setMaxAge(3600L);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
