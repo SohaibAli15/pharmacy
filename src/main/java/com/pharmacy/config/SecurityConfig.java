@@ -90,12 +90,7 @@ public class SecurityConfig {
     return new WebMvcConfigurer() {
         @Override
         public void addCorsMappings(CorsRegistry registry) {
-            registry.addMapping("/api/**")
-                    .allowedOriginPatterns("*")  // Changed from allowedOrigins
-                    .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
-                    .allowedHeaders("*")
-                    .allowCredentials(true)  // Added this
-                    .maxAge(3600);
+            registry.addMapping("/**").allowedOrigins("*").allowedMethods("*");
         }
     };
   }
