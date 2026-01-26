@@ -16,6 +16,7 @@ import com.pharmacy.entity.CustomerTypeEntity;
 import com.pharmacy.entity.Role;
 import com.pharmacy.entity.StoreStatusEntity;
 import com.pharmacy.entity.StoreTypeEntity;
+import com.pharmacy.entity.SupplierStatusEntity;
 import com.pharmacy.entity.User;
 import com.pharmacy.repository.AlertTypeRepository;
 import com.pharmacy.repository.AuditLogRepository;
@@ -26,6 +27,7 @@ import com.pharmacy.repository.MaterialIssueRepository;
 import com.pharmacy.repository.RoleRepository;
 import com.pharmacy.repository.StoreStatusRepository;
 import com.pharmacy.repository.StoreTypeRepository;
+import com.pharmacy.repository.SupplierStatusEntityRepository;
 import com.pharmacy.repository.UserRepository;
 import com.pharmacy.repository.WorkOrderRepository;
 
@@ -47,6 +49,7 @@ public class DataInitializer implements ApplicationRunner {
   private final WorkOrderRepository workOrderRepository;
   private final DispatchRepository dispatchRepository;
   private final AuditLogRepository auditLogRepository;
+  private final SupplierStatusEntityRepository supplierStatusEntityRepository;
 
   @PersistenceContext private EntityManager entityManager;
 
@@ -121,6 +124,13 @@ public class DataInitializer implements ApplicationRunner {
     if (alertTypeRepository.count() == 0) {
       alertTypeRepository.save(new AlertTypeEntity(null, "LOW_STOCK", true));
       alertTypeRepository.save(new AlertTypeEntity(null, "HIGH_STOCK", true));
+    }
+
+    // Initialize Supplier Statuses
+    if (supplierStatusEntityRepository.count() == 0) {
+      supplierStatusEntityRepository.save(new SupplierStatusEntity(null, "ACTIVE", true));
+      supplierStatusEntityRepository.save(new SupplierStatusEntity(null, "INACTIVE", true));
+      supplierStatusEntityRepository.save(new SupplierStatusEntity(null, "SUSPENDED", true));
     }
 
     // Initialize Order Statuses (Full/Partial/Etc.)

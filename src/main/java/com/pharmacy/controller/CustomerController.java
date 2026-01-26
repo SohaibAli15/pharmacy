@@ -1,6 +1,8 @@
 /* Copyright (C) Pharmacy Management System - All Rights Reserved */
 package com.pharmacy.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -30,6 +32,7 @@ import lombok.RequiredArgsConstructor;
     description = "APIs for managing customers with medical history and contact information (v1)")
 public class CustomerController {
 
+  private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
   private final CustomerService customerService;
 
   @PostMapping
@@ -48,8 +51,15 @@ public class CustomerController {
         @ApiResponse(responseCode = "400", description = "Invalid input or duplicate customer code")
       })
   public ResponseEntity<CustomerDto> createCustomer(@RequestBody CustomerDto customerDto) {
-    CustomerDto created = customerService.createCustomer(customerDto);
-    return new ResponseEntity<>(created, HttpStatus.CREATED);
+    logger.info("Received request to create customer: {}", customerDto.getCustomerCode());
+    try {
+      CustomerDto created = customerService.createCustomer(customerDto);
+      logger.info("Customer created successfully: {}", created.getId());
+      return new ResponseEntity<>(created, HttpStatus.CREATED);
+    } catch (Exception e) {
+      logger.error("Error creating customer: {}", e.getMessage(), e);
+      throw e;
+    }
   }
 
   @PutMapping("/{id}")

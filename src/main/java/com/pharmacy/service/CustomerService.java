@@ -4,6 +4,8 @@ package com.pharmacy.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
+  private static final Logger logger = LoggerFactory.getLogger(CustomerService.class);
   private final CustomerRepository customerRepository;
   private final CustomerTypeRepository customerTypeRepository;
   private final CustomerStatusRepository customerStatusRepository;
@@ -30,19 +33,26 @@ public class CustomerService {
 
   @Transactional
   public CustomerDto createCustomer(CustomerDto customerDto) {
+    logger.debug("Attempting to create customer: {}", customerDto.getCustomerCode());
     if (customerRepository.existsByCustomerCode(customerDto.getCustomerCode())) {
+      logger.warn("Customer code already exists: {}", customerDto.getCustomerCode());
       throw new RuntimeException("Customer code already exists");
     }
     if (customerRepository.existsByEmail(customerDto.getEmail())) {
+      logger.warn("Email already exists: {}", customerDto.getEmail());
       throw new RuntimeException("Email already exists");
     }
-
-    Customer customer = mapToEntity(customerDto);
-    customer.setCreatedAt(LocalDateTime.now());
-    customer.setUpdatedAt(LocalDateTime.now());
-
-    Customer savedCustomer = customerRepository.save(customer);
-    return mapToDto(savedCustomer);
+    try {
+      Customer customer = mapToEntity(customerDto);
+      customer.setCreatedAt(LocalDateTime.now());
+      customer.setUpdatedAt(LocalDateTime.now());
+      Customer savedCustomer = customerRepository.save(customer);
+      logger.info("Customer created with ID: {}", savedCustomer.getId());
+      return mapToDto(savedCustomer);
+    } catch (Exception e) {
+      logger.error("Exception while creating customer: {}", e.getMessage(), e);
+      throw e;
+    }
   }
 
   @Transactional
