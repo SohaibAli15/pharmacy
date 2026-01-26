@@ -70,7 +70,7 @@ public class SaleService {
     sale.setTaxAmount(dto.getTaxAmount());
     sale.setTotalAmount(dto.getTotalAmount());
     sale.setPaymentMethod(dto.getPaymentMethod());
-    sale.setStatus(Sale.SaleStatus.COMPLETED);
+    sale.setStatus(Sale.SaleStatus.PENDING);
     sale.setNotes(dto.getNotes());
 
     // Save sale first to get ID

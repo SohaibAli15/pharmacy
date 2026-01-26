@@ -94,7 +94,7 @@ public class OpenApiConfig {
                     new License().name("Proprietary License").url("https://pharmacy.com/license")))
         .servers(
             List.of(
-                new Server().url("http://localhost:8080").description("Local Development Server"),
+                new Server().url("http://localhost:2005").description("Local Development Server"),
                 new Server().url("https://api.pharmacy.com").description("Production Server")))
         .components(
             new Components()

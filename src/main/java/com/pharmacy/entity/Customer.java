@@ -6,6 +6,9 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +19,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Customer {
+
+  private static final Logger log = LoggerFactory.getLogger(Customer.class);
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -82,11 +87,13 @@ public class Customer {
   protected void onCreate() {
     createdAt = LocalDateTime.now();
     updatedAt = LocalDateTime.now();
+    log.info("Customer created: {} {}", firstName, lastName);
   }
 
   @PreUpdate
   protected void onUpdate() {
     updatedAt = LocalDateTime.now();
+    log.debug("Customer updated: {} {}", firstName, lastName);
   }
 
   public enum Gender {

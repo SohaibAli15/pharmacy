@@ -12,8 +12,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.pharmacy.dto.DispatchInvoiceDto;
+import com.pharmacy.dto.FoilPrintingDto;
 import com.pharmacy.dto.InventoryStockDto;
+import com.pharmacy.dto.IssueMaterialDto;
 import com.pharmacy.dto.ProductionBatchDto;
+import com.pharmacy.dto.QualityControlDto;
 import com.pharmacy.dto.SaleDto;
 import com.pharmacy.entity.Sale;
 import com.pharmacy.service.InventoryStockService;
@@ -437,7 +441,18 @@ public class ManufacturingReportController {
 
   @Operation(
       summary = "Create Sales Order (Manufacturing Step 1)",
-      description = "Step 1: Create a sales order as the first step in the manufacturing workflow.")
+      description = "Step 1: Create a sales order as the first step in the manufacturing workflow.",
+      requestBody =
+          @io.swagger.v3.oas.annotations.parameters.RequestBody(
+              description = "Sales order request body",
+              required = true,
+              content =
+                  @Content(
+                      schema = @Schema(implementation = SaleDto.class),
+                      examples =
+                          @io.swagger.v3.oas.annotations.media.ExampleObject(
+                              value =
+                                  "{\"storeId\":1,\"customerId\":2,\"pharmacistId\":3,\"subtotal\":100.00,\"discount\":5.00,\"taxAmount\":10.00,\"totalAmount\":105.00,\"paymentMethod\":\"CASH\",\"notes\":\"Urgent\",\"items\":[{\"productId\":10,\"quantity\":2,\"unitPrice\":50.00,\"totalPrice\":100.00,\"productName\":\"Paracetamol\",\"productCode\":\"P001\"}]}"))))
   @ApiResponse(
       responseCode = "200",
       description = "Sales order created",
@@ -449,44 +464,8 @@ public class ManufacturingReportController {
                       example = "{\"status\":\"success\",\"salesOrderId\":123}")))
   @PostMapping("/step/create-sales-order")
   public ResponseEntity<Map<String, Object>> createSalesOrder(
-      @RequestBody Map<String, Object> salesOrderRequest) {
-    // Convert request map to SaleDto (manual mapping for now)
-    SaleDto saleDto = new SaleDto();
-    saleDto.setStoreId(
-        salesOrderRequest.get("storeId") != null
-            ? Long.valueOf(salesOrderRequest.get("storeId").toString())
-            : null);
-    saleDto.setCustomerId(
-        salesOrderRequest.get("customerId") != null
-            ? Long.valueOf(salesOrderRequest.get("customerId").toString())
-            : null);
-    saleDto.setPharmacistId(
-        salesOrderRequest.get("pharmacistId") != null
-            ? Long.valueOf(salesOrderRequest.get("pharmacistId").toString())
-            : null);
-    saleDto.setSubtotal(
-        salesOrderRequest.get("subtotal") != null
-            ? new BigDecimal(salesOrderRequest.get("subtotal").toString())
-            : null);
-    saleDto.setDiscount(
-        salesOrderRequest.get("discount") != null
-            ? new BigDecimal(salesOrderRequest.get("discount").toString())
-            : null);
-    saleDto.setTaxAmount(
-        salesOrderRequest.get("taxAmount") != null
-            ? new BigDecimal(salesOrderRequest.get("taxAmount").toString())
-            : null);
-    saleDto.setTotalAmount(
-        salesOrderRequest.get("totalAmount") != null
-            ? new BigDecimal(salesOrderRequest.get("totalAmount").toString())
-            : null);
-    saleDto.setPaymentMethod(
-        salesOrderRequest.get("paymentMethod") != null
-            ? Sale.PaymentMethod.valueOf(salesOrderRequest.get("paymentMethod").toString())
-            : null);
-    saleDto.setNotes((String) salesOrderRequest.get("notes"));
-    // TODO: Map items if present
-    SaleDto sale = saleService.createSale(saleDto);
+      @RequestBody SaleDto salesOrderRequest) {
+    SaleDto sale = saleService.createSale(salesOrderRequest);
     Map<String, Object> result = new HashMap<>();
     result.put("status", "success");
     result.put("salesOrderId", sale.getId());
@@ -517,7 +496,18 @@ public class ManufacturingReportController {
 
   @Operation(
       summary = "Issue Materials (Manufacturing Step 3)",
-      description = "Step 3: Issue materials to production for the batch.")
+      description = "Step 3: Issue materials to production for the batch.",
+      requestBody =
+          @io.swagger.v3.oas.annotations.parameters.RequestBody(
+              description = "Issue material request body",
+              required = true,
+              content =
+                  @Content(
+                      schema = @Schema(implementation = IssueMaterialDto.class),
+                      examples =
+                          @io.swagger.v3.oas.annotations.media.ExampleObject(
+                              value =
+                                  "{\"stockId\":1,\"quantity\":10,\"reason\":\"Issued to production\"}"))))
   @ApiResponse(
       responseCode = "200",
       description = "Materials issued",
@@ -527,20 +517,12 @@ public class ManufacturingReportController {
                   @Schema(type = "object", example = "{\"status\":\"success\",\"issued\":true}")))
   @PostMapping("/step/issue-materials")
   public ResponseEntity<Map<String, Object>> issueMaterials(
-      @RequestBody Map<String, Object> issueRequest) {
-    // Example expects: {stockId, quantity, reason}
-    Long stockId =
-        issueRequest.get("stockId") != null
-            ? Long.valueOf(issueRequest.get("stockId").toString())
-            : null;
-    Integer quantity =
-        issueRequest.get("quantity") != null
-            ? Integer.valueOf(issueRequest.get("quantity").toString())
-            : null;
-    String reason = (String) issueRequest.get("reason");
-    if (stockId != null && quantity != null) {
+      @RequestBody IssueMaterialDto issueRequest) {
+    if (issueRequest.getStockId() != null && issueRequest.getQuantity() != null) {
       inventoryStockService.adjustStock(
-          stockId, -quantity, reason != null ? reason : "Issued to production");
+          issueRequest.getStockId(),
+          -issueRequest.getQuantity(),
+          issueRequest.getReason() != null ? issueRequest.getReason() : "Issued to production");
     }
     Map<String, Object> result = new HashMap<>();
     result.put("status", "success");
@@ -550,7 +532,18 @@ public class ManufacturingReportController {
 
   @Operation(
       summary = "Foil Printing/Production (Manufacturing Step 4)",
-      description = "Step 4: Perform foil printing/production as a single step for this process.")
+      description = "Step 4: Perform foil printing/production as a single step for this process.",
+      requestBody =
+          @io.swagger.v3.oas.annotations.parameters.RequestBody(
+              description = "Foil printing request body",
+              required = true,
+              content =
+                  @Content(
+                      schema = @Schema(implementation = FoilPrintingDto.class),
+                      examples =
+                          @io.swagger.v3.oas.annotations.media.ExampleObject(
+                              value =
+                                  "{\"id\":1,\"jobNumber\":\"FP-001\",\"materialCode\":\"M001\",\"foilType\":\"Silver\",\"sheetsUsed\":100,\"bundlesProduced\":10,\"cost\":500.00,\"createdAt\":\"2026-01-26T10:00:00\",\"updatedAt\":\"2026-01-26T12:00:00\"}"))))
   @ApiResponse(
       responseCode = "200",
       description = "Foil printing/production completed",
@@ -562,17 +555,11 @@ public class ManufacturingReportController {
                       example = "{\"status\":\"success\",\"foilPrinted\":true}")))
   @PostMapping("/step/foil-printing")
   public ResponseEntity<Map<String, Object>> foilPrinting(
-      @RequestBody Map<String, Object> foilRequest) {
-    // Example expects: {batchId, status}
-    Long batchId =
-        foilRequest.get("batchId") != null
-            ? Long.valueOf(foilRequest.get("batchId").toString())
-            : null;
-    String status = (String) foilRequest.get("status");
-    if (batchId != null && status != null) {
-      ProductionBatchDto batch = productionBatchService.getById(batchId);
-      batch.setStatus(status);
-      productionBatchService.update(batchId, batch);
+      @RequestBody FoilPrintingDto foilRequest) {
+    if (foilRequest.getId() != null) {
+      ProductionBatchDto batch = productionBatchService.getById(foilRequest.getId());
+      batch.setStatus("FOIL_PRINTED");
+      productionBatchService.update(foilRequest.getId(), batch);
     }
     Map<String, Object> result = new HashMap<>();
     result.put("status", "success");
@@ -582,7 +569,17 @@ public class ManufacturingReportController {
 
   @Operation(
       summary = "Quality Control (Manufacturing Step 5)",
-      description = "Step 5: Perform quality control for the batch.")
+      description = "Step 5: Perform quality control for the batch.",
+      requestBody =
+          @io.swagger.v3.oas.annotations.parameters.RequestBody(
+              description = "Quality control request body",
+              required = true,
+              content =
+                  @Content(
+                      schema = @Schema(implementation = QualityControlDto.class),
+                      examples =
+                          @io.swagger.v3.oas.annotations.media.ExampleObject(
+                              value = "{\"batchId\":1,\"qcPassed\":true}"))))
   @ApiResponse(
       responseCode = "200",
       description = "Quality control completed",
@@ -592,22 +589,15 @@ public class ManufacturingReportController {
                   @Schema(type = "object", example = "{\"status\":\"success\",\"qcPassed\":true}")))
   @PostMapping("/step/quality-control")
   public ResponseEntity<Map<String, Object>> qualityControl(
-      @RequestBody Map<String, Object> qcRequest) {
-    // Example expects: {batchId, qcPassed}
-    Long batchId =
-        qcRequest.get("batchId") != null ? Long.valueOf(qcRequest.get("batchId").toString()) : null;
-    Boolean qcPassed =
-        qcRequest.get("qcPassed") != null
-            ? Boolean.valueOf(qcRequest.get("qcPassed").toString())
-            : null;
-    if (batchId != null && qcPassed != null) {
-      ProductionBatchDto batch = productionBatchService.getById(batchId);
-      batch.setStatus(qcPassed ? "QC_PASSED" : "QC_FAILED");
-      productionBatchService.update(batchId, batch);
+      @RequestBody QualityControlDto qcRequest) {
+    if (qcRequest.getBatchId() != null && qcRequest.getQcPassed() != null) {
+      ProductionBatchDto batch = productionBatchService.getById(qcRequest.getBatchId());
+      batch.setStatus(qcRequest.getQcPassed() ? "QC_PASSED" : "QC_FAILED");
+      productionBatchService.update(qcRequest.getBatchId(), batch);
     }
     Map<String, Object> result = new HashMap<>();
     result.put("status", "success");
-    result.put("qcPassed", qcPassed != null ? qcPassed : false);
+    result.put("qcPassed", qcRequest.getQcPassed() != null ? qcRequest.getQcPassed() : false);
     return ResponseEntity.ok(result);
   }
 
@@ -634,7 +624,17 @@ public class ManufacturingReportController {
 
   @Operation(
       summary = "Dispatch and Invoice (Manufacturing Step 7)",
-      description = "Step 7: Dispatch finished goods and generate invoice.")
+      description = "Step 7: Dispatch finished goods and generate invoice.",
+      requestBody =
+          @io.swagger.v3.oas.annotations.parameters.RequestBody(
+              description = "Dispatch and invoice request body",
+              required = true,
+              content =
+                  @Content(
+                      schema = @Schema(implementation = DispatchInvoiceDto.class),
+                      examples =
+                          @io.swagger.v3.oas.annotations.media.ExampleObject(
+                              value = "{\"saleId\":123,\"status\":\"DISPATCHED\"}"))))
   @ApiResponse(
       responseCode = "200",
       description = "Goods dispatched and invoice generated",
@@ -646,20 +646,15 @@ public class ManufacturingReportController {
                       example = "{\"status\":\"success\",\"dispatched\":true,\"invoiceId\":789}")))
   @PostMapping("/step/dispatch-invoice")
   public ResponseEntity<Map<String, Object>> dispatchAndInvoice(
-      @RequestBody Map<String, Object> dispatchRequest) {
-    // Example expects: {saleId, status}
-    Long saleId =
-        dispatchRequest.get("saleId") != null
-            ? Long.valueOf(dispatchRequest.get("saleId").toString())
-            : null;
-    String status = (String) dispatchRequest.get("status");
-    if (saleId != null && status != null) {
-      saleService.updateSaleStatus(saleId, Sale.SaleStatus.valueOf(status));
+      @RequestBody DispatchInvoiceDto dispatchRequest) {
+    if (dispatchRequest.getSaleId() != null && dispatchRequest.getStatus() != null) {
+      saleService.updateSaleStatus(
+          dispatchRequest.getSaleId(), Sale.SaleStatus.valueOf(dispatchRequest.getStatus()));
     }
     Map<String, Object> result = new HashMap<>();
     result.put("status", "success");
     result.put("dispatched", true);
-    result.put("invoiceId", saleId);
+    result.put("invoiceId", dispatchRequest.getSaleId());
     return ResponseEntity.ok(result);
   }
 }
