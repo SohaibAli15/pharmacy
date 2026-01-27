@@ -92,6 +92,7 @@ public class PurchaseOrder {
     ORDERED,
     PARTIALLY_RECEIVED,
     RECEIVED,
+    FIXED_GOODS, // Added for manufacturing workflow
     CANCELLED,
     RETURNED
   }

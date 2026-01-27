@@ -34,6 +34,8 @@ public class WorkOrder {
   @Enumerated(EnumType.STRING)
   private Status status;
 
+  private String notes;
+
   public enum Status {
     CREATED,
     IN_PROGRESS,
