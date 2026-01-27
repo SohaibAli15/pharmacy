@@ -231,40 +231,46 @@ public class RecipeService {
 
     // Update ingredients if provided
     if (dto.getIngredients() != null) {
-      existing.getIngredients().clear();
-
-      final Recipe finalExisting = existing;
-      List<RecipeIngredient> ingredients =
+      // Remove ingredients not present in the new list
+      List<Long> newIngredientIds =
           dto.getIngredients().stream()
-              .map(
-                  riDto -> {
-                    RecipeIngredient ri = new RecipeIngredient();
-                    ri.setRecipe(finalExisting);
+              .map(riDto -> riDto.getId())
+              .filter(java.util.Objects::nonNull)
+              .toList();
+      existing
+          .getIngredients()
+          .removeIf(ri -> ri.getId() != null && !newIngredientIds.contains(ri.getId()));
 
-                    var ingredient =
-                        ingredientRepository
-                            .findById(riDto.getIngredientId())
-                            .orElseThrow(
-                                () ->
-                                    new RuntimeException(
-                                        "Ingredient not found: " + riDto.getIngredientId()));
-                    ri.setIngredient(ingredient);
-
-                    ri.setQuantityRequired(riDto.getQuantityRequired());
-                    ri.setUnit(riDto.getUnit() != null ? riDto.getUnit() : ingredient.getUnit());
-                    ri.setWastagePercent(
-                        riDto.getWastagePercent() != null
-                            ? riDto.getWastagePercent()
-                            : BigDecimal.ZERO);
-                    ri.setCostPerUnit(ingredient.getCostPerUnit());
-                    ri.setSortOrder(riDto.getSortOrder());
-
-                    return ri;
-                  })
-              .collect(Collectors.toList());
-
-      existing.setIngredients(ingredients);
-
+      // Update or add ingredients
+      for (var riDto : dto.getIngredients()) {
+        RecipeIngredient ri = null;
+        if (riDto.getId() != null) {
+          ri =
+              existing.getIngredients().stream()
+                  .filter(existingRi -> riDto.getId().equals(existingRi.getId()))
+                  .findFirst()
+                  .orElse(null);
+        }
+        if (ri == null) {
+          ri = new RecipeIngredient();
+          ri.setRecipe(existing);
+          existing.getIngredients().add(ri);
+        }
+        var ingredient =
+            ingredientRepository
+                .findById(riDto.getIngredientId())
+                .orElseThrow(
+                    () -> new RuntimeException("Ingredient not found: " + riDto.getIngredientId()));
+        ri.setIngredient(ingredient);
+        ri.setQuantityRequired(riDto.getQuantityRequired());
+        ri.setUnit(riDto.getUnit() != null ? riDto.getUnit() : ingredient.getUnit());
+        ri.setWastagePercent(
+            riDto.getWastagePercent() != null
+                ? riDto.getWastagePercent()
+                : java.math.BigDecimal.ZERO);
+        ri.setCostPerUnit(ingredient.getCostPerUnit());
+        ri.setSortOrder(riDto.getSortOrder());
+      }
       // Recalculate costs
       calculateRecipeCosts(existing);
     }
