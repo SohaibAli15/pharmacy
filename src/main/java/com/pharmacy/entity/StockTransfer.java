@@ -98,8 +98,8 @@ public class StockTransfer {
   }
 
   public enum TransferType {
-    MEDICINE,
     INGREDIENT,
+    PRODUCT,
     BOTH
   }
 }
