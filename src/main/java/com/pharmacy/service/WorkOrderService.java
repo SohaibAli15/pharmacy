@@ -61,7 +61,11 @@ public class WorkOrderService {
     WorkOrder workOrder = new WorkOrder();
     workOrder.setId(dto.getId());
     workOrder.setWorkOrderNumber(dto.getWorkOrderNumber());
-    workOrder.setCreatedAt(dto.getCreatedAt());
+    if (dto.getCreatedAt() != null) {
+      workOrder.setCreatedAt(dto.getCreatedAt());
+    } else {
+      workOrder.setCreatedAt(java.time.LocalDateTime.now());
+    }
     workOrder.setStatus(
         dto.getStatus() != null
             ? WorkOrder.Status.valueOf(dto.getStatus())
@@ -79,7 +83,11 @@ public class WorkOrderService {
   public void updateEntityFromDto(
       WorkOrder workOrder, WorkOrderDto dto, SaleDto saleDto, List<ProductionBatch> batches) {
     workOrder.setWorkOrderNumber(dto.getWorkOrderNumber());
-    workOrder.setCreatedAt(dto.getCreatedAt());
+    if (dto.getCreatedAt() != null) {
+      workOrder.setCreatedAt(dto.getCreatedAt());
+    } else {
+      workOrder.setCreatedAt(java.time.LocalDateTime.now());
+    }
     workOrder.setStatus(
         dto.getStatus() != null
             ? WorkOrder.Status.valueOf(dto.getStatus())
