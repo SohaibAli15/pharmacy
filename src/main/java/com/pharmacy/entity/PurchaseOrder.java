@@ -3,7 +3,6 @@ package com.pharmacy.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -69,20 +68,20 @@ public class PurchaseOrder {
   private List<PurchaseOrderItem> items;
 
   @Column(nullable = false)
-  private LocalDateTime createdAt;
+  private java.time.LocalDateTime createdAt;
 
   @Column(nullable = false)
-  private LocalDateTime updatedAt;
+  private java.time.LocalDateTime updatedAt;
 
   @PrePersist
   protected void onCreate() {
-    createdAt = LocalDateTime.now();
-    updatedAt = LocalDateTime.now();
+    createdAt = java.time.LocalDateTime.now();
+    updatedAt = java.time.LocalDateTime.now();
   }
 
   @PreUpdate
   protected void onUpdate() {
-    updatedAt = LocalDateTime.now();
+    updatedAt = java.time.LocalDateTime.now();
   }
 
   public enum OrderStatus {

@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pharmacy.dto.GoodsReceiptNoteDto;
 import com.pharmacy.repository.GoodsReceiptNoteRepository;
 import com.pharmacy.repository.PurchaseInvoiceRepository;
 import com.pharmacy.repository.PurchaseOrderRepository;
@@ -76,5 +77,18 @@ public class PurchaseDashboardService {
     grn.setVendor(po.getSupplier().getName());
     grn.setAmount(po.getTotalAmount());
     return grnRepository.save(grn);
+  }
+
+  public GoodsReceiptNoteDto createGRNFromApprovedPODto(Long purchaseOrderId) {
+    com.pharmacy.entity.GoodsReceiptNote grn = createGRNFromApprovedPO(purchaseOrderId);
+    GoodsReceiptNoteDto dto = new GoodsReceiptNoteDto();
+    dto.setId(grn.getId());
+    dto.setDate(grn.getDate());
+    dto.setStatus(grn.getStatus() != null ? grn.getStatus().name() : null);
+    dto.setReferenceNumber(grn.getReferenceNumber());
+    dto.setPurchaseOrderId(grn.getPurchaseOrder() != null ? grn.getPurchaseOrder().getId() : null);
+    dto.setVendor(grn.getVendor());
+    dto.setAmount(grn.getAmount());
+    return dto;
   }
 }

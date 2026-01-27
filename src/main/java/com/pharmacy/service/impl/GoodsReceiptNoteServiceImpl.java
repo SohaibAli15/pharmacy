@@ -90,6 +90,29 @@ public class GoodsReceiptNoteServiceImpl implements GoodsReceiptNoteService {
     return toDto(saved);
   }
 
+  @Override
+  public GoodsReceiptNoteDto saveDto(GoodsReceiptNoteDto dto) {
+    if (dto.getId() == null) {
+      return create(dto);
+    } else {
+      return update(dto.getId(), dto);
+    }
+  }
+
+  @Override
+  public List<GoodsReceiptNoteDto> findAllDto() {
+    return getAll();
+  }
+
+  @Override
+  public java.util.Optional<GoodsReceiptNoteDto> findDtoById(Long id) {
+    try {
+      return java.util.Optional.of(getById(id));
+    } catch (Exception e) {
+      return java.util.Optional.empty();
+    }
+  }
+
   private GoodsReceiptNoteDto toDto(GoodsReceiptNote grn) {
     GoodsReceiptNoteDto dto = new GoodsReceiptNoteDto();
     dto.setId(grn.getId());

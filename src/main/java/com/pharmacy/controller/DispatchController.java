@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.pharmacy.entity.Dispatch;
+import com.pharmacy.dto.DispatchDto;
 import com.pharmacy.service.DispatchService;
 
 import lombok.RequiredArgsConstructor;
@@ -18,31 +18,32 @@ public class DispatchController {
   private final DispatchService dispatchService;
 
   @GetMapping
-  public List<Dispatch> getAll() {
-    return dispatchService.findAll();
+  public List<DispatchDto> getAll() {
+    return dispatchService.findAllDto();
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Dispatch> getById(@PathVariable Long id) {
+  public ResponseEntity<DispatchDto> getById(@PathVariable Long id) {
     return dispatchService
-        .findById(id)
+        .findDtoById(id)
         .map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
   }
 
   @PostMapping
-  public Dispatch create(@RequestBody Dispatch dispatch) {
-    return dispatchService.save(dispatch);
+  public DispatchDto create(@RequestBody DispatchDto dispatch) {
+    return dispatchService.saveDto(dispatch);
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Dispatch> update(@PathVariable Long id, @RequestBody Dispatch dispatch) {
+  public ResponseEntity<DispatchDto> update(
+      @PathVariable Long id, @RequestBody DispatchDto dispatch) {
     return dispatchService
-        .findById(id)
+        .findDtoById(id)
         .map(
             existing -> {
               dispatch.setId(id);
-              return ResponseEntity.ok(dispatchService.save(dispatch));
+              return ResponseEntity.ok(dispatchService.saveDto(dispatch));
             })
         .orElse(ResponseEntity.notFound().build());
   }

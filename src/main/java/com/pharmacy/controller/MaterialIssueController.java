@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.pharmacy.entity.MaterialIssue;
+import com.pharmacy.dto.MaterialIssueDto;
 import com.pharmacy.service.MaterialIssueService;
 
 import lombok.RequiredArgsConstructor;
@@ -18,32 +18,32 @@ public class MaterialIssueController {
   private final MaterialIssueService materialIssueService;
 
   @GetMapping
-  public List<MaterialIssue> getAll() {
-    return materialIssueService.findAll();
+  public List<MaterialIssueDto> getAll() {
+    return materialIssueService.findAllDto();
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<MaterialIssue> getById(@PathVariable Long id) {
+  public ResponseEntity<MaterialIssueDto> getById(@PathVariable Long id) {
     return materialIssueService
-        .findById(id)
+        .findDtoById(id)
         .map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
   }
 
   @PostMapping
-  public MaterialIssue create(@RequestBody MaterialIssue materialIssue) {
-    return materialIssueService.save(materialIssue);
+  public MaterialIssueDto create(@RequestBody MaterialIssueDto materialIssue) {
+    return materialIssueService.saveDto(materialIssue);
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<MaterialIssue> update(
-      @PathVariable Long id, @RequestBody MaterialIssue materialIssue) {
+  public ResponseEntity<MaterialIssueDto> update(
+      @PathVariable Long id, @RequestBody MaterialIssueDto materialIssue) {
     return materialIssueService
-        .findById(id)
+        .findDtoById(id)
         .map(
             existing -> {
               materialIssue.setId(id);
-              return ResponseEntity.ok(materialIssueService.save(materialIssue));
+              return ResponseEntity.ok(materialIssueService.saveDto(materialIssue));
             })
         .orElse(ResponseEntity.notFound().build());
   }

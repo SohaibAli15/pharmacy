@@ -17,4 +17,10 @@ public interface GoodsReceiptNoteService {
   List<GoodsReceiptNoteDto> getAll();
 
   GoodsReceiptNoteDto changeStatus(Long id, String status);
+
+  List<GoodsReceiptNoteDto> findAllDto();
+
+  java.util.Optional<GoodsReceiptNoteDto> findDtoById(Long id);
+
+  GoodsReceiptNoteDto saveDto(GoodsReceiptNoteDto dto);
 }

@@ -19,8 +19,8 @@ public class Dispatch {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "sales_order_id", nullable = false)
-  private SalesOrder salesOrder;
+  @JoinColumn(name = "sale_id", nullable = false)
+  private Sale sale;
 
   @Column(nullable = false)
   private LocalDateTime dispatchDate;

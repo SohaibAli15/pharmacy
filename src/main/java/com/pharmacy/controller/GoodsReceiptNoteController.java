@@ -29,8 +29,8 @@ public class GoodsReceiptNoteController {
       description = "GRN created",
       content = @Content(schema = @Schema(implementation = GoodsReceiptNoteDto.class)))
   @PostMapping
-  public ResponseEntity<GoodsReceiptNoteDto> create(@RequestBody GoodsReceiptNoteDto dto) {
-    return ResponseEntity.ok(grnService.create(dto));
+  public GoodsReceiptNoteDto create(@RequestBody GoodsReceiptNoteDto grn) {
+    return grnService.saveDto(grn);
   }
 
   @Operation(summary = "Update a GRN", description = "Updates an existing Goods Receipt Note")
@@ -40,8 +40,15 @@ public class GoodsReceiptNoteController {
       content = @Content(schema = @Schema(implementation = GoodsReceiptNoteDto.class)))
   @PutMapping("/{id}")
   public ResponseEntity<GoodsReceiptNoteDto> update(
-      @PathVariable Long id, @RequestBody GoodsReceiptNoteDto dto) {
-    return ResponseEntity.ok(grnService.update(id, dto));
+      @PathVariable Long id, @RequestBody GoodsReceiptNoteDto grn) {
+    return grnService
+        .findDtoById(id)
+        .map(
+            existing -> {
+              grn.setId(id);
+              return ResponseEntity.ok(grnService.saveDto(grn));
+            })
+        .orElse(ResponseEntity.notFound().build());
   }
 
   @Operation(summary = "Delete a GRN", description = "Deletes a Goods Receipt Note by ID")
@@ -59,7 +66,10 @@ public class GoodsReceiptNoteController {
       content = @Content(schema = @Schema(implementation = GoodsReceiptNoteDto.class)))
   @GetMapping("/{id}")
   public ResponseEntity<GoodsReceiptNoteDto> getById(@PathVariable Long id) {
-    return ResponseEntity.ok(grnService.getById(id));
+    return grnService
+        .findDtoById(id)
+        .map(ResponseEntity::ok)
+        .orElse(ResponseEntity.notFound().build());
   }
 
   @Operation(summary = "List all GRNs", description = "Fetches all Goods Receipt Notes")
@@ -68,8 +78,8 @@ public class GoodsReceiptNoteController {
       description = "List of GRNs",
       content = @Content(schema = @Schema(implementation = GoodsReceiptNoteDto.class)))
   @GetMapping
-  public ResponseEntity<List<GoodsReceiptNoteDto>> getAll() {
-    return ResponseEntity.ok(grnService.getAll());
+  public List<GoodsReceiptNoteDto> getAll() {
+    return grnService.findAllDto();
   }
 
   @Operation(

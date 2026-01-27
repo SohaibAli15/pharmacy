@@ -66,20 +66,20 @@ public class Sale {
   private List<SaleItem> items;
 
   @Column(nullable = false)
-  private LocalDateTime createdAt;
+  private java.time.LocalDateTime createdAt;
 
   @Column(nullable = false)
-  private LocalDateTime updatedAt;
+  private java.time.LocalDateTime updatedAt;
 
   @PrePersist
   protected void onCreate() {
-    createdAt = LocalDateTime.now();
-    updatedAt = LocalDateTime.now();
+    createdAt = java.time.LocalDateTime.now();
+    updatedAt = java.time.LocalDateTime.now();
   }
 
   @PreUpdate
   protected void onUpdate() {
-    updatedAt = LocalDateTime.now();
+    updatedAt = java.time.LocalDateTime.now();
   }
 
   public enum PaymentMethod {
