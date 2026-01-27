@@ -7,13 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.pharmacy.dto.ProductionBatchDto;
-import com.pharmacy.dto.SalesOrderDto;
+import com.pharmacy.dto.SaleDto;
 import com.pharmacy.dto.WorkOrderDto;
 import com.pharmacy.entity.ProductionBatch;
-import com.pharmacy.entity.SalesOrder;
 import com.pharmacy.entity.WorkOrder;
 import com.pharmacy.service.ProductionBatchService;
-import com.pharmacy.service.SalesOrderService;
+import com.pharmacy.service.SaleService;
 import com.pharmacy.service.WorkOrderService;
 
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WorkOrderController {
   private final WorkOrderService workOrderService;
-  private final SalesOrderService salesOrderService;
+  private final SaleService saleService;
   private final ProductionBatchService productionBatchService;
 
   @GetMapping
@@ -42,11 +41,9 @@ public class WorkOrderController {
 
   @PostMapping
   public ResponseEntity<WorkOrderDto> create(@RequestBody WorkOrderDto workOrderDto) {
-    SalesOrder salesOrder = null;
+    SaleDto sale = null;
     if (workOrderDto.getSalesOrderId() != null) {
-      SalesOrderDto salesOrderDto = salesOrderService.getById(workOrderDto.getSalesOrderId());
-      salesOrder = new SalesOrder();
-      salesOrder.setId(salesOrderDto.getId());
+      sale = saleService.getSaleById(workOrderDto.getSalesOrderId());
     }
     List<ProductionBatch> batches = null;
     if (workOrderDto.getProductionBatchIds() != null
@@ -62,7 +59,7 @@ public class WorkOrderController {
                   })
               .toList();
     }
-    WorkOrder workOrder = workOrderService.mapToEntity(workOrderDto, salesOrder, batches);
+    WorkOrder workOrder = workOrderService.mapToEntity(workOrderDto, sale, batches);
     WorkOrder savedWorkOrder = workOrderService.save(workOrder);
     return ResponseEntity.ok(workOrderService.mapToDto(savedWorkOrder));
   }
@@ -74,12 +71,9 @@ public class WorkOrderController {
         .findById(id)
         .map(
             existing -> {
-              SalesOrder salesOrder = null;
+              SaleDto sale = null;
               if (workOrderDto.getSalesOrderId() != null) {
-                SalesOrderDto salesOrderDto =
-                    salesOrderService.getById(workOrderDto.getSalesOrderId());
-                salesOrder = new SalesOrder();
-                salesOrder.setId(salesOrderDto.getId());
+                sale = saleService.getSaleById(workOrderDto.getSalesOrderId());
               }
               List<ProductionBatch> batches = null;
               if (workOrderDto.getProductionBatchIds() != null
@@ -95,7 +89,7 @@ public class WorkOrderController {
                             })
                         .toList();
               }
-              workOrderService.updateEntityFromDto(existing, workOrderDto, salesOrder, batches);
+              workOrderService.updateEntityFromDto(existing, workOrderDto, sale, batches);
               WorkOrder updated = workOrderService.save(existing);
               return ResponseEntity.ok(workOrderService.mapToDto(updated));
             })

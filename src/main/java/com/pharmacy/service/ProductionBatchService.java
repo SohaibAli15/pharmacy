@@ -70,6 +70,9 @@ public class ProductionBatchService {
     dto.setUpdatedAt(pb.getUpdatedAt());
     dto.setCreatedBy(pb.getCreatedBy());
     dto.setUpdatedBy(pb.getUpdatedBy());
+    if (pb.getWorkOrder() != null) {
+      dto.setWorkOrderId(pb.getWorkOrder().getId());
+    }
     return dto;
   }
 
@@ -128,7 +131,12 @@ public class ProductionBatchService {
     pb.setNotes(dto.getNotes());
     pb.setCreatedBy(dto.getCreatedBy());
     pb.setUpdatedBy(dto.getUpdatedBy());
-
+    // Attach work order if provided
+    if (dto.getWorkOrderId() != null) {
+      WorkOrder workOrder = new WorkOrder();
+      workOrder.setId(dto.getWorkOrderId());
+      pb.setWorkOrder(workOrder);
+    }
     return pb;
   }
 

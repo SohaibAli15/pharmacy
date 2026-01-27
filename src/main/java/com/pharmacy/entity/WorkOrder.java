@@ -22,8 +22,8 @@ public class WorkOrder {
   private String workOrderNumber;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "sales_order_id", nullable = false)
-  private SalesOrder salesOrder;
+  @JoinColumn(name = "sale_id", nullable = false)
+  private Sale sale;
 
   @OneToMany(mappedBy = "workOrder")
   private List<ProductionBatch> productionBatches;

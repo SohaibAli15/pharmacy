@@ -60,4 +60,6 @@ public class ProductionBatchDto {
   private LocalDateTime updatedAt;
   private String createdBy;
   private String updatedBy;
+
+  private Long workOrderId;
 }
