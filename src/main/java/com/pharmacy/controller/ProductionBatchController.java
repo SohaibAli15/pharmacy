@@ -241,21 +241,15 @@ public class ProductionBatchController {
         @ApiResponse(responseCode = "400", description = "Invalid input")
       })
   @PostMapping
-  public ResponseEntity<?> createProductionBatch(
+  public ResponseEntity<ProductionBatchDto> createProductionBatch(
       @io.swagger.v3.oas.annotations.parameters.RequestBody(
               description = "Production batch details with materials consumed",
               required = true)
           @Valid
           @RequestBody
           ProductionBatchDto dto) {
-    try {
-      ProductionBatchDto created = productionBatchService.create(dto);
-      return ResponseEntity.status(HttpStatus.CREATED).body(created);
-    } catch (RuntimeException e) {
-      Map<String, String> error = new HashMap<>();
-      error.put("error", e.getMessage());
-      return ResponseEntity.badRequest().body(error);
-    }
+    ProductionBatchDto created = productionBatchService.create(dto);
+    return ResponseEntity.status(HttpStatus.CREATED).body(created);
   }
 
   @Operation(
@@ -275,17 +269,11 @@ public class ProductionBatchController {
         @ApiResponse(responseCode = "404", description = "Production batch not found")
       })
   @PutMapping("/{id}")
-  public ResponseEntity<?> updateProductionBatch(
+  public ResponseEntity<ProductionBatchDto> updateProductionBatch(
       @Parameter(description = "Production batch ID") @PathVariable Long id,
       @Valid @RequestBody ProductionBatchDto dto) {
-    try {
-      ProductionBatchDto updated = productionBatchService.update(id, dto);
-      return ResponseEntity.ok(updated);
-    } catch (RuntimeException e) {
-      Map<String, String> error = new HashMap<>();
-      error.put("error", e.getMessage());
-      return ResponseEntity.badRequest().body(error);
-    }
+    ProductionBatchDto updated = productionBatchService.update(id, dto);
+    return ResponseEntity.ok(updated);
   }
 
   @Operation(
@@ -298,16 +286,10 @@ public class ProductionBatchController {
         @ApiResponse(responseCode = "404", description = "Production batch not found")
       })
   @DeleteMapping("/{id}")
-  public ResponseEntity<?> deleteProductionBatch(
+  public ResponseEntity<Void> deleteProductionBatch(
       @Parameter(description = "Production batch ID") @PathVariable Long id) {
-    try {
-      productionBatchService.delete(id);
-      return ResponseEntity.noContent().build();
-    } catch (RuntimeException e) {
-      Map<String, String> error = new HashMap<>();
-      error.put("error", e.getMessage());
-      return ResponseEntity.badRequest().body(error);
-    }
+    productionBatchService.delete(id);
+    return ResponseEntity.noContent().build();
   }
 
   @Operation(
@@ -336,19 +318,13 @@ public class ProductionBatchController {
         @ApiResponse(responseCode = "404", description = "Production batch not found")
       })
   @PostMapping("/{id}/finalize")
-  public ResponseEntity<?> finalize(
+  public ResponseEntity<ProductionBatchDto> finalize(
       @Parameter(description = "Production batch ID") @PathVariable Long id,
       @Parameter(description = "Username of person finalizing", example = "admin")
           @RequestParam(required = false)
           String finalizedBy) {
-    try {
-      ProductionBatchDto finalized = productionBatchService.finalize(id, finalizedBy);
-      return ResponseEntity.ok(finalized);
-    } catch (RuntimeException e) {
-      Map<String, String> error = new HashMap<>();
-      error.put("error", e.getMessage());
-      return ResponseEntity.badRequest().body(error);
-    }
+    ProductionBatchDto finalized = productionBatchService.finalize(id, finalizedBy);
+    return ResponseEntity.ok(finalized);
   }
 
   @Operation(
@@ -377,16 +353,10 @@ public class ProductionBatchController {
         @ApiResponse(responseCode = "404", description = "Production batch not found")
       })
   @PostMapping("/{id}/unfinalize")
-  public ResponseEntity<?> unfinalize(
+  public ResponseEntity<ProductionBatchDto> unfinalize(
       @Parameter(description = "Production batch ID") @PathVariable Long id) {
-    try {
-      ProductionBatchDto unfinalized = productionBatchService.unfinalize(id);
-      return ResponseEntity.ok(unfinalized);
-    } catch (RuntimeException e) {
-      Map<String, String> error = new HashMap<>();
-      error.put("error", e.getMessage());
-      return ResponseEntity.badRequest().body(error);
-    }
+    ProductionBatchDto unfinalized = productionBatchService.unfinalize(id);
+    return ResponseEntity.ok(unfinalized);
   }
 
   /** Get production statistics */

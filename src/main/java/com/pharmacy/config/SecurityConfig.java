@@ -44,8 +44,8 @@ public class SecurityConfig {
 
   @Bean
   public DaoAuthenticationProvider authenticationProvider() {
-    DaoAuthenticationProvider authProvider =
-        new DaoAuthenticationProvider(customUserDetailsService);
+    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+    authProvider.setUserDetailsService(customUserDetailsService);
     authProvider.setPasswordEncoder(passwordEncoder());
     return authProvider;
   }
@@ -54,7 +54,8 @@ public class SecurityConfig {
   public AuthenticationManager authenticationManager(
       org.springframework.security.config.annotation.authentication.configuration
               .AuthenticationConfiguration
-          configuration) {
+          configuration)
+      throws Exception {
     return configuration.getAuthenticationManager();
   }
 
@@ -74,7 +75,7 @@ public class SecurityConfig {
 
   // Enable production configuration for role-based authorization
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) {
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
