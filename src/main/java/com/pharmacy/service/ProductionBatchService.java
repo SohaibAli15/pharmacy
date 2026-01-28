@@ -139,6 +139,16 @@ public class ProductionBatchService {
       workOrder.setId(dto.getWorkOrderId());
       pb.setWorkOrder(workOrder);
     }
+    // Set costs from DTO if provided, else leave for calculation
+    if (dto.getProductionCost() != null) {
+      pb.setProductionCost(dto.getProductionCost());
+    }
+    if (dto.getIngredientCost() != null) {
+      pb.setIngredientCost(dto.getIngredientCost());
+    }
+    if (dto.getTotalCost() != null) {
+      pb.setTotalCost(dto.getTotalCost());
+    }
     return pb;
   }
 
@@ -217,8 +227,12 @@ public class ProductionBatchService {
       savedBatch.setMaterialsConsumed(materials);
     }
 
-    // Calculate costs
-    calculateProductionCosts(savedBatch);
+    // Calculate costs only if not provided in DTO
+    if (dto.getProductionCost() == null
+        || dto.getIngredientCost() == null
+        || dto.getTotalCost() == null) {
+      calculateProductionCosts(savedBatch);
+    }
 
     ProductionBatch finalSaved = productionBatchRepository.save(savedBatch);
     return toDto(finalSaved);
@@ -282,8 +296,12 @@ public class ProductionBatchService {
       existing.setMaterialsConsumed(materials);
     }
 
-    // Recalculate costs
-    calculateProductionCosts(existing);
+    // Recalculate costs only if not provided in DTO
+    if (dto.getProductionCost() == null
+        || dto.getIngredientCost() == null
+        || dto.getTotalCost() == null) {
+      calculateProductionCosts(existing);
+    }
 
     ProductionBatch saved = productionBatchRepository.save(existing);
     return toDto(saved);
