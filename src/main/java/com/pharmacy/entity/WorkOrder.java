@@ -25,7 +25,8 @@ public class WorkOrder {
   @JoinColumn(name = "sale_id", nullable = false)
   private Sale sale;
 
-  @OneToMany(mappedBy = "workOrder")
+  @OneToMany(mappedBy = "workOrder", fetch = FetchType.LAZY)
+  @org.hibernate.annotations.Fetch(org.hibernate.annotations.FetchMode.JOIN)
   private List<ProductionBatch> productionBatches;
 
   @Column(nullable = false)

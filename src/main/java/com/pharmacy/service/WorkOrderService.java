@@ -100,4 +100,12 @@ public class WorkOrderService {
     }
     workOrder.setProductionBatches(batches);
   }
+
+  public Optional<WorkOrder> findByIdWithBatches(Long id) {
+    return workOrderRepository.findByIdWithBatches(id);
+  }
+
+  public List<WorkOrder> findAllWithBatches() {
+    return workOrderRepository.findAllWithBatches();
+  }
 }

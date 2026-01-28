@@ -27,13 +27,13 @@ public class WorkOrderController {
 
   @GetMapping
   public List<WorkOrderDto> getAll() {
-    return workOrderService.findAll().stream().map(workOrderService::mapToDto).toList();
+    return workOrderService.findAllWithBatches().stream().map(workOrderService::mapToDto).toList();
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<WorkOrderDto> getById(@PathVariable Long id) {
     return workOrderService
-        .findById(id)
+        .findByIdWithBatches(id)
         .map(workOrderService::mapToDto)
         .map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
