@@ -3,6 +3,7 @@ package com.pharmacy.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.persistence.*;
 
@@ -23,8 +24,8 @@ public class MaterialIssue {
   private ProductionBatch productionBatch;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "sales_order_id", nullable = false)
-  private SalesOrder salesOrder;
+  @JoinColumn(name = "sale_id", nullable = true)
+  private Sale sales;
 
   @Column(nullable = false)
   private LocalDateTime issueDate;
@@ -40,6 +41,25 @@ public class MaterialIssue {
 
   @Column(nullable = false)
   private java.time.LocalDateTime updatedAt;
+
+  @OneToMany(
+      mappedBy = "materialIssue",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.LAZY)
+  private List<MaterialIssueItem> items;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "issued_by_user_id")
+  private User issuedBy;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "approved_by_user_id")
+  private User approvedBy;
+
+  @Column private String department;
+
+  @Column private String Purpose;
 
   @PrePersist
   protected void onCreate() {

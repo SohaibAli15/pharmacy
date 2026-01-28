@@ -3,14 +3,16 @@ package com.pharmacy.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pharmacy.dto.MaterialIssueDto;
 import com.pharmacy.entity.MaterialIssue;
+import com.pharmacy.entity.MaterialIssueItem;
 import com.pharmacy.entity.ProductionBatch;
-import com.pharmacy.entity.SalesOrder;
+import com.pharmacy.entity.Sale;
 import com.pharmacy.repository.MaterialIssueRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -46,6 +48,16 @@ public class MaterialIssueService {
   }
 
   public MaterialIssueDto saveDto(MaterialIssueDto dto) {
+    // Calculate totalQuantityIssued if not provided
+    if (dto.getTotalQuantityIssued() == null && dto.getItems() != null) {
+      java.math.BigDecimal sum = java.math.BigDecimal.ZERO;
+      for (MaterialIssueDto.Item item : dto.getItems()) {
+        if (item.getQuantityIssued() != null) {
+          sum = sum.add(item.getQuantityIssued());
+        }
+      }
+      dto.setTotalQuantityIssued(sum);
+    }
     MaterialIssue entity = fromDto(dto);
     MaterialIssue saved = materialIssueRepository.save(entity);
     return toDto(saved);
@@ -56,10 +68,15 @@ public class MaterialIssueService {
     dto.setId(m.getId());
     dto.setProductionBatchId(
         m.getProductionBatch() != null ? m.getProductionBatch().getId() : null);
-    dto.setSalesOrderId(m.getSalesOrder() != null ? m.getSalesOrder().getId() : null);
+    dto.setSaleId(m.getSales() != null ? m.getSales().getId() : null);
     dto.setIssueDate(m.getIssueDate());
     dto.setTotalQuantityIssued(m.getTotalQuantityIssued());
     dto.setStatus(m.getStatus() != null ? m.getStatus().name() : null);
+    dto.setDepartment(m.getDepartment());
+    dto.setPurpose(m.getPurpose());
+    if (m.getItems() != null) {
+      dto.setItems(m.getItems().stream().map(this::toItemDto).collect(Collectors.toList()));
+    }
     return dto;
   }
 
@@ -71,16 +88,52 @@ public class MaterialIssueService {
       pb.setId(dto.getProductionBatchId());
       m.setProductionBatch(pb);
     }
-    if (dto.getSalesOrderId() != null) {
-      SalesOrder so = new SalesOrder();
-      so.setId(dto.getSalesOrderId());
-      m.setSalesOrder(so);
+    if (dto.getSaleId() != null) {
+      Sale sale = new Sale();
+      sale.setId(dto.getSaleId());
+      m.setSales(sale);
     }
     m.setIssueDate(dto.getIssueDate());
     m.setTotalQuantityIssued(dto.getTotalQuantityIssued());
-    if (dto.getStatus() != null) {
-      m.setStatus(MaterialIssue.Status.valueOf(dto.getStatus()));
+    m.setStatus(dto.getStatus() != null ? MaterialIssue.Status.valueOf(dto.getStatus()) : null);
+    m.setDepartment(dto.getDepartment());
+    m.setPurpose(dto.getPurpose());
+    if (dto.getItems() != null) {
+      m.setItems(dto.getItems().stream().map(i -> fromItemDto(i, m)).collect(Collectors.toList()));
     }
     return m;
+  }
+
+  private MaterialIssueDto.Item toItemDto(MaterialIssueItem item) {
+    MaterialIssueDto.Item dto = new MaterialIssueDto.Item();
+    dto.setIngredientId(item.getIngredientId());
+    dto.setIngredientName(item.getIngredientName());
+    dto.setIngredientCode(item.getIngredientCode());
+    dto.setQuantityRequired(item.getQuantityRequired());
+    dto.setQuantityIssued(item.getQuantityIssued());
+    dto.setUnit(item.getUnit());
+    dto.setBatchNumber(item.getBatchNumber());
+    dto.setExpiryDate(item.getExpiryDate());
+    dto.setLotNumber(item.getLotNumber());
+    dto.setStorageLocation(item.getStorageLocation());
+    dto.setNotes(item.getNotes());
+    return dto;
+  }
+
+  private MaterialIssueItem fromItemDto(MaterialIssueDto.Item dto, MaterialIssue parent) {
+    MaterialIssueItem item = new MaterialIssueItem();
+    item.setMaterialIssue(parent);
+    item.setIngredientId(dto.getIngredientId());
+    item.setIngredientName(dto.getIngredientName());
+    item.setIngredientCode(dto.getIngredientCode());
+    item.setQuantityRequired(dto.getQuantityRequired());
+    item.setQuantityIssued(dto.getQuantityIssued());
+    item.setUnit(dto.getUnit());
+    item.setBatchNumber(dto.getBatchNumber());
+    item.setExpiryDate(dto.getExpiryDate());
+    item.setLotNumber(dto.getLotNumber());
+    item.setStorageLocation(dto.getStorageLocation());
+    item.setNotes(dto.getNotes());
+    return item;
   }
 }
