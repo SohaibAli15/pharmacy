@@ -32,11 +32,7 @@ public class WorkOrderController {
 
   @GetMapping("/{id}")
   public ResponseEntity<WorkOrderDto> getById(@PathVariable Long id) {
-    return workOrderService
-        .findByIdWithBatches(id)
-        .map(workOrderService::mapToDto)
-        .map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
+    return ResponseEntity.ok(workOrderService.getById(id));
   }
 
   @PostMapping

@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pharmacy.dto.ProductionBatchDto;
 import com.pharmacy.dto.ProductionBatchMaterialDto;
 import com.pharmacy.entity.*;
+import com.pharmacy.exception.NotFoundException;
 import com.pharmacy.repository.*;
 
 import lombok.RequiredArgsConstructor;
@@ -304,7 +305,7 @@ public class ProductionBatchService {
     return productionBatchRepository
         .findById(id)
         .map(this::toDto)
-        .orElseThrow(() -> new RuntimeException("Production batch not found: " + id));
+        .orElseThrow(() -> new NotFoundException("Production batch not found: " + id));
   }
 
   public List<ProductionBatchDto> listAll() {

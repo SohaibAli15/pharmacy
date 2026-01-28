@@ -12,6 +12,7 @@ import com.pharmacy.dto.WorkOrderDto;
 import com.pharmacy.entity.ProductionBatch;
 import com.pharmacy.entity.Sale;
 import com.pharmacy.entity.WorkOrder;
+import com.pharmacy.exception.NotFoundException;
 import com.pharmacy.repository.WorkOrderRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,13 @@ public class WorkOrderService {
 
   public Optional<WorkOrder> findById(Long id) {
     return workOrderRepository.findById(id);
+  }
+
+  public WorkOrderDto getById(Long id) {
+    return workOrderRepository
+        .findById(id)
+        .map(this::mapToDto)
+        .orElseThrow(() -> new NotFoundException("WorkOrder not found: " + id));
   }
 
   public WorkOrder save(WorkOrder workOrder) {

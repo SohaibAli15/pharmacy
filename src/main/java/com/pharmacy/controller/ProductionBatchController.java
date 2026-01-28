@@ -223,12 +223,7 @@ public class ProductionBatchController {
   @GetMapping("/{id}")
   public ResponseEntity<ProductionBatchDto> getProductionBatchById(
       @Parameter(description = "Production batch ID", example = "1") @PathVariable Long id) {
-    try {
-      ProductionBatchDto dto = productionBatchService.getById(id);
-      return ResponseEntity.ok(dto);
-    } catch (RuntimeException e) {
-      return ResponseEntity.notFound().build();
-    }
+    return ResponseEntity.ok(productionBatchService.getById(id));
   }
 
   @Operation(
