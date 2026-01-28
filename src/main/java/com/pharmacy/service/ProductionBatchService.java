@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -478,23 +479,25 @@ public class ProductionBatchService {
       ingredientCost =
           pb.getMaterialsConsumed().stream()
               .map(ProductionBatchMaterial::getTotalCost)
+              .filter(Objects::nonNull)
               .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
     pb.setIngredientCost(ingredientCost);
 
     // Production cost (fixed + variable)
     BigDecimal productionCost =
-        (recipe.getFixedProductionCost() != null
+        (recipe != null && recipe.getFixedProductionCost() != null
                 ? recipe.getFixedProductionCost()
                 : BigDecimal.ZERO)
             .add(
-                recipe.getVariableProductionCost() != null
+                recipe != null && recipe.getVariableProductionCost() != null
                     ? recipe.getVariableProductionCost()
                     : BigDecimal.ZERO);
     pb.setProductionCost(productionCost);
 
     // Total cost
-    pb.setTotalCost(ingredientCost.add(productionCost));
+    BigDecimal totalCost = ingredientCost.add(productionCost);
+    pb.setTotalCost(totalCost);
   }
 
   /** Generate unique reference number in format: DDMMYYYY/NNNN */
