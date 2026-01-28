@@ -151,6 +151,12 @@ public class ProductionBatchService {
     ProductionBatch pb = fromDto(dto);
     Recipe recipe = pb.getRecipe();
 
+    // Set createdAt and updatedAt
+    if (pb.getCreatedAt() == null) {
+      pb.setCreatedAt(LocalDateTime.now());
+    }
+    pb.setUpdatedAt(LocalDateTime.now());
+
     // Calculate expected quantity from recipe
     if (pb.getExpectedQuantity() == null) {
       pb.setExpectedQuantity(recipe.getOutputQuantity());
@@ -236,6 +242,8 @@ public class ProductionBatchService {
     existing.setAttachedDocumentPath(dto.getAttachedDocumentPath());
     existing.setNotes(dto.getNotes());
     existing.setUpdatedBy(dto.getUpdatedBy());
+    // Set updatedAt
+    existing.setUpdatedAt(LocalDateTime.now());
 
     // Update materials if provided
     if (dto.getMaterialsConsumed() != null) {
