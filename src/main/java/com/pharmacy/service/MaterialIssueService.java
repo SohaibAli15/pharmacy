@@ -14,6 +14,7 @@ import com.pharmacy.entity.MaterialIssueItem;
 import com.pharmacy.entity.ProductionBatch;
 import com.pharmacy.entity.Sale;
 import com.pharmacy.repository.MaterialIssueRepository;
+import com.pharmacy.repository.ProductionBatchRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class MaterialIssueService {
   private final MaterialIssueRepository materialIssueRepository;
+  private final ProductionBatchRepository productionBatchRepository;
 
   public List<MaterialIssue> findAll() {
     return materialIssueRepository.findAll();
@@ -58,7 +60,53 @@ public class MaterialIssueService {
       }
       dto.setTotalQuantityIssued(sum);
     }
-    MaterialIssue entity = fromDto(dto);
+
+    MaterialIssue entity;
+    if (dto.getId() != null) {
+      // Update: load existing entity and update fields
+      entity = materialIssueRepository.findById(dto.getId()).orElse(null);
+      if (entity == null) {
+        // Not found, treat as create
+        entity = fromDto(dto);
+      } else {
+        // Update only fields present in DTO
+        if (dto.getProductionBatchId() != null) {
+          ProductionBatch pb =
+              productionBatchRepository.findById(dto.getProductionBatchId()).orElse(null);
+          if (pb != null) {
+            entity.setProductionBatch(pb);
+          } else {
+            // fallback: set by id if not found (should not happen in normal flow)
+            ProductionBatch fallbackPb = new ProductionBatch();
+            fallbackPb.setId(dto.getProductionBatchId());
+            entity.setProductionBatch(fallbackPb);
+          }
+        }
+        if (dto.getSaleId() != null) {
+          Sale sale = new Sale();
+          sale.setId(dto.getSaleId());
+          entity.setSales(sale);
+        }
+        // Preserve created_at from the existing entity
+        entity.setCreatedAt(entity.getCreatedAt());
+        entity.setIssueDate(dto.getIssueDate());
+        entity.setTotalQuantityIssued(dto.getTotalQuantityIssued());
+        entity.setStatus(
+            dto.getStatus() != null ? MaterialIssue.Status.valueOf(dto.getStatus()) : null);
+        entity.setDepartment(dto.getDepartment());
+        entity.setPurpose(dto.getPurpose());
+        if (dto.getItems() != null) {
+          final MaterialIssue finalEntity = entity;
+          entity.setItems(
+              dto.getItems().stream()
+                  .map(i -> fromItemDto(i, finalEntity))
+                  .collect(java.util.stream.Collectors.toList()));
+        }
+      }
+    } else {
+      // Create
+      entity = fromDto(dto);
+    }
     MaterialIssue saved = materialIssueRepository.save(entity);
     return toDto(saved);
   }
