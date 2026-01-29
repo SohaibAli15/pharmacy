@@ -87,8 +87,14 @@ public class MaterialIssueService {
           sale.setId(dto.getSaleId());
           entity.setSales(sale);
         }
-        // Preserve created_at from the existing entity
-        entity.setCreatedAt(entity.getCreatedAt());
+        // Preserve createdAt and updatedAt from the existing entity if not set in DTO
+        if (entity.getCreatedAt() != null) {
+          entity.setCreatedAt(entity.getCreatedAt());
+        } else {
+          entity.setCreatedAt(java.time.LocalDateTime.now());
+        }
+        // Always update updatedAt to now
+        entity.setUpdatedAt(java.time.LocalDateTime.now());
         entity.setIssueDate(dto.getIssueDate());
         entity.setTotalQuantityIssued(dto.getTotalQuantityIssued());
         entity.setStatus(
