@@ -64,17 +64,13 @@ public class DataInitializer implements ApplicationRunner {
               null, "ADMIN", true, java.time.LocalDateTime.now(), java.time.LocalDateTime.now()));
       roleRepository.save(
           new Role(
-              null,
-              "PHARMACIST",
-              true,
-              java.time.LocalDateTime.now(),
-              java.time.LocalDateTime.now()));
+              null, "USER", true, java.time.LocalDateTime.now(), java.time.LocalDateTime.now()));
       rolesSeeded = true;
     }
 
     // Assign roles to default users
     Role adminRole = roleRepository.findByName("ADMIN");
-    Role pharmacistRole = roleRepository.findByName("PHARMACIST");
+    Role pharmacistRole = roleRepository.findByName("USER");
     if (adminRole == null || pharmacistRole == null) {
       throw new IllegalStateException("Roles not found in database. Check role seeding logic.");
     }
@@ -87,8 +83,8 @@ public class DataInitializer implements ApplicationRunner {
       userRepository.save(admin);
 
       User pharmacist = new User();
-      pharmacist.setUsername("pharma");
-      pharmacist.setPassword(passwordEncoder.encode("pharma123"));
+      pharmacist.setUsername("user");
+      pharmacist.setPassword(passwordEncoder.encode("user123"));
       pharmacist.setEmail("pharma@pharma.local");
       pharmacist.setRole(pharmacistRole);
       userRepository.save(pharmacist);
