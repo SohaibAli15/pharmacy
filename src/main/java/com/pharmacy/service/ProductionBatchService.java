@@ -263,7 +263,8 @@ public class ProductionBatchService {
 
     // Update materials if provided
     if (dto.getMaterialsConsumed() != null) {
-      existing.getMaterialsConsumed().clear();
+      List<ProductionBatchMaterial> existingMaterials = existing.getMaterialsConsumed();
+      existingMaterials.clear();
 
       final ProductionBatch batchForLambda = existing;
       List<ProductionBatchMaterial> materials =
@@ -291,9 +292,9 @@ public class ProductionBatchService {
 
                     return pbm;
                   })
-              .collect(Collectors.toList());
+              .toList();
 
-      existing.setMaterialsConsumed(materials);
+      existingMaterials.addAll(materials);
     }
 
     // Recalculate costs only if not provided in DTO

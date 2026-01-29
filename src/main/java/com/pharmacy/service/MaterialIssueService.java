@@ -103,10 +103,16 @@ public class MaterialIssueService {
         entity.setPurpose(dto.getPurpose());
         if (dto.getItems() != null) {
           final MaterialIssue finalEntity = entity;
-          entity.setItems(
+          List<MaterialIssueItem> newItems =
               dto.getItems().stream()
                   .map(i -> fromItemDto(i, finalEntity))
-                  .collect(java.util.stream.Collectors.toList()));
+                  .collect(java.util.stream.Collectors.toList());
+          if (entity.getItems() != null) {
+            entity.getItems().clear();
+            entity.getItems().addAll(newItems);
+          } else {
+            entity.setItems(newItems);
+          }
         }
       }
     } else {
