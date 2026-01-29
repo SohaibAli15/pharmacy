@@ -316,6 +316,7 @@ public class SaleService {
     sale.setTotalAmount(dto.getTotalAmount());
     sale.setPaymentMethod(dto.getPaymentMethod());
     sale.setNotes(dto.getNotes());
+    sale.setStatus(dto.getStatus()); // Allow status update
     sale.setUpdatedAt(LocalDateTime.now());
 
     // Remove old items and restore inventory
