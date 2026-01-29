@@ -281,6 +281,103 @@ public class SaleService {
     return mapToDto(updated);
   }
 
+  @Transactional
+  public SaleDto updateSale(Long id, SaleDto dto) {
+    Sale sale =
+        saleRepository.findById(id).orElseThrow(() -> new RuntimeException("Sale not found"));
+
+    // Validate store
+    Store store =
+        storeRepository
+            .findById(dto.getStoreId())
+            .orElseThrow(() -> new RuntimeException("Store not found"));
+    sale.setStore(store);
+
+    // Validate customer (optional)
+    Customer customer = null;
+    if (dto.getCustomerId() != null) {
+      customer =
+          customerRepository
+              .findById(dto.getCustomerId())
+              .orElseThrow(() -> new RuntimeException("Customer not found"));
+    }
+    sale.setCustomer(customer);
+
+    // Validate pharmacist
+    User pharmacist =
+        userRepository
+            .findById(dto.getPharmacistId())
+            .orElseThrow(() -> new RuntimeException("Pharmacist not found"));
+    sale.setPharmacist(pharmacist);
+
+    sale.setSubtotal(dto.getSubtotal());
+    sale.setDiscount(dto.getDiscount() != null ? dto.getDiscount() : BigDecimal.ZERO);
+    sale.setTaxAmount(dto.getTaxAmount());
+    sale.setTotalAmount(dto.getTotalAmount());
+    sale.setPaymentMethod(dto.getPaymentMethod());
+    sale.setNotes(dto.getNotes());
+    sale.setUpdatedAt(LocalDateTime.now());
+
+    // Remove old items and restore inventory
+    if (sale.getItems() != null) {
+      for (SaleItem oldItem : sale.getItems()) {
+        List<InventoryStock> stockList =
+            inventoryStockRepository.findByStoreAndProduct(store, oldItem.getProduct());
+        if (!stockList.isEmpty()) {
+          InventoryStock stock = stockList.get(0);
+          stock.setQuantity(stock.getQuantity() + oldItem.getQuantity());
+          stock.setUpdatedAt(LocalDateTime.now());
+          inventoryStockRepository.save(stock);
+        }
+      }
+      sale.getItems().clear();
+    }
+
+    // Add new items and update inventory
+    List<SaleItem> saleItems = new ArrayList<>();
+    for (SaleItemDto itemDto : dto.getItems()) {
+      Product product =
+          productRepository
+              .findById(itemDto.getProductId())
+              .orElseThrow(
+                  () -> new RuntimeException("Product not found: " + itemDto.getProductId()));
+      List<InventoryStock> stockList =
+          inventoryStockRepository.findByStoreAndProduct(store, product);
+      if (stockList.isEmpty()) {
+        throw new RuntimeException("Product not available in store: " + product.getName());
+      }
+      int totalAvailable = stockList.stream().mapToInt(InventoryStock::getQuantity).sum();
+      if (totalAvailable < itemDto.getQuantity()) {
+        throw new RuntimeException(
+            "Insufficient stock for product: "
+                + product.getName()
+                + ". Available: "
+                + totalAvailable
+                + ", Required: "
+                + itemDto.getQuantity());
+      }
+      SaleItem saleItem = new SaleItem();
+      saleItem.setSale(sale);
+      saleItem.setProduct(product);
+      saleItem.setQuantity(itemDto.getQuantity());
+      saleItem.setUnitPrice(itemDto.getUnitPrice());
+      saleItem.setTotalPrice(itemDto.getTotalPrice());
+      saleItems.add(saleItem);
+      int remainingQty = itemDto.getQuantity();
+      for (InventoryStock stock : stockList) {
+        if (remainingQty <= 0) break;
+        int deductQty = Math.min(stock.getQuantity(), remainingQty);
+        stock.setQuantity(stock.getQuantity() - deductQty);
+        stock.setUpdatedAt(LocalDateTime.now());
+        inventoryStockRepository.save(stock);
+        remainingQty -= deductQty;
+      }
+    }
+    sale.setItems(saleItems);
+    Sale updatedSale = saleRepository.save(sale);
+    return mapToDto(updatedSale);
+  }
+
   private String generateInvoiceNumber(Store store) {
     String storeCode = store.getCode();
     String datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));

@@ -19,6 +19,7 @@ import com.pharmacy.service.SaleService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -289,7 +290,15 @@ public class SaleController {
   @Operation(
       summary = "Update sale status",
       description =
-          "Update the status of a sale order (CONFIRMED, IN_PRODUCTION, DISPATCHED, COMPLETED, etc.)")
+          "Update the status of a sale order (CONFIRMED, IN_PRODUCTION, DISPATCHED, COMPLETED, etc.)",
+      parameters = {
+        @Parameter(
+            name = "status",
+            description = "New sale status",
+            required = true,
+            in = ParameterIn.QUERY,
+            schema = @Schema(implementation = Sale.SaleStatus.class, example = "CONFIRMED"))
+      })
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -305,6 +314,27 @@ public class SaleController {
   public ResponseEntity<SaleDto> updateSaleStatus(
       @PathVariable Long id, @RequestParam Sale.SaleStatus status) {
     SaleDto updated = saleService.updateSaleStatus(id, status);
+    return ResponseEntity.ok(updated);
+  }
+
+  @PutMapping("/{id}")
+  @Operation(summary = "Update a sale", description = "Update an existing sale and its items")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Sale updated successfully",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = SaleDto.class))),
+        @ApiResponse(responseCode = "404", description = "Sale not found"),
+        @ApiResponse(responseCode = "400", description = "Invalid input")
+      })
+  public ResponseEntity<SaleDto> updateSale(
+      @Parameter(description = "Sale ID", required = true) @PathVariable Long id,
+      @RequestBody SaleDto saleDto) {
+    SaleDto updated = saleService.updateSale(id, saleDto);
     return ResponseEntity.ok(updated);
   }
 }
