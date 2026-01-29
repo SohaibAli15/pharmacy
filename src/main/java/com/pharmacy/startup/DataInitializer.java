@@ -58,10 +58,15 @@ public class DataInitializer implements ApplicationRunner {
   public void run(ApplicationArguments args) throws Exception {
     // Initialize Roles FIRST, before truncating users
     boolean rolesSeeded = false;
-    if (roleRepository.count() == 0) {
+    // Always ensure ADMIN role exists
+    if (roleRepository.findByName("ADMIN") == null) {
       roleRepository.save(
           new Role(
               null, "ADMIN", true, java.time.LocalDateTime.now(), java.time.LocalDateTime.now()));
+      rolesSeeded = true;
+    }
+    // Always ensure USER role exists
+    if (roleRepository.findByName("USER") == null) {
       roleRepository.save(
           new Role(
               null, "USER", true, java.time.LocalDateTime.now(), java.time.LocalDateTime.now()));
