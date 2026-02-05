@@ -41,4 +41,14 @@ public class GeneralLedgerEntry {
 
   @Column(nullable = false)
   private String company; // For multi-company support
+
+  // Reference to Party Account for transaction traceability
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "account_id")
+  private Account linkedAccount;
+
+  // Reference to Party (Customer/Supplier) for quick lookup
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "party_id")
+  private Party party;
 }

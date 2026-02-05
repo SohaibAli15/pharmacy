@@ -58,6 +58,11 @@ public class Supplier {
 
   @Column private Integer paymentTermsDays; // e.g., Net 30, Net 60
 
+  // Unified party relationship - one supplier linked to one party
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "party_id", unique = true)
+  private Party party;
+
   @Column(nullable = false)
   private LocalDateTime createdAt;
 

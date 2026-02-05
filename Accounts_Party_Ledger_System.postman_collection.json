@@ -1,0 +1,450 @@
+{
+  "info": {
+    "_postman_id": "accounts-ledger-collection",
+    "name": "Pharmacy - Accounts & Party Ledger System",
+    "description": "Complete API collection for unified Party and Account ledger system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Party Management",
+      "item": [
+        {
+          "name": "Create Party",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"partyCode\": \"PARTY-001\",\n  \"partyName\": \"John's Pharmacy Supplies\",\n  \"partyType\": \"CUSTOMER_ONLY\",\n  \"email\": \"john@pharmacy.com\",\n  \"phone\": \"+91-9876543210\",\n  \"address\": \"123 Business St\",\n  \"city\": \"Mumbai\",\n  \"state\": \"Maharashtra\",\n  \"country\": \"India\",\n  \"zipCode\": \"400001\",\n  \"taxId\": \"TAX-123456\",\n  \"bankAccount\": \"ACC-987654\",\n  \"notes\": \"Preferred supplier\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/parties",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "parties"]
+            }
+          }
+        },
+        {
+          "name": "Get All Parties",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/parties",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "parties"]
+            }
+          }
+        },
+        {
+          "name": "Get Party by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/parties/1",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "parties", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Party by Code",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/parties/code/PARTY-001",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "parties", "code", "PARTY-001"]
+            }
+          }
+        },
+        {
+          "name": "Get Parties by Type",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/parties/type/CUSTOMER_ONLY",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "parties", "type", "CUSTOMER_ONLY"]
+            }
+          }
+        },
+        {
+          "name": "Update Party",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"partyName\": \"John's Updated Pharmacy Supplies\",\n  \"email\": \"john.updated@pharmacy.com\",\n  \"phone\": \"+91-9876543211\",\n  \"address\": \"456 Business Ave\",\n  \"city\": \"Mumbai\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/parties/1",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "parties", "1"]
+            }
+          }
+        },
+        {
+          "name": "Link Customer to Party",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/parties/1/link-customer/5",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "parties", "1", "link-customer", "5"]
+            }
+          }
+        },
+        {
+          "name": "Link Supplier to Party",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/parties/1/link-supplier/3",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "parties", "1", "link-supplier", "3"]
+            }
+          }
+        },
+        {
+          "name": "Get Party by Customer ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/parties/customer/5",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "parties", "customer", "5"]
+            }
+          }
+        },
+        {
+          "name": "Delete Party",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/parties/1",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "parties", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Account Management",
+      "item": [
+        {
+          "name": "Create Account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountCode\": \"ACC-001\",\n  \"accountName\": \"John Business Account\",\n  \"accountType\": \"BOTH\",\n  \"accountOpeningDate\": \"2026-01-01\",\n  \"openingBalance\": \"10000.00\",\n  \"status\": \"ACTIVE\",\n  \"notes\": \"Main trading account\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/accounts",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "accounts"]
+            }
+          }
+        },
+        {
+          "name": "Get All Accounts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/accounts",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "accounts"]
+            }
+          }
+        },
+        {
+          "name": "Get Account by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/accounts/100",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "accounts", "100"]
+            }
+          }
+        },
+        {
+          "name": "Get Account by Code",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/accounts/code/ACC-001",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "accounts", "code", "ACC-001"]
+            }
+          }
+        },
+        {
+          "name": "Get Account by Party",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/accounts/party/1",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "accounts", "party", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Accounts by Type",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/accounts/type/RECEIVABLE",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "accounts", "type", "RECEIVABLE"]
+            }
+          }
+        },
+        {
+          "name": "Get Account Balance",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/accounts/100/balance",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "accounts", "100", "balance"]
+            }
+          }
+        },
+        {
+          "name": "Get Account Transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/accounts/100/transactions",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "accounts", "100", "transactions"]
+            }
+          }
+        },
+        {
+          "name": "Get Account Statement",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/accounts/100/statement?fromDate=2026-01-01&toDate=2026-01-31",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "accounts", "100", "statement"],
+              "query": [
+                {
+                  "key": "fromDate",
+                  "value": "2026-01-01"
+                },
+                {
+                  "key": "toDate",
+                  "value": "2026-01-31"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Account Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/accounts/100/status?status=INACTIVE",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "accounts", "100", "status"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "INACTIVE"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Account",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/accounts/100",
+              "protocol": "http",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "accounts", "100"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
