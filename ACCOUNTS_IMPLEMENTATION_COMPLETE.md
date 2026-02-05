@@ -1,4 +1,5 @@
 /* Copyright (C) Pharmacy Management System - All Rights Reserved */
+
 # Unified Ledger Account System - Implementation Complete
 
 ## 🎯 Overview
@@ -10,13 +11,14 @@ A complete unified ledger account system has been successfully implemented for t
 ## 📦 New Entities Created
 
 ### 1. **Party.java** (`com.pharmacy.entity`)
+
 Represents any business entity (customer, supplier, or both) with:
 - **Unique Fields:**
-  - `partyCode` (UNIQUE) - Unified party identifier
-  - `partyName` - Name of the party
-  - `partyType` - Enum: CUSTOMER_ONLY, SUPPLIER_ONLY, BOTH
-  - Email, Phone, Address, City, State, Country, ZipCode
-  - Tax ID, Bank Account, Notes
+- `partyCode` (UNIQUE) - Unified party identifier
+- `partyName` - Name of the party
+- `partyType` - Enum: CUSTOMER_ONLY, SUPPLIER_ONLY, BOTH
+- Email, Phone, Address, City, State, Country, ZipCode
+- Tax ID, Bank Account, Notes
 
 - **Key Relationships:**
   - `customer` (OneToOne, nullable) - Link to Customer entity
@@ -24,17 +26,18 @@ Represents any business entity (customer, supplier, or both) with:
   - `account` (OneToOne, CascadeAll) - **Single unified ledger account**
 
 ### 2. **Account.java** (`com.pharmacy.entity`)
+
 Represents the unified ledger account for a party:
 - **Unique Fields:**
-  - `accountCode` (UNIQUE) - Account identifier
-  - `accountName` - Account name
-  - `accountType` - Enum: RECEIVABLE, PAYABLE, BOTH
-  - `accountOpeningDate` - Account creation date
-  - `openingBalance` - Opening balance (default: 0.00)
-  - `currentBalance` - Running balance
-  - `totalDebits` - Cumulative debit transactions
-  - `totalCredits` - Cumulative credit transactions
-  - `status` - Enum: ACTIVE, INACTIVE, SUSPENDED, CLOSED
+- `accountCode` (UNIQUE) - Account identifier
+- `accountName` - Account name
+- `accountType` - Enum: RECEIVABLE, PAYABLE, BOTH
+- `accountOpeningDate` - Account creation date
+- `openingBalance` - Opening balance (default: 0.00)
+- `currentBalance` - Running balance
+- `totalDebits` - Cumulative debit transactions
+- `totalCredits` - Cumulative credit transactions
+- `status` - Enum: ACTIVE, INACTIVE, SUSPENDED, CLOSED
 
 - **Key Features:**
   - @Builder pattern with default values
@@ -42,6 +45,7 @@ Represents the unified ledger account for a party:
   - Timestamp tracking (createdAt, updatedAt)
 
 ### 3. **Enhanced GeneralLedgerEntry.java**
+
 Updated to reference Party and Account:
 - `linkedAccount` (ManyToOne) - Direct reference to Account entity
 - `party` (ManyToOne) - Reference to Party for quick lookup
@@ -52,10 +56,12 @@ Updated to reference Party and Account:
 ## 📝 Enhanced Existing Entities
 
 ### Customer.java
+
 - ✅ Added: `party` (OneToOne relationship)
 - Allows customer to be linked to unified Party and its Account
 
 ### Supplier.java
+
 - ✅ Added: `party` (OneToOne relationship)
 - Allows supplier to be linked to unified Party and its Account
 
@@ -71,7 +77,6 @@ Updated to reference Party and Account:
    - Opening/Closing balances
    - Total debits/credits
    - Transaction list
-
 4. **AccountTransactionDto** - Individual transaction details:
    - Transaction ID, Date, Description
    - Reference Number (Invoice/PO)
@@ -83,6 +88,7 @@ Updated to reference Party and Account:
 ## 📚 New Repositories Created
 
 ### PartyRepository (`com.pharmacy.repository`)
+
 Methods:
 - `findByPartyCode(String)`
 - `findByEmail(String)`
@@ -91,6 +97,7 @@ Methods:
 - `findByPartyType(Party.PartyType)`
 
 ### AccountRepository (`com.pharmacy.repository`)
+
 Methods:
 - `findByAccountCode(String)`
 - `findByAccountName(String)`
@@ -103,7 +110,9 @@ Methods:
 ## 🔧 New Services Created
 
 ### AccountService Interface (`com.pharmacy.service`)
+
 **Key Methods:**
+
 ```java
 // Account Management
 AccountDto createAccount(AccountDto accountDto)
@@ -125,6 +134,7 @@ void deleteAccount(Long accountId)
 ```
 
 ### AccountServiceImpl (`com.pharmacy.service.impl`)
+
 - Complete implementation with transaction support
 - Automatic balance calculation based on account type:
   - **RECEIVABLE**: Debit ↑ Balance, Credit ↓ Balance
@@ -133,7 +143,9 @@ void deleteAccount(Long accountId)
 - Statement generation with running balance calculation
 
 ### PartyService Interface (`com.pharmacy.service`)
+
 **Key Methods:**
+
 ```java
 // Party Management
 PartyDto createParty(PartyDto partyDto)
@@ -153,6 +165,7 @@ PartyDto getPartyBySupplierId(Long supplierId)
 ```
 
 ### PartyServiceImpl (`com.pharmacy.service.impl`)
+
 - Auto-creates Account when Party is created
 - Sets account type based on party type
 - Supports converting CUSTOMER_ONLY to BOTH when supplier is linked
@@ -163,7 +176,9 @@ PartyDto getPartyBySupplierId(Long supplierId)
 ## 🎮 New Controllers Created
 
 ### AccountController (`com.pharmacy.controller`)
+
 **Endpoints:**
+
 ```
 POST   /api/v1/accounts                    - Create account
 GET    /api/v1/accounts                    - Get all accounts
@@ -179,7 +194,9 @@ DELETE /api/v1/accounts/{id}               - Delete account
 ```
 
 ### PartyController (`com.pharmacy.controller`)
+
 **Endpoints:**
+
 ```
 POST   /api/v1/parties                              - Create party
 GET    /api/v1/parties                              - Get all parties
@@ -200,17 +217,20 @@ DELETE /api/v1/parties/{id}                         - Delete party
 ## 🔐 Key Features
 
 ### ✅ Unified Account System
+
 - **One Party = One Account**: Whether acting as customer or supplier, a party maintains a single ledger account
 - Eliminates duplicate account records
 - Simplifies reconciliation and reporting
 
 ### ✅ Smart Balance Calculation
+
 - Account type determines balance logic
 - RECEIVABLE accounts: Customer owes money (Debit ↑, Credit ↓)
 - PAYABLE accounts: We owe supplier (Credit ↑, Debit ↓)
 - BOTH accounts: Flexible for mixed scenarios
 
 ### ✅ Account Statements
+
 - Date-range filtering
 - Running balance calculation per transaction
 - Complete transaction history
@@ -218,11 +238,13 @@ DELETE /api/v1/parties/{id}                         - Delete party
 - Total debits/credits summary
 
 ### ✅ Transaction Traceability
+
 - GL entries linked to Party and Account
 - Cross-reference between Account and GL
 - Quick lookup of all party transactions
 
 ### ✅ Cascading Operations
+
 - Creating a Party auto-creates its Account
 - Account type dynamically adjusts (CUSTOMER_ONLY → BOTH when supplier linked)
 - Relationship management handled automatically
@@ -234,6 +256,7 @@ DELETE /api/v1/parties/{id}                         - Delete party
 ### How to Integrate with Existing Services:
 
 #### 1. When Creating a Customer:
+
 ```java
 // In CustomerService.createCustomer():
 // Option A: Create party explicitly
@@ -249,11 +272,13 @@ partyService.linkCustomerToParty(createdParty.getId(), customer.getId());
 ```
 
 #### 2. When Creating a Supplier:
+
 ```java
 // Similar process, use Party.PartyType.SUPPLIER_ONLY
 ```
 
 #### 3. When Recording a Sale/Invoice:
+
 ```java
 // Post GL entry AND update account balance
 GeneralLedgerEntry glEntry = createGLEntry(...);
@@ -270,11 +295,13 @@ accountService.updateAccountBalance(
 ```
 
 #### 4. When Recording a Purchase:
+
 ```java
 // Same pattern - GL entry auto-posts to supplier's account
 ```
 
 #### 5. Generate Account Statement:
+
 ```java
 AccountStatementDto statement = accountService.getAccountStatement(
     accountId, 
@@ -291,6 +318,7 @@ AccountStatementDto statement = accountService.getAccountStatement(
 ### Scenario: John does business as BOTH customer AND supplier
 
 **Step 1: Create Party**
+
 ```json
 POST /api/v1/parties
 {
@@ -308,6 +336,7 @@ POST /api/v1/parties
 ```
 
 **Step 2: Link as Customer**
+
 ```json
 POST /api/v1/customers
 {
@@ -321,6 +350,7 @@ POST /api/v1/customers
 ```
 
 **Step 3: Link as Supplier**
+
 ```json
 POST /api/v1/suppliers
 {
@@ -334,6 +364,7 @@ POST /api/v1/suppliers
 ```
 
 **Step 4: View Unified Account**
+
 ```json
 GET /api/v1/accounts/party/1
 
@@ -350,6 +381,7 @@ Response: {
 ```
 
 **Step 5: Generate Account Statement**
+
 ```json
 GET /api/v1/accounts/100/statement?fromDate=2026-01-01&toDate=2026-01-31
 
@@ -385,6 +417,7 @@ Response: {
 ### New Tables:
 
 **parties**
+
 ```sql
 - id (PK, Auto)
 - party_code (UNIQUE)
@@ -402,6 +435,7 @@ Response: {
 ```
 
 **accounts**
+
 ```sql
 - id (PK, Auto)
 - account_code (UNIQUE)
@@ -418,6 +452,7 @@ Response: {
 ```
 
 **general_ledger_entries** (Updated)
+
 ```sql
 - ...existing fields...
 - account_id (FK to accounts, Nullable)
@@ -446,18 +481,21 @@ Response: {
 ## 🚀 Next Steps
 
 ### Phase 2: GL Integration
+
 1. **SalesInvoiceService**: Post GL entries to customer accounts
 2. **PurchaseInvoiceService**: Post GL entries to supplier accounts
 3. **PaymentService**: Record payment GL entries and update balances
 4. **ReturnService**: Reverse transactions with return GL entries
 
 ### Phase 3: Reporting
+
 1. **AR/AP Reports**: Aging analysis by party
 2. **Account Reconciliation**: Auto-reconcile GL vs Account
 3. **Dashboard Integration**: Party summary in Partners Dashboard
 4. **Account Status Alerts**: Track overdue payables/receivables
 
 ### Phase 4: Advanced Features
+
 1. **Opening Balance Import**: Bulk migrate existing customer/supplier balances
 2. **GL Posting Reversal**: Undo transaction with audit trail
 3. **Account Merge**: Consolidate duplicate party accounts
