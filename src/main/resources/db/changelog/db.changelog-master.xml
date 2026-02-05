@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.0.xsd"
+    logicalFilePath="db/changelog/db.changelog-master.xml">
+
+    <!-- Master changelog file for Pharmacy Management System Database -->
+    <!-- This file includes all individual migration changelogs -->
+    <!-- Liquibase will track all changes in DATABASECHANGELOG table -->
+
+    <!-- Initial Schema Creation - February 6, 2026 -->
+    <include file="db/changelog/v001/001_create_base_tables.xml" />
+    <include file="db/changelog/v001/002_create_party_and_account_tables.xml" />
+
+    <!-- Future changes should follow the pattern:
+         v002/001_feature_description.xml
+         v002/002_another_feature.xml
+         etc.
+    -->
+
+</databaseChangeLog>

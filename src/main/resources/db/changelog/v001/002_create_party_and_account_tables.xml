@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.0.xsd"
+    logicalFilePath="db/changelog/v001/002_create_party_and_account_tables.xml">
+
+    <!-- Party and Account Tables for Unified Ledger System -->
+    <!-- Created: February 6, 2026 -->
+    <!-- Note: These will be created by Hibernate on first run -->
+    <!-- Liquibase tracks them here for version control -->
+
+    <changeSet id="002-party-and-account-tables-placeholder" author="system" runOnChange="false">
+        <comment>Placeholder for Party and Account tables - managed by Hibernate JPA</comment>
+        <sql dbms="h2">SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME IN ('ACCOUNTS', 'PARTIES') LIMIT 1;</sql>
+    </changeSet>
+
+</databaseChangeLog>
